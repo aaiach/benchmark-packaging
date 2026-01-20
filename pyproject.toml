@@ -1,0 +1,19 @@
+[project]
+name = "product-scraper"
+version = "0.2.0"
+description = "Lead generation scraper with LLM-powered product discovery"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "firecrawl-py>=4.12.0",
+    "google-genai>=1.47.0",
+    "openai>=2.2.0",
+    "pandas>=2.0.3",
+    "python-dotenv>=1.0.1",
+    # LangChain for agentic workflows
+    "langchain>=0.3.0",
+    "langchain-core>=0.3.0",
+    "langchain-openai>=0.3.0",
+    "langchain-google-genai>=2.0.0",
+    "pydantic>=2.0.0",
+]
