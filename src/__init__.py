@@ -7,13 +7,14 @@ Architecture LLM en plusieurs étapes avec web search:
 4. Sélection d'images: OpenAI Mini + téléchargement local
 5. Analyse visuelle: Gemini Vision (hiérarchie visuelle, eye-tracking)
 6. Génération de heatmaps: Gemini Vision (overlay de chaleur visuelle)
+7. Analyse concurrentielle: PODs/POPs extraction pour présentation BCG-style
 
 Usage:
     # Run complet
-    uv run python main.py "lait d'avoine" --steps 1-6
+    uv run python main.py "lait d'avoine" --steps 1-7
     
-    # Continuer un run existant avec heatmaps
-    uv run python main.py --run-id 20260120_184854 --steps 6
+    # Continuer un run existant avec analyse concurrentielle
+    uv run python main.py --run-id 20260120_184854 --steps 7
 """
 from .config import (
     get_config,
@@ -36,11 +37,18 @@ from .models import (
     EyeTrackingPattern,
     MassingAnalysis,
     VisualHierarchyAnalysis,
+    # Competitive Analysis models
+    CompetitiveAnalysisResult,
+    PointOfDifference,
+    PointOfParity,
+    ProductCompetitiveProfile,
+    StrategicInsight,
 )
 from .product_discovery import ProductDiscovery, discover_products
 from .scraper import ProductScraper
 from .image_selector import ImageSelector, select_images, list_runs
 from .visual_analyzer import VisualAnalyzer, analyze_images, generate_heatmaps, list_runs_with_images
+from .competitive_analyzer import CompetitiveAnalyzer, run_competitive_analysis
 from .pipeline import Pipeline, PipelineContext, STEPS, parse_steps_arg, list_steps
 
 __all__ = [
@@ -64,6 +72,12 @@ __all__ = [
     'EyeTrackingPattern',
     'MassingAnalysis',
     'VisualHierarchyAnalysis',
+    # Competitive Analysis Models
+    'CompetitiveAnalysisResult',
+    'PointOfDifference',
+    'PointOfParity',
+    'ProductCompetitiveProfile',
+    'StrategicInsight',
     # Discovery
     'ProductDiscovery',
     'discover_products',
@@ -78,6 +92,9 @@ __all__ = [
     'analyze_images',
     'generate_heatmaps',
     'list_runs_with_images',
+    # Competitive Analysis
+    'CompetitiveAnalyzer',
+    'run_competitive_analysis',
     # Pipeline
     'Pipeline',
     'PipelineContext',

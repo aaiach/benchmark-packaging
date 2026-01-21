@@ -329,6 +329,132 @@ class AssetSymbolism(BaseModel):
     )
 
 
+# =============================================================================
+# Pydantic Models for Competitive Analysis (Step 7)
+# =============================================================================
+
+class PointOfDifference(BaseModel):
+    """A Point-of-Difference axis for radar chart comparison."""
+    axis_id: str = Field(
+        description="Short unique identifier (e.g., 'premium_craft', 'health_focus')"
+    )
+    axis_name: str = Field(
+        description="Display name for the axis (2-4 words, English, e.g., 'Premium Craft')"
+    )
+    description: str = Field(
+        description="What this axis measures and what visual elements indicate high scores"
+    )
+    high_score_indicators: List[str] = Field(
+        description="Visual/textual elements that indicate a high score on this axis"
+    )
+
+
+class PointOfParity(BaseModel):
+    """A Point-of-Parity attribute for matrix comparison."""
+    pop_id: str = Field(
+        description="Short unique identifier (e.g., 'organic_certified', 'no_sugar')"
+    )
+    pop_name: str = Field(
+        description="Display name for the attribute (e.g., 'Organic Certified')"
+    )
+    pop_type: Literal["certification", "nutritional_claim", "category_attribute", "origin_claim"] = Field(
+        description="Type of point-of-parity"
+    )
+    description: str = Field(
+        description="Brief description of what this POP represents"
+    )
+
+
+class ProductPODScore(BaseModel):
+    """A single POD score for a product."""
+    axis_id: str = Field(description="References PointOfDifference.axis_id")
+    score: int = Field(description="Score from 1-10", ge=1, le=10)
+    reasoning: str = Field(description="Brief justification for this score based on visual elements")
+
+
+class ProductPOPStatus(BaseModel):
+    """A single POP status for a product."""
+    pop_id: str = Field(description="References PointOfParity.pop_id")
+    has_attribute: bool = Field(description="Whether the product has this attribute")
+    evidence: Optional[str] = Field(None, description="Visual evidence if present")
+
+
+class ProductCompetitiveProfile(BaseModel):
+    """Complete competitive profile for a single product."""
+    brand: str = Field(description="Brand name")
+    product_name: str = Field(description="Full product name")
+    image_path: Optional[str] = Field(None, description="Path to product image")
+    
+    # Radar chart data
+    pod_scores: List[ProductPODScore] = Field(
+        description="Scores for each Point-of-Difference axis"
+    )
+    
+    # Matrix data
+    pop_status: List[ProductPOPStatus] = Field(
+        description="Status for each Point-of-Parity attribute"
+    )
+    
+    # Summary
+    positioning_summary: str = Field(
+        description="One-sentence positioning summary for this product"
+    )
+    key_differentiator: str = Field(
+        description="The single most distinctive aspect of this product"
+    )
+
+
+class StrategicInsight(BaseModel):
+    """A strategic insight from the competitive analysis."""
+    insight_type: Literal["competitive_landscape", "differentiation_opportunity", "visual_trend", "positioning_gap"] = Field(
+        description="Category of insight"
+    )
+    title: str = Field(
+        description="Short title for the insight"
+    )
+    description: str = Field(
+        description="Detailed explanation of the insight"
+    )
+    affected_brands: List[str] = Field(
+        default_factory=list,
+        description="Brands most relevant to this insight"
+    )
+
+
+class CompetitiveAnalysisResult(BaseModel):
+    """Complete competitive analysis output for frontend consumption."""
+    
+    # Metadata
+    category: str = Field(description="Product category analyzed")
+    analysis_date: str = Field(description="ISO date of analysis")
+    product_count: int = Field(description="Number of products analyzed")
+    
+    # PODs for Radar Chart
+    points_of_difference: List[PointOfDifference] = Field(
+        description="5 axes of differentiation for radar chart"
+    )
+    
+    # POPs for Matrix
+    points_of_parity: List[PointOfParity] = Field(
+        description="5 common attributes for parity matrix"
+    )
+    
+    # Product Profiles
+    products: List[ProductCompetitiveProfile] = Field(
+        description="Competitive profile for each product"
+    )
+    
+    # Strategic Insights
+    strategic_insights: List[StrategicInsight] = Field(
+        description="3-5 key strategic observations"
+    )
+    
+    # Category Summary
+    category_summary: str = Field(
+        description="Executive summary of the competitive landscape (2-3 sentences)"
+    )
+
+
 class VisualHierarchyAnalysis(BaseModel):
     """Complete visual hierarchy analysis result with 4 sections."""
     

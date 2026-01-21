@@ -292,6 +292,32 @@ def execute_step_6_heatmaps(ctx: PipelineContext, config: Any) -> Optional[Path]
     return result_file
 
 
+def execute_step_7_competitive(ctx: PipelineContext, config: Any) -> Optional[Path]:
+    """Step 7: Competitive Analysis using Gemini.
+    
+    Analyzes the visual analysis data to extract:
+    - Top 5 Points-of-Difference (PODs) for radar chart comparison
+    - Top 5 Points-of-Parity (POPs) for attribute matrix
+    - Product scores on each POD axis
+    - Strategic insights for BCG-style presentation
+    
+    Output is structured JSON ready for frontend React consumption.
+    
+    Returns:
+        Path to the competitive analysis JSON file
+    """
+    from ..competitive_analyzer import CompetitiveAnalyzer
+    
+    print(f"[Step 7] Competitive analysis with {config.gemini.model}...")
+    
+    analyzer = CompetitiveAnalyzer(config=config)
+    
+    # Run competitive analysis
+    result_file = analyzer.run(run_id=ctx.run_id)
+    
+    return result_file
+
+
 # =============================================================================
 # Step Registry
 # =============================================================================
@@ -348,6 +374,14 @@ STEPS: Dict[int, Step] = {
         output_pattern="analysis/{category}_visual_analysis_{run_id}.json",  # Updates same file
         requires=[5],
         executor=execute_step_6_heatmaps,
+    ),
+    7: Step(
+        number=7,
+        name="competitive",
+        description="Competitive Analysis (PODs/POPs extraction)",
+        output_pattern="analysis/{category}_competitive_analysis_{run_id}.json",
+        requires=[5],  # Only requires visual analysis, not heatmaps
+        executor=execute_step_7_competitive,
     ),
 }
 
