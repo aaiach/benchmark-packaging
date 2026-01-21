@@ -53,7 +53,7 @@ class OpenAIConfig:
 
 @dataclass
 class OpenAIMiniConfig:
-    """Configuration for OpenAI Mini model (Image Selection - Step 3)."""
+    """Configuration for OpenAI Mini model (Image Selection - Step 4)."""
     model: str = "gpt-5"  # Using full model for better image selection decisions
     temperature: float = 1.0  # OpenAI models only support temperature=1.0
     
@@ -62,6 +62,20 @@ class OpenAIMiniConfig:
         key = os.getenv("OPENAI_API_KEY")
         if not key:
             raise ValueError("OPENAI_API_KEY environment variable required")
+        return key
+
+
+@dataclass
+class GeminiVisionConfig:
+    """Configuration for Gemini Vision model (Visual Analysis - Step 5)."""
+    model: str = "gemini-3-pro-image-preview"  # Gemini 3 Pro with image/vision capabilities
+    temperature: float = 1.0  # Recommended for Gemini models
+    
+    @property
+    def api_key(self) -> str:
+        key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
+        if not key:
+            raise ValueError("GOOGLE_API_KEY or GEMINI_API_KEY environment variable required")
         return key
 
 
@@ -80,10 +94,12 @@ class DiscoveryConfig:
     gemini: GeminiConfig = field(default_factory=GeminiConfig)
     openai: OpenAIConfig = field(default_factory=OpenAIConfig)
     openai_mini: OpenAIMiniConfig = field(default_factory=OpenAIMiniConfig)
+    gemini_vision: GeminiVisionConfig = field(default_factory=GeminiVisionConfig)
     
     # Output settings
     output_dir: str = "output"
     images_subdir: str = "images"
+    analysis_subdir: str = "analysis"
     verbose: bool = True
 
 

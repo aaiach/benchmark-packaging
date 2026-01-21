@@ -1,0 +1,16 @@
+Ajoute une heatmap overlay sur ce packaging: {brand} - {product_name}
+
+## Hiérarchie visuelle (positionne les zones de chaleur selon ces données)
+
+**Ancre visuelle (ROUGE/ORANGE):**
+{visual_anchor}
+
+**Éléments par poids visuel décroissant:**
+{elements_hierarchy}
+
+**Parcours oculaire ({eye_pattern}):**
+Entrée: {entry_point} → Fixations: {fixation_sequence} → Sortie: {exit_point}
+Zones de fixation prolongée: {dwell_zones}
+
+**Massing ({balance_type}):**
+Dense: {dense_zones} | Léger: {light_zones} | Centre de gravité: {center_of_gravity}

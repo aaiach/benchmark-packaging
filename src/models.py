@@ -83,6 +83,108 @@ class ImageSelectionResult(BaseModel):
 
 
 # =============================================================================
+# Pydantic Models for Visual Analysis (Step 5)
+# =============================================================================
+
+class VisualElement(BaseModel):
+    """A single visual element identified in the image."""
+    element_type: str = Field(
+        description="Type of element: 'product', 'text', 'logo', 'illustration', 'background', 'icon', 'pattern', 'other'"
+    )
+    description: str = Field(
+        description="Brief description of the element"
+    )
+    position: str = Field(
+        description="Position in image: 'top-left', 'top-center', 'top-right', 'center-left', 'center', 'center-right', 'bottom-left', 'bottom-center', 'bottom-right'"
+    )
+    visual_weight: int = Field(
+        description="Visual weight/importance from 1 (lowest) to 10 (highest)",
+        ge=1,
+        le=10
+    )
+    dominant_color: str = Field(
+        description="Primary color of this element (e.g., 'deep blue', 'bright red', 'white')"
+    )
+    size_percentage: Optional[int] = Field(
+        None,
+        description="Approximate percentage of image area occupied (0-100)"
+    )
+
+
+class EyeTrackingPattern(BaseModel):
+    """Eye movement pattern analysis."""
+    pattern_type: Literal["Z", "F", "circular", "diagonal", "centered", "scattered"] = Field(
+        description="Primary eye movement pattern"
+    )
+    entry_point: str = Field(
+        description="Where the eye first enters the image"
+    )
+    fixation_sequence: List[str] = Field(
+        description="Ordered list of fixation points (what the eye looks at in sequence)"
+    )
+    exit_point: str = Field(
+        description="Where the eye naturally exits or rests"
+    )
+    dwell_zones: List[str] = Field(
+        description="Areas where the eye likely dwells longer"
+    )
+
+
+class MassingAnalysis(BaseModel):
+    """Analysis of visual mass distribution."""
+    balance_type: Literal["symmetric", "asymmetric", "dynamic", "radial", "mosaic"] = Field(
+        description="Type of visual balance"
+    )
+    dense_zones: List[str] = Field(
+        description="Areas with high visual density/weight"
+    )
+    light_zones: List[str] = Field(
+        description="Areas with visual breathing room/whitespace"
+    )
+    center_of_gravity: str = Field(
+        description="Where the visual 'weight' of the image is centered"
+    )
+
+
+class VisualHierarchyAnalysis(BaseModel):
+    """Complete visual hierarchy analysis result."""
+    # Visual anchor (the dominant element)
+    visual_anchor: str = Field(
+        description="The largest, highest-contrast element that captures immediate attention"
+    )
+    visual_anchor_description: str = Field(
+        description="Detailed description of why this element is the visual anchor"
+    )
+    
+    # Ranked elements
+    elements: List[VisualElement] = Field(
+        description="All visual elements ranked by visual weight (descending order)"
+    )
+    
+    # Eye tracking
+    eye_tracking: EyeTrackingPattern = Field(
+        description="Eye movement pattern analysis"
+    )
+    
+    # Massing
+    massing: MassingAnalysis = Field(
+        description="Visual mass distribution analysis"
+    )
+    
+    # Overall scores
+    hierarchy_clarity_score: int = Field(
+        description="How clear is the visual hierarchy (1-10)",
+        ge=1,
+        le=10
+    )
+    
+    # Free-form detailed analysis
+    detailed_analysis: str = Field(
+        description="Comprehensive free-form analysis of the visual hierarchy, eye-tracking simulation, and design effectiveness. Be thorough and technical."
+    )
+
+
+# =============================================================================
 # Dataclass for Internal Product Representation
 # =============================================================================
 

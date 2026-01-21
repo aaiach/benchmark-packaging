@@ -1,0 +1,25 @@
+Analyse cette image de produit: {brand} - {product_name}
+Catégorie: {category}
+
+## Ta tâche:
+
+1. **Identifie l'Ancre Visuelle**: Quel est l'élément le plus grand et à plus fort contraste? Décris-le précisément.
+
+2. **Liste tous les éléments visibles** par ordre décroissant de poids visuel. Pour chaque élément, indique:
+   - Son type (texte, logo, produit, illustration, etc.)
+   - Sa position approximative (haut-gauche, centre, etc.)
+   - Son poids visuel estimé (1-10)
+   - Sa couleur dominante
+
+3. **Décris le parcours oculaire**:
+   - Où l'œil entre-t-il dans l'image?
+   - Quelle est la séquence de fixations probable?
+   - Quel pattern suit le regard (Z, F, circulaire, diagonal)?
+   - Où l'œil sort-il de l'image?
+
+4. **Analyse le massing**:
+   - Comment les masses visuelles sont-elles réparties?
+   - L'équilibre est-il symétrique, asymétrique ou dynamique?
+   - Y a-t-il des zones de repos pour l'œil?
+
+Fournis une analyse détaillée et professionnelle.

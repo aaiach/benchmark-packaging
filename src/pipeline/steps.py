@@ -245,6 +245,53 @@ def execute_step_4_images(ctx: PipelineContext, config: Any) -> Optional[Path]:
     return result_file
 
 
+def execute_step_5_visual_analysis(ctx: PipelineContext, config: Any) -> Optional[Path]:
+    """Step 5: Visual Analysis using Gemini Vision.
+    
+    Analyzes each downloaded product image for:
+    - Visual hierarchy and element ranking
+    - Eye-tracking simulation (Z, F patterns)
+    - Massing and visual balance
+    - Design effectiveness scoring
+    
+    Returns:
+        Path to the output JSON file with analysis data
+    """
+    from ..visual_analyzer import VisualAnalyzer
+    
+    print(f"[Step 5] Visual analysis with {config.gemini_vision.model}...")
+    
+    analyzer = VisualAnalyzer(config=config)
+    
+    # Run analysis on all images from this run
+    result_file = analyzer.run(run_id=ctx.run_id)
+    
+    return result_file
+
+
+def execute_step_6_heatmaps(ctx: PipelineContext, config: Any) -> Optional[Path]:
+    """Step 6: Heatmap Generation using Gemini Vision.
+    
+    Generates eye-tracking heatmap overlays for each product image based on
+    the visual hierarchy analysis from Step 5.
+    
+    Heatmaps are saved in a 'heatmaps' subdirectory alongside the original images.
+    
+    Returns:
+        Path to the updated analysis JSON file with heatmap paths
+    """
+    from ..visual_analyzer import VisualAnalyzer
+    
+    print(f"[Step 6] Heatmap generation with {config.gemini_vision.model}...")
+    
+    analyzer = VisualAnalyzer(config=config)
+    
+    # Generate heatmaps for all analyzed images
+    result_file = analyzer.run_heatmaps(run_id=ctx.run_id)
+    
+    return result_file
+
+
 # =============================================================================
 # Step Registry
 # =============================================================================
@@ -285,6 +332,22 @@ STEPS: Dict[int, Step] = {
         output_pattern="{category}_with_images_{run_id}.json",
         requires=[3],
         executor=execute_step_4_images,
+    ),
+    5: Step(
+        number=5,
+        name="analysis",
+        description="Visual Analysis (Gemini Vision)",
+        output_pattern="analysis/{category}_visual_analysis_{run_id}.json",
+        requires=[4],
+        executor=execute_step_5_visual_analysis,
+    ),
+    6: Step(
+        number=6,
+        name="heatmaps",
+        description="Heatmap Generation (Gemini Vision)",
+        output_pattern="analysis/{category}_visual_analysis_{run_id}.json",  # Updates same file
+        requires=[5],
+        executor=execute_step_6_heatmaps,
     ),
 }
 

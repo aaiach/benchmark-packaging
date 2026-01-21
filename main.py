@@ -5,19 +5,21 @@ Architecture en plusieurs étapes LLM avec web search:
 2. Détails par marque: OpenAI + Web Search (Responses API)
 3. Scraping optionnel via Firecrawl
 4. Sélection d'images: OpenAI Mini + téléchargement local
+5. Analyse visuelle: Gemini Vision (hiérarchie visuelle, eye-tracking)
+6. Génération de heatmaps: Gemini Vision (overlay de chaleur visuelle)
 
 Usage:
     # Nouveau run avec toutes les étapes
-    uv run python main.py "lait d'avoine" --steps 1-4
+    uv run python main.py "lait d'avoine" --steps 1-6
     
-    # Nouveau run jusqu'à l'étape 3 (sans images)
-    uv run python main.py "lait d'avoine" --steps 1-3
+    # Nouveau run jusqu'à l'étape 5 (sans heatmaps)
+    uv run python main.py "lait d'avoine" --steps 1-5
     
-    # Continuer un run existant à partir de l'étape 4
-    uv run python main.py --run-id 20260120_184854 --steps 4
+    # Continuer un run existant avec heatmaps
+    uv run python main.py --run-id 20260120_184854 --steps 6
     
-    # Relancer les étapes 3-4 sur un run existant
-    uv run python main.py --run-id 20260120_184854 --steps 3-4
+    # Relancer les étapes 5-6 sur un run existant
+    uv run python main.py --run-id 20260120_184854 --steps 5-6
     
     # Lister les runs disponibles
     uv run python main.py --list-runs
@@ -44,9 +46,9 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Exemples:
-  %(prog)s "lait d'avoine" --steps 1-4     # Run complet
-  %(prog)s "lait d'avoine" --steps 1-3     # Sans sélection d'images
-  %(prog)s --run-id 20260120_184854 --steps 4  # Continuer avec images
+  %(prog)s "lait d'avoine" --steps 1-6     # Run complet avec heatmaps
+  %(prog)s "lait d'avoine" --steps 1-5     # Sans heatmaps
+  %(prog)s --run-id 20260120_184854 --steps 6  # Ajouter heatmaps
   %(prog)s --list-runs                     # Voir les runs existants
   %(prog)s --run-id 20260120_184854 --status   # Statut d'un run
         """
@@ -271,6 +273,7 @@ Exemples:
     print(f"  - Step 1 (Discovery): {config.gemini.model} + Google Search")
     print(f"  - Step 2 (Details):   {config.openai.model} + Web Search")
     print(f"  - Step 4 (Images):    {config.openai_mini.model}")
+    print(f"  - Step 5-6 (Vision):  {config.gemini_vision.model}")
     print("=" * 80)
     
     # ==========================================================================
