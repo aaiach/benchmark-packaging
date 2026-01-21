@@ -39,6 +39,50 @@ class ProductDetailsList(BaseModel):
 
 
 # =============================================================================
+# Pydantic Models for Image Selection
+# =============================================================================
+
+class ImageSelection(BaseModel):
+    """Result of AI-powered image selection for a product."""
+    selected_url: str = Field(
+        description="URL of the selected best product image"
+    )
+    confidence: float = Field(
+        description="Confidence score from 0.0 to 1.0",
+        ge=0.0,
+        le=1.0
+    )
+    reasoning: str = Field(
+        description="Brief explanation of why this image was selected"
+    )
+    is_product_image: bool = Field(
+        description="Whether the selected image actually shows the product"
+    )
+
+
+class ImageSelectionResult(BaseModel):
+    """Complete result for a product's image selection."""
+    brand: str = Field(description="Brand name")
+    product_name: str = Field(description="Product full name")
+    selected_image_url: Optional[str] = Field(
+        None, 
+        description="URL of the selected image (None if no suitable image found)"
+    )
+    local_image_path: Optional[str] = Field(
+        None,
+        description="Local filesystem path to the downloaded image"
+    )
+    selection_confidence: float = Field(
+        default=0.0,
+        description="Confidence score of the selection"
+    )
+    selection_reasoning: Optional[str] = Field(
+        None,
+        description="AI reasoning for the selection"
+    )
+
+
+# =============================================================================
 # Dataclass for Internal Product Representation
 # =============================================================================
 

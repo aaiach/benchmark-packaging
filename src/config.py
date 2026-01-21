@@ -6,6 +6,7 @@ product discovery pipeline.
 Architecture:
 - Step 1 (Brand Discovery): Gemini with Google Search grounding
 - Step 2 (Product Details): OpenAI with Web Search (Responses API)
+- Step 3 (Image Selection): OpenAI Mini with structured outputs
 """
 from dataclasses import dataclass, field
 from typing import Optional
@@ -50,6 +51,20 @@ class OpenAIConfig:
         return key
 
 
+@dataclass
+class OpenAIMiniConfig:
+    """Configuration for OpenAI Mini model (Image Selection - Step 3)."""
+    model: str = "gpt-5"  # Using full model for better image selection decisions
+    temperature: float = 1.0  # OpenAI models only support temperature=1.0
+    
+    @property
+    def api_key(self) -> str:
+        key = os.getenv("OPENAI_API_KEY")
+        if not key:
+            raise ValueError("OPENAI_API_KEY environment variable required")
+        return key
+
+
 # =============================================================================
 # Pipeline Configuration
 # =============================================================================
@@ -64,9 +79,11 @@ class DiscoveryConfig:
     # LLM configs
     gemini: GeminiConfig = field(default_factory=GeminiConfig)
     openai: OpenAIConfig = field(default_factory=OpenAIConfig)
+    openai_mini: OpenAIMiniConfig = field(default_factory=OpenAIMiniConfig)
     
     # Output settings
     output_dir: str = "output"
+    images_subdir: str = "images"
     verbose: bool = True
 
 
