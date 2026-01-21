@@ -1,25 +1,32 @@
-Analyse cette image de produit: {brand} - {product_name}
+Analyse cette image de packaging: **{brand}** - {product_name}
 Catégorie: {category}
 
-## Ta tâche:
+Applique ton expertise pour produire une analyse complète structurée en 4 sections:
 
-1. **Identifie l'Ancre Visuelle**: Quel est l'élément le plus grand et à plus fort contraste? Décris-le précisément.
+## Section 1: Hiérarchie Visuelle
+- Identifie l'ancre visuelle (élément dominant)
+- Liste TOUS les éléments par poids visuel décroissant (type, position, poids 1-10, couleur, % surface)
+- Décris le parcours oculaire complet (entrée → fixations → sortie, type de pattern)
+- Analyse le massing (distribution, équilibre, zones de repos, centre de gravité)
+- Score de clarté hiérarchique (1-10)
 
-2. **Liste tous les éléments visibles** par ordre décroissant de poids visuel. Pour chaque élément, indique:
-   - Son type (texte, logo, produit, illustration, etc.)
-   - Sa position approximative (haut-gauche, centre, etc.)
-   - Son poids visuel estimé (1-10)
-   - Sa couleur dominante
+## Section 2: Cartographie Chromatique & Sémiotique
+- Extrais la palette COMPLÈTE (nom, hex, Pantone si possible, usage, % couverture)
+- Sépare: couleurs de fond / couleurs de marque / couleurs d'accent
+- Détermine la finition de surface basée sur les reflets (matte/satin/brillant/métallique/mixte)
+- Identifie l'harmonie colorimétrique et son impact psychologique
 
-3. **Décris le parcours oculaire**:
-   - Où l'œil entre-t-il dans l'image?
-   - Quelle est la séquence de fixations probable?
-   - Quel pattern suit le regard (Z, F, circulaire, diagonal)?
-   - Où l'œil sort-il de l'image?
+## Section 3: Inventaire Textuel & Claims
+- Transcris CHAQUE mot visible sur la face avant
+- Pour chaque bloc: texte exact, catégorie de police, graisse, taille relative, couleur (hex), position, techniques d'emphase, si c'est un claim, niveau hiérarchique (1-5)
+- Décris la typographie marque et produit
+- Liste tous les claims marketing et identifie ceux mis en emphase
+- Évalue la cohérence typographique et la lisibilité
 
-4. **Analyse le massing**:
-   - Comment les masses visuelles sont-elles réparties?
-   - L'équilibre est-il symétrique, asymétrique ou dynamique?
-   - Y a-t-il des zones de repos pour l'œil?
+## Section 4: Symbolisme des Assets & Confiance
+- Catalogue TOUS les assets graphiques (type, description, style, position, % surface, fonction)
+- Liste TOUTES les certifications et marques de confiance (nom, type, description visuelle, position, proéminence, couleurs)
+- Estime le ratio photographie/illustration
+- Identifie les éléments de storytelling et évalue l'efficacité des signaux de confiance
 
 Fournis une analyse détaillée et professionnelle.

@@ -146,8 +146,196 @@ class MassingAnalysis(BaseModel):
     )
 
 
+# =============================================================================
+# Section 2: Chromatic & Semiotic Mapping
+# =============================================================================
+
+class ColorEntry(BaseModel):
+    """A single color in the palette."""
+    color_name: str = Field(
+        description="Descriptive color name (e.g., 'Deep Forest Green', 'Warm Beige')"
+    )
+    hex_code: str = Field(
+        description="Hex color code approximation (e.g., '#2D5A3D')"
+    )
+    pantone_approximation: Optional[str] = Field(
+        None,
+        description="Closest Pantone reference if identifiable (e.g., 'Pantone 349 C')"
+    )
+    usage: str = Field(
+        description="Where this color is used (e.g., 'background', 'primary branding', 'accent text', 'logo')"
+    )
+    coverage_percentage: Optional[int] = Field(
+        None,
+        description="Approximate percentage of package surface using this color (0-100)"
+    )
+
+
+class ChromaticMapping(BaseModel):
+    """Chromatic & Semiotic Mapping - Color codes and surface finishes."""
+    color_palette: List[ColorEntry] = Field(
+        description="Complete color palette extracted from the packaging, ordered by visual prominence"
+    )
+    background_colors: List[str] = Field(
+        description="Primary background color(s) with hex codes"
+    )
+    primary_branding_colors: List[str] = Field(
+        description="Main brand identity colors with hex codes"
+    )
+    accent_colors: List[str] = Field(
+        description="Accent and highlight colors with hex codes"
+    )
+    surface_finish: Literal["matte", "satin", "semi-gloss", "high-gloss", "metallic", "textured", "mixed"] = Field(
+        description="Surface finish based on light reflections analysis"
+    )
+    surface_finish_description: str = Field(
+        description="Detailed description of surface finish characteristics based on light reflections, shadows, and highlights visible in the image"
+    )
+    color_harmony: str = Field(
+        description="Color harmony type (e.g., 'complementary', 'analogous', 'triadic', 'monochromatic', 'split-complementary')"
+    )
+    color_psychology_notes: str = Field(
+        description="Brief analysis of the psychological impact of the color choices for the product category"
+    )
+
+
+# =============================================================================
+# Section 3: Textual & Claim Inventory
+# =============================================================================
+
+class TextBlock(BaseModel):
+    """A single text block on the packaging."""
+    text_content: str = Field(
+        description="Exact transcription of the text"
+    )
+    font_category: str = Field(
+        description="Font category: 'Rounded Sans-Serif', 'Geometric Sans-Serif', 'Humanist Sans-Serif', 'Traditional Serif', 'Modern Serif', 'Slab Serif', 'Script', 'Display', 'Handwritten', 'Monospace'"
+    )
+    font_weight: str = Field(
+        description="Font weight: 'thin', 'light', 'regular', 'medium', 'semi-bold', 'bold', 'extra-bold', 'black'"
+    )
+    text_size: Literal["extra-small", "small", "medium", "large", "extra-large", "headline"] = Field(
+        description="Relative text size on the packaging"
+    )
+    text_color: str = Field(
+        description="Text color with hex code approximation"
+    )
+    position: str = Field(
+        description="Position on packaging (e.g., 'top-center', 'below logo')"
+    )
+    emphasis_techniques: List[str] = Field(
+        description="How this text is emphasized: 'bold', 'larger size', 'color contrast', 'color block background', 'underline', 'uppercase', 'isolation/whitespace', 'none'"
+    )
+    is_claim: bool = Field(
+        description="Whether this text is a marketing claim or certification statement"
+    )
+    hierarchy_level: int = Field(
+        description="Text hierarchy level: 1 (most prominent) to 5 (least prominent)",
+        ge=1,
+        le=5
+    )
+
+
+class TextualInventory(BaseModel):
+    """Textual & Claim Inventory - Lexicon, typography, and hierarchy."""
+    all_text_blocks: List[TextBlock] = Field(
+        description="All text blocks on the front-of-pack, ordered by hierarchy level (most prominent first)"
+    )
+    brand_name_typography: str = Field(
+        description="Detailed description of brand name font and styling"
+    )
+    product_name_typography: str = Field(
+        description="Detailed description of product name font and styling"
+    )
+    claims_summary: List[str] = Field(
+        description="List of all marketing claims and benefit statements"
+    )
+    emphasized_claims: List[str] = Field(
+        description="Claims that are visually emphasized through bolding, size, or distinct color blocks"
+    )
+    typography_consistency: str = Field(
+        description="Assessment of typographic consistency across the packaging (e.g., 'highly consistent 2-font system', 'varied with 4+ fonts')"
+    )
+    readability_assessment: str = Field(
+        description="Assessment of overall text readability considering size, contrast, and spacing"
+    )
+
+
+# =============================================================================
+# Section 4: Asset & Trust Symbolism
+# =============================================================================
+
+class GraphicalAsset(BaseModel):
+    """A non-text graphical asset on the packaging."""
+    asset_type: Literal["photography", "illustration", "line-art", "icon", "pattern", "abstract", "logo", "badge", "symbol"] = Field(
+        description="Type of graphical asset"
+    )
+    description: str = Field(
+        description="Detailed description of the asset"
+    )
+    style: str = Field(
+        description="Visual style (e.g., 'photorealistic', 'stylized line art', 'flat icon', 'watercolor illustration', 'geometric pattern')"
+    )
+    position: str = Field(
+        description="Position on the packaging"
+    )
+    size_percentage: Optional[int] = Field(
+        None,
+        description="Approximate percentage of packaging area (0-100)"
+    )
+    purpose: str = Field(
+        description="Purpose of this asset (e.g., 'product visualization', 'ingredient showcase', 'brand identity', 'decorative', 'trust signal')"
+    )
+
+
+class TrustMark(BaseModel):
+    """A certification, trust mark, or origin symbol."""
+    name: str = Field(
+        description="Name of the certification or symbol (e.g., 'EU Organic', 'Fairtrade', 'Non-GMO Project')"
+    )
+    mark_type: Literal["organic-certification", "quality-certification", "environmental-certification", "dietary-certification", "origin-symbol", "brand-quality-mark", "recycling-symbol", "other"] = Field(
+        description="Category of trust mark"
+    )
+    visual_description: str = Field(
+        description="Visual description of the mark/badge"
+    )
+    position: str = Field(
+        description="Position on the packaging"
+    )
+    prominence: Literal["highly-prominent", "prominent", "moderate", "subtle"] = Field(
+        description="How prominently the mark is displayed"
+    )
+    colors: List[str] = Field(
+        description="Colors used in the mark"
+    )
+
+
+class AssetSymbolism(BaseModel):
+    """Asset & Trust Symbolism - Graphical assets and third-party badges."""
+    graphical_assets: List[GraphicalAsset] = Field(
+        description="All non-text visual assets, differentiating between photography, line art, and patterns"
+    )
+    trust_marks: List[TrustMark] = Field(
+        description="All visible certifications, trust marks, and origin symbols"
+    )
+    photography_vs_illustration_ratio: str = Field(
+        description="Ratio of photographic vs illustrated content (e.g., '70% photography / 30% illustration')"
+    )
+    visual_storytelling_elements: List[str] = Field(
+        description="Elements that contribute to brand storytelling (e.g., 'rustic farm imagery', 'fresh ingredient photography')"
+    )
+    trust_signal_effectiveness: str = Field(
+        description="Assessment of how effectively trust marks and certifications are communicated"
+    )
+
+
 class VisualHierarchyAnalysis(BaseModel):
-    """Complete visual hierarchy analysis result."""
+    """Complete visual hierarchy analysis result with 4 sections."""
+    
+    # =========================================================================
+    # SECTION 1: Visual Hierarchy (existing)
+    # =========================================================================
+    
     # Visual anchor (the dominant element)
     visual_anchor: str = Field(
         description="The largest, highest-contrast element that captures immediate attention"
@@ -178,9 +366,33 @@ class VisualHierarchyAnalysis(BaseModel):
         le=10
     )
     
-    # Free-form detailed analysis
+    # Free-form detailed analysis for section 1
     detailed_analysis: str = Field(
         description="Comprehensive free-form analysis of the visual hierarchy, eye-tracking simulation, and design effectiveness. Be thorough and technical."
+    )
+    
+    # =========================================================================
+    # SECTION 2: Chromatic & Semiotic Mapping
+    # =========================================================================
+    
+    chromatic_mapping: ChromaticMapping = Field(
+        description="Color palette analysis and surface finish assessment"
+    )
+    
+    # =========================================================================
+    # SECTION 3: Textual & Claim Inventory
+    # =========================================================================
+    
+    textual_inventory: TextualInventory = Field(
+        description="Complete transcription and typography analysis of all text on the packaging"
+    )
+    
+    # =========================================================================
+    # SECTION 4: Asset & Trust Symbolism
+    # =========================================================================
+    
+    asset_symbolism: AssetSymbolism = Field(
+        description="Graphical assets and trust marks/certifications analysis"
     )
 
 

@@ -19,7 +19,15 @@ from google.genai import types
 from PIL import Image
 
 from .config import get_config, DiscoveryConfig
-from .models import VisualHierarchyAnalysis, VisualElement, EyeTrackingPattern, MassingAnalysis
+from .models import (
+    VisualHierarchyAnalysis, 
+    VisualElement, 
+    EyeTrackingPattern, 
+    MassingAnalysis,
+    ChromaticMapping,
+    TextualInventory,
+    AssetSymbolism
+)
 from .utils import load_prompt
 
 
@@ -288,10 +296,23 @@ class VisualAnalyzer:
                 result['analysis_success'] = True
                 success_count += 1
                 
-                # Print summary
-                print(f"    [✓] Anchor: {analysis.visual_anchor[:50]}...")
-                print(f"    [✓] Elements: {len(analysis.elements)}, Pattern: {analysis.eye_tracking.pattern_type}")
-                print(f"    [✓] Hierarchy clarity: {analysis.hierarchy_clarity_score}/10")
+                # Print summary for Section 1: Visual Hierarchy
+                print(f"    [✓] Section 1 - Visual Hierarchy:")
+                print(f"        Anchor: {analysis.visual_anchor[:50]}...")
+                print(f"        Elements: {len(analysis.elements)}, Pattern: {analysis.eye_tracking.pattern_type}")
+                print(f"        Clarity: {analysis.hierarchy_clarity_score}/10")
+                
+                # Print summary for Section 2: Chromatic Mapping
+                print(f"    [✓] Section 2 - Chromatic Mapping:")
+                print(f"        Colors: {len(analysis.chromatic_mapping.color_palette)}, Finish: {analysis.chromatic_mapping.surface_finish}")
+                
+                # Print summary for Section 3: Textual Inventory
+                print(f"    [✓] Section 3 - Textual Inventory:")
+                print(f"        Text blocks: {len(analysis.textual_inventory.all_text_blocks)}, Claims: {len(analysis.textual_inventory.claims_summary)}")
+                
+                # Print summary for Section 4: Asset Symbolism
+                print(f"    [✓] Section 4 - Asset Symbolism:")
+                print(f"        Assets: {len(analysis.asset_symbolism.graphical_assets)}, Trust marks: {len(analysis.asset_symbolism.trust_marks)}")
             else:
                 print(f"    [✗] Analysis failed")
             
