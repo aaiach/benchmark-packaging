@@ -1,6 +1,8 @@
 Analyse cette image de packaging: **{brand}** - {product_name}
 Catégorie: {category}
 
+IMPORTANT: Réponds ENTIÈREMENT EN FRANÇAIS pour toute ton analyse.
+
 Applique ton expertise pour produire une analyse complète structurée en 4 sections:
 
 ## Section 1: Hiérarchie Visuelle
@@ -29,4 +31,4 @@ Applique ton expertise pour produire une analyse complète structurée en 4 sect
 - Estime le ratio photographie/illustration
 - Identifie les éléments de storytelling et évalue l'efficacité des signaux de confiance
 
-Fournis une analyse détaillée et professionnelle.
+Fournis une analyse détaillée et professionnelle, ENTIÈREMENT EN FRANÇAIS.

@@ -32,7 +32,7 @@ from .models import (
     TextualInventory,
     AssetSymbolism
 )
-from .utils import load_prompt
+from .utils import load_prompt, invoke_with_retry
 from .parallel_executor import (
     ParallelExecutor,
     Provider,
@@ -223,12 +223,16 @@ class VisualAnalyzer:
             ]
             
             # Call LangChain with structured output - handles schema automatically
-            result = self._structured_llm.invoke(messages)
+            result = invoke_with_retry(
+                lambda: self._structured_llm.invoke(messages),
+                max_retries=3,
+                label=f"Visual analysis ({brand})"
+            )
             
             return result
             
         except Exception as e:
-            print(f"    [!] Analysis error: {e}")
+            print(f"    [!] Analysis error (after retries): {e}")
             return None
     
     def analyze_run(

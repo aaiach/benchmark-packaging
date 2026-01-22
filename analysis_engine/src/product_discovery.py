@@ -18,7 +18,7 @@ from langchain_openai import ChatOpenAI
 
 from .config import get_config, DiscoveryConfig
 from .models import Product, Brand, BrandList, ProductDetails
-from .utils import load_prompt, extract_json
+from .utils import load_prompt, extract_json, invoke_with_retry
 from .parallel_executor import (
     ParallelExecutor, 
     Provider, 
@@ -178,11 +178,15 @@ class ProductDiscovery:
         print(f"\n[Étape 1] Découverte de {count} marques '{category}' via Gemini...")
         print(f"  Modèle: {self.config.gemini.model} + Google Search grounding")
         
-        result: BrandList = self.brands_chain.invoke({
-            "count": count,
-            "category": category,
-            "country": country,
-        })
+        result: BrandList = invoke_with_retry(
+            lambda: self.brands_chain.invoke({
+                "count": count,
+                "category": category,
+                "country": country,
+            }),
+            max_retries=3,
+            label="Brand discovery"
+        )
         
         print(f"[Étape 1] ✓ {len(result.brands)} marques découvertes:")
         for i, brand in enumerate(result.brands, 1):
@@ -209,11 +213,15 @@ class ProductDiscovery:
         """
         try:
             # Get raw response (AIMessage) from chain with web search
-            result = self.details_chain.invoke({
-                "brand": brand.name,
-                "category": category,
-                "country": country,
-            })
+            result = invoke_with_retry(
+                lambda: self.details_chain.invoke({
+                    "brand": brand.name,
+                    "category": category,
+                    "country": country,
+                }),
+                max_retries=3,
+                label=f"Details ({brand.name})"
+            )
             
             # Extract text content from AIMessage
             # Responses API returns content as a list of content blocks

@@ -1,8 +1,43 @@
 """Utilitaires pour le scraper de produits."""
 import json
 import re
+import time
 from pathlib import Path
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Callable, TypeVar
+
+T = TypeVar('T')
+
+
+def invoke_with_retry(
+    llm_call: Callable[[], T],
+    max_retries: int = 3,
+    delay: float = 1.0,
+    label: str = "LLM"
+) -> T:
+    """Retry wrapper for LLM calls that may fail on JSON parsing.
+    
+    Args:
+        llm_call: Zero-argument callable that invokes the LLM
+        max_retries: Maximum number of attempts (default 3)
+        delay: Seconds to wait between retries (default 1.0)
+        label: Label for logging (default "LLM")
+    
+    Returns:
+        The result from the successful LLM call
+    
+    Raises:
+        The last exception if all retries fail
+    """
+    last_error = None
+    for attempt in range(max_retries):
+        try:
+            return llm_call()
+        except Exception as e:
+            last_error = e
+            if attempt < max_retries - 1:
+                print(f"    [!] {label} attempt {attempt + 1} failed: {str(e)[:80]}... retrying")
+                time.sleep(delay)
+    raise last_error
 
 # Répertoire des prompts
 PROMPTS_DIR = Path(__file__).parent / "prompts"

@@ -37,7 +37,7 @@ from .models import (
     SingleProductProfile,
     StrategicInsightsResult,
 )
-from .utils import load_prompt
+from .utils import load_prompt, invoke_with_retry
 from .parallel_executor import (
     ParallelExecutor,
     Provider,
@@ -358,13 +358,17 @@ class CompetitiveAnalyzer:
                 HumanMessage(content=user_prompt)
             ]
             
-            result = self._phase1_llm.invoke(messages)
+            result = invoke_with_retry(
+                lambda: self._phase1_llm.invoke(messages),
+                max_retries=3,
+                label="Phase 1 (POD/POP)"
+            )
             
             print(f"    [✓] Identified {len(result.points_of_difference)} PODs and {len(result.points_of_parity)} POPs")
             return result
             
         except Exception as e:
-            print(f"    [!] Phase 1 error: {e}")
+            print(f"    [!] Phase 1 error (after retries): {e}")
             import traceback
             traceback.print_exc()
             return None
@@ -412,11 +416,15 @@ class CompetitiveAnalyzer:
                 HumanMessage(content=user_prompt)
             ]
             
-            result = self._phase2_llm.invoke(messages)
+            result = invoke_with_retry(
+                lambda: self._phase2_llm.invoke(messages),
+                max_retries=3,
+                label=f"Phase 2 ({brand})"
+            )
             return result
             
         except Exception as e:
-            print(f"      [!] Scoring error: {e}")
+            print(f"      [!] Scoring error (after retries): {e}")
             return None
     
     def _phase3_generate_insights(
@@ -457,13 +465,17 @@ class CompetitiveAnalyzer:
                 HumanMessage(content=user_prompt)
             ]
             
-            result = self._phase3_llm.invoke(messages)
+            result = invoke_with_retry(
+                lambda: self._phase3_llm.invoke(messages),
+                max_retries=3,
+                label="Phase 3 (Insights)"
+            )
             
             print(f"    [✓] Generated {len(result.strategic_insights)} insights")
             return result
             
         except Exception as e:
-            print(f"    [!] Phase 3 error: {e}")
+            print(f"    [!] Phase 3 error (after retries): {e}")
             import traceback
             traceback.print_exc()
             return None
