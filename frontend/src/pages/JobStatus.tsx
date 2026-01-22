@@ -18,11 +18,11 @@ export function JobStatus() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Card className="text-center py-8 max-w-md">
-          <div className="text-red-400 text-xl mb-4">No Job ID Provided</div>
+          <div className="text-red-400 text-xl mb-4">Aucun ID de tâche fourni</div>
           <Link to="/categories">
             <Button>
               <Home size={16} />
-              Go to Categories
+              Aller aux Catégories
             </Button>
           </Link>
         </Card>
@@ -36,7 +36,7 @@ export function JobStatus() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4">
           <Spinner size="lg" />
-          <div className="text-white text-lg">Loading job status...</div>
+          <div className="text-white text-lg">Chargement du statut...</div>
         </div>
       </div>
     );
@@ -47,14 +47,14 @@ export function JobStatus() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Card className="text-center py-8 max-w-md">
-          <div className="text-red-400 text-xl mb-2">Failed to Load Job Status</div>
+          <div className="text-red-400 text-xl mb-2">Échec du chargement du statut</div>
           <div className="text-gray-400 text-sm mb-4">{error}</div>
           <div className="flex gap-4 justify-center">
-            <Button onClick={() => window.location.reload()}>Retry</Button>
+            <Button onClick={() => window.location.reload()}>Réessayer</Button>
             <Link to="/categories">
               <Button variant="secondary">
                 <Home size={16} />
-                Categories
+                Catégories
               </Button>
             </Link>
           </div>
@@ -81,12 +81,12 @@ export function JobStatus() {
           className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
         >
           <ArrowLeft size={16} />
-          All Categories
+          Toutes les Catégories
         </Link>
 
         {/* Header */}
         <header className="space-y-2">
-          <h1 className="text-3xl font-bold text-white">Job Progress</h1>
+          <h1 className="text-3xl font-bold text-white">Progression de la Tâche</h1>
           <p className="text-gray-400 text-sm font-mono">{jobId}</p>
         </header>
 
@@ -98,28 +98,28 @@ export function JobStatus() {
           {isComplete && status?.result && (
             <Button onClick={handleViewResults} size="lg" className="flex-1">
               <ExternalLink size={18} />
-              View Analysis Results
+              Voir les Résultats
             </Button>
           )}
 
           {isFailed && (
             <Link to="/categories" className="flex-1">
               <Button variant="secondary" size="lg" className="w-full">
-                Start New Analysis
+                Nouvelle Analyse
               </Button>
             </Link>
           )}
 
           {!isComplete && !isFailed && (
             <div className="text-sm text-gray-500 text-center flex-1">
-              This page updates automatically. You can leave and come back later.
+              Cette page se met à jour automatiquement. Vous pouvez partir et revenir plus tard.
             </div>
           )}
         </div>
 
         {/* Job ID for reference */}
         <Card className="bg-white/5">
-          <div className="text-xs text-gray-500 mb-1">Job ID (for reference)</div>
+          <div className="text-xs text-gray-500 mb-1">ID de tâche (pour référence)</div>
           <code className="text-sm text-gray-300 font-mono break-all">{jobId}</code>
         </Card>
       </div>

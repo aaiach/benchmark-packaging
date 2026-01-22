@@ -28,15 +28,15 @@ export function CategoryLandscape({ products, axisDescriptions }: CategoryLandsc
   return (
     <Card className="grid md:grid-cols-3 gap-8 items-center">
       <div className="col-span-1">
-        <h2 className="text-2xl font-bold mb-4">Category Landscape</h2>
+        <h2 className="text-2xl font-bold mb-4">Paysage Catégoriel</h2>
         <p className="text-gray-300 mb-6 text-sm leading-relaxed">
-          Average positioning scores across all {products.length} analyzed products in the
-          category.
+          Scores de positionnement moyens sur les {products.length} produits analysés 
+          dans la catégorie.
         </p>
         <div className="grid grid-cols-2 gap-4">
           <div className="text-center p-3 bg-white/5 rounded-lg">
             <div className="text-3xl font-bold text-white">{products.length}</div>
-            <div className="text-xs text-gray-500 uppercase">Products</div>
+            <div className="text-xs text-gray-500 uppercase">Produits</div>
           </div>
           <div className="text-center p-3 bg-white/5 rounded-lg">
             <div className="text-3xl font-bold text-white">
@@ -50,7 +50,7 @@ export function CategoryLandscape({ products, axisDescriptions }: CategoryLandsc
       <div className="col-span-2">
         <RadarChartWrapper
           data={categoryAverages}
-          name="Category Average"
+          name="Moyenne Catégorie"
           height={320}
           fillOpacity={0.3}
         />

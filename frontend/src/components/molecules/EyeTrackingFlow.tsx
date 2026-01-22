@@ -14,14 +14,14 @@ export function EyeTrackingFlow({ eyeTracking }: EyeTrackingFlowProps) {
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-2 text-sm">
-        <Badge variant="info">{eyeTracking.pattern_type}-Pattern</Badge>
+        <Badge variant="info">Pattern {eyeTracking.pattern_type}</Badge>
       </div>
       <div className="text-xs text-gray-400 space-y-1">
         <div>
-          <span className="text-gray-300">Entry:</span> {eyeTracking.entry_point}
+          <span className="text-gray-300">Entrée :</span> {eyeTracking.entry_point}
         </div>
         <div>
-          <span className="text-gray-300">Exit:</span> {eyeTracking.exit_point}
+          <span className="text-gray-300">Sortie :</span> {eyeTracking.exit_point}
         </div>
       </div>
       {eyeTracking.fixation_sequence && eyeTracking.fixation_sequence.length > 0 && (

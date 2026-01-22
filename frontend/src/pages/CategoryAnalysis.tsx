@@ -26,7 +26,7 @@ export function CategoryAnalysis() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4">
           <Spinner size="lg" />
-          <div className="text-white text-lg">Loading competitive analysis...</div>
+          <div className="text-white text-lg">Chargement de l'analyse concurrentielle...</div>
         </div>
       </div>
     );
@@ -37,16 +37,16 @@ export function CategoryAnalysis() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4 max-w-md">
-          <div className="text-red-400 text-xl font-bold">Error Loading Data</div>
-          <div className="text-gray-400">{error || 'No data available'}</div>
+          <div className="text-red-400 text-xl font-bold">Erreur de Chargement</div>
+          <div className="text-gray-400">{error || 'Aucune donnée disponible'}</div>
           <div className="flex gap-4 justify-center">
             <Button onClick={refetch} variant="primary">
-              Retry
+              Réessayer
             </Button>
             <Link to="/categories">
               <Button variant="secondary">
                 <Home size={16} />
-                All Categories
+                Toutes les Catégories
               </Button>
             </Link>
           </div>
@@ -71,13 +71,13 @@ export function CategoryAnalysis() {
           className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
         >
           <ArrowLeft size={16} />
-          All Categories
+          Toutes les Catégories
         </Link>
 
         {/* Header */}
         <header className="space-y-4">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-300 text-xs font-medium uppercase tracking-wider">
-            Competitive Benchmark 2026
+            Benchmark Concurrentiel 2026
           </div>
           <h1 className="text-5xl md:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-white/50 capitalize">
             {overview.name}
@@ -97,7 +97,7 @@ export function CategoryAnalysis() {
           <section>
             <div className="flex items-center gap-3 mb-6">
               <Lightbulb className="text-yellow-400" size={24} />
-              <h2 className="text-2xl font-bold">Strategic Insights</h2>
+              <h2 className="text-2xl font-bold">Insights Stratégiques</h2>
             </div>
             <div className="grid md:grid-cols-2 gap-4">
               {overview.strategic_insights.map((insight, idx) => (
@@ -110,8 +110,8 @@ export function CategoryAnalysis() {
         {/* Product Grid */}
         <section>
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold">Brand Portfolio ({products.length})</h2>
-            <div className="text-sm text-gray-500">Click card for deep dive</div>
+            <h2 className="text-2xl font-bold">Portfolio Marques ({products.length})</h2>
+            <div className="text-sm text-gray-500">Cliquez pour approfondir</div>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">

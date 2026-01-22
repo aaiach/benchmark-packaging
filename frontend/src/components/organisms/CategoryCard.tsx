@@ -25,13 +25,13 @@ export function CategoryCard({ category }: CategoryCardProps) {
             {category.has_visual_analysis && (
               <Badge variant="success" className="text-[10px]">
                 <Eye size={10} />
-                Visual
+                Visuel
               </Badge>
             )}
             {category.has_competitive_analysis && (
               <Badge variant="info" className="text-[10px]">
                 <BarChart3 size={10} />
-                Competitive
+                Concurrentiel
               </Badge>
             )}
           </div>
@@ -40,7 +40,7 @@ export function CategoryCard({ category }: CategoryCardProps) {
         <div className="grid grid-cols-2 gap-4 text-sm">
           <div className="flex items-center gap-2 text-gray-400">
             <Package size={14} />
-            <span>{category.product_count} products</span>
+            <span>{category.product_count} produits</span>
           </div>
           <div className="flex items-center gap-2 text-gray-400">
             <Calendar size={14} />
@@ -49,7 +49,7 @@ export function CategoryCard({ category }: CategoryCardProps) {
         </div>
 
         <div className="mt-4 pt-4 border-t border-white/10">
-          <span className="text-xs text-gray-500">Run ID: {category.run_id}</span>
+          <span className="text-xs text-gray-500">ID d'exécution : {category.run_id}</span>
         </div>
       </Card>
     </Link>

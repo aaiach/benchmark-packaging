@@ -12,21 +12,21 @@ const stateConfig: Record<
   string,
   { color: string; icon: React.ComponentType<{ className?: string; size?: number }>; label: string }
 > = {
-  PENDING: { color: 'text-gray-400', icon: Clock, label: 'Waiting' },
-  STARTED: { color: 'text-blue-400', icon: Loader2, label: 'Starting' },
-  PROGRESS: { color: 'text-blue-400', icon: Loader2, label: 'In Progress' },
-  SUCCESS: { color: 'text-green-400', icon: CheckCircle, label: 'Completed' },
-  FAILURE: { color: 'text-red-400', icon: XCircle, label: 'Failed' },
+  PENDING: { color: 'text-gray-400', icon: Clock, label: 'En attente' },
+  STARTED: { color: 'text-blue-400', icon: Loader2, label: 'Démarrage' },
+  PROGRESS: { color: 'text-blue-400', icon: Loader2, label: 'En cours' },
+  SUCCESS: { color: 'text-green-400', icon: CheckCircle, label: 'Terminé' },
+  FAILURE: { color: 'text-red-400', icon: XCircle, label: 'Échec' },
 };
 
 const pipelineSteps = [
-  { num: 1, name: 'Brand Discovery' },
-  { num: 2, name: 'Product Details' },
-  { num: 3, name: 'Image Selection' },
-  { num: 4, name: 'Image Download' },
-  { num: 5, name: 'Visual Analysis' },
-  { num: 6, name: 'Heatmap Generation' },
-  { num: 7, name: 'Competitive Analysis' },
+  { num: 1, name: 'Découverte des Marques' },
+  { num: 2, name: 'Détails Produits' },
+  { num: 3, name: 'Sélection d\'Images' },
+  { num: 4, name: 'Téléchargement Images' },
+  { num: 5, name: 'Analyse Visuelle' },
+  { num: 6, name: 'Génération Heatmap' },
+  { num: 7, name: 'Analyse Concurrentielle' },
 ];
 
 /**
@@ -71,7 +71,7 @@ export function JobProgress({ job }: JobProgressProps) {
       {/* Progress Bar */}
       <div className="mb-6">
         <div className="flex justify-between text-sm text-gray-400 mb-2">
-          <span>Overall Progress</span>
+          <span>Progression Globale</span>
           <span>{progress}%</span>
         </div>
         <ProgressBar
@@ -136,9 +136,9 @@ export function JobProgress({ job }: JobProgressProps) {
       {/* Success Result */}
       {job.state === 'SUCCESS' && job.result && (
         <div className="mt-4 p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
-          <p className="text-green-300 text-sm font-medium mb-1">Analysis Complete!</p>
+          <p className="text-green-300 text-sm font-medium mb-1">Analyse Terminée !</p>
           <p className="text-gray-400 text-xs">
-            Run ID: {job.result.run_id}
+            ID d'exécution : {job.result.run_id}
           </p>
         </div>
       )}

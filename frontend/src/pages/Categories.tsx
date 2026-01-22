@@ -22,12 +22,13 @@ export function Categories() {
         {/* Header */}
         <header className="space-y-4">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-300 text-xs font-medium uppercase tracking-wider">
-            Competitive Intelligence Platform
+            Plateforme d'Intelligence Concurrentielle
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-white">Category Analysis</h1>
+          <h1 className="text-4xl md:text-5xl font-bold text-white">Analyse par Catégorie</h1>
           <p className="text-lg text-gray-400 max-w-2xl">
-            Explore existing competitive analyses or start a new one. Each analysis provides
-            deep insights into product positioning, visual design, and market opportunities.
+            Explorez les analyses concurrentielles existantes ou lancez-en une nouvelle. 
+            Chaque analyse fournit des insights approfondis sur le positionnement produit, 
+            le design visuel et les opportunités de marché.
           </p>
         </header>
 
@@ -42,11 +43,11 @@ export function Categories() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <FolderOpen className="text-blue-400" size={24} />
-                <h2 className="text-2xl font-bold">Existing Analyses</h2>
+                <h2 className="text-2xl font-bold">Analyses Existantes</h2>
               </div>
               <Button variant="ghost" onClick={refetch} disabled={loading}>
                 <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
-                Refresh
+                Actualiser
               </Button>
             </div>
 
@@ -58,18 +59,18 @@ export function Categories() {
 
             {error && (
               <Card className="text-center py-8">
-                <div className="text-red-400 mb-2">Failed to load categories</div>
+                <div className="text-red-400 mb-2">Échec du chargement des catégories</div>
                 <div className="text-gray-500 text-sm mb-4">{error}</div>
-                <Button onClick={refetch}>Retry</Button>
+                <Button onClick={refetch}>Réessayer</Button>
               </Card>
             )}
 
             {!loading && !error && categories.length === 0 && (
               <Card className="text-center py-12">
                 <FolderOpen size={48} className="mx-auto mb-4 text-gray-600" />
-                <div className="text-gray-400 mb-2">No analyses yet</div>
+                <div className="text-gray-400 mb-2">Aucune analyse pour le moment</div>
                 <div className="text-gray-500 text-sm">
-                  Start your first analysis using the form on the left.
+                  Lancez votre première analyse avec le formulaire à gauche.
                 </div>
               </Card>
             )}

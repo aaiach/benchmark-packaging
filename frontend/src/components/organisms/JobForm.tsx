@@ -9,18 +9,18 @@ type JobFormProps = {
 
 const countryOptions = [
   { value: 'France', label: 'France' },
-  { value: 'Germany', label: 'Germany' },
-  { value: 'UK', label: 'United Kingdom' },
-  { value: 'USA', label: 'United States' },
-  { value: 'Spain', label: 'Spain' },
-  { value: 'Italy', label: 'Italy' },
+  { value: 'Germany', label: 'Allemagne' },
+  { value: 'UK', label: 'Royaume-Uni' },
+  { value: 'USA', label: 'États-Unis' },
+  { value: 'Spain', label: 'Espagne' },
+  { value: 'Italy', label: 'Italie' },
 ];
 
 const stepOptions = [
-  { value: '1-7', label: 'Full Pipeline (1-7)' },
-  { value: '1-4', label: 'Discovery + Scraping (1-4)' },
-  { value: '5-7', label: 'Analysis Only (5-7)' },
-  { value: '1-2', label: 'Discovery Only (1-2)' },
+  { value: '1-7', label: 'Pipeline Complet (1-7)' },
+  { value: '1-4', label: 'Découverte + Scraping (1-4)' },
+  { value: '5-7', label: 'Analyse Uniquement (5-7)' },
+  { value: '1-2', label: 'Découverte Uniquement (1-2)' },
 ];
 
 /**
@@ -38,13 +38,13 @@ export function JobForm({ onJobStarted }: JobFormProps) {
     e.preventDefault();
 
     if (!category.trim()) {
-      setError('Category is required');
+      setError('La catégorie est requise');
       return;
     }
 
     const countNum = parseInt(count, 10);
     if (isNaN(countNum) || countNum < 1 || countNum > 100) {
-      setError('Count must be between 1 and 100');
+      setError('Le nombre doit être entre 1 et 100');
       return;
     }
 
@@ -61,7 +61,7 @@ export function JobForm({ onJobStarted }: JobFormProps) {
 
       onJobStarted(response.job_id);
     } catch (err: any) {
-      setError(err.message || 'Failed to start job');
+      setError(err.message || 'Échec du lancement de la tâche');
     } finally {
       setLoading(false);
     }
@@ -69,12 +69,12 @@ export function JobForm({ onJobStarted }: JobFormProps) {
 
   return (
     <Card>
-      <h3 className="text-xl font-bold text-white mb-6">New Analysis Job</h3>
+      <h3 className="text-xl font-bold text-white mb-6">Nouvelle Analyse</h3>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <Input
-          label="Product Category"
-          placeholder="e.g., lait d'avoine, muesli bio, café moulu"
+          label="Catégorie de Produit"
+          placeholder="ex: lait d'avoine, muesli bio, café moulu"
           value={category}
           onChange={setCategory}
           disabled={loading}
@@ -82,7 +82,7 @@ export function JobForm({ onJobStarted }: JobFormProps) {
 
         <div className="grid grid-cols-2 gap-4">
           <Select
-            label="Country"
+            label="Pays"
             value={country}
             onChange={setCountry}
             options={countryOptions}
@@ -90,7 +90,7 @@ export function JobForm({ onJobStarted }: JobFormProps) {
           />
 
           <Input
-            label="Product Count"
+            label="Nombre de Produits"
             type="number"
             value={count}
             onChange={setCount}
@@ -101,7 +101,7 @@ export function JobForm({ onJobStarted }: JobFormProps) {
         </div>
 
         <Select
-          label="Pipeline Steps"
+          label="Étapes du Pipeline"
           value={steps}
           onChange={setSteps}
           options={stepOptions}
@@ -116,7 +116,7 @@ export function JobForm({ onJobStarted }: JobFormProps) {
 
         <Button type="submit" loading={loading} className="w-full" size="lg">
           <Play size={18} />
-          Start Analysis
+          Lancer l'Analyse
         </Button>
       </form>
     </Card>

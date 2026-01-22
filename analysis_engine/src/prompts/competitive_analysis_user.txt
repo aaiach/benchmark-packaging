@@ -1,5 +1,7 @@
 Analyse ce set de {product_count} produits dans la catégorie **{category}** pour préparer une présentation stratégique BCG-style.
 
+IMPORTANT: Réponds ENTIÈREMENT EN FRANÇAIS pour tous les champs.
+
 ## Données d'entrée
 
 Voici les analyses visuelles détaillées de chaque produit:
@@ -12,7 +14,7 @@ Voici les analyses visuelles détaillées de chaque produit:
 
 Identifie les 5 axes de différenciation les plus pertinents pour comparer ces produits.
 Pour chaque axe:
-- Nom court en anglais (ex: "Premium Craft", "Health Focus", "Bold Identity")
+- Nom court EN FRANÇAIS (ex: "Premium Artisanal", "Focus Santé", "Identité Audacieuse")
 - Description de ce que l'axe mesure
 - Quels éléments visuels/textuels indiquent un score élevé sur cet axe
 
@@ -25,7 +27,7 @@ Justifie brièvement chaque score basé sur les éléments visuels observés.
 
 Identifie les 5 attributs/claims les plus partagés dans cette catégorie.
 Pour chaque POP:
-- Nom court (ex: "Organic Certified", "No Sugar Added", "100% Plant-Based")
+- Nom court EN FRANÇAIS (ex: "Certifié Bio", "Sans Sucres Ajoutés", "100% Végétal")
 - Type: certification, claim nutritionnel, ou attribut catégorie
 
 ### 4. Matrix Produits x POPs
@@ -34,7 +36,7 @@ Pour chaque produit, indique si oui (true) ou non (false) il possède chaque POP
 
 ### 5. Insights stratégiques
 
-Fournis 3-5 observations clés sur:
+Fournis 3-5 observations clés EN FRANÇAIS sur:
 - Le paysage concurrentiel de cette catégorie
 - Les opportunités de différenciation non exploitées
 - Les tendances visuelles dominantes

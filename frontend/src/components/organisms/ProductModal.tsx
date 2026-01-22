@@ -47,9 +47,9 @@ export function ProductModal({
   const va = product.visual_analysis;
 
   const tabs = [
-    { id: 'overview' as TabId, label: 'Overview', icon: Target },
-    { id: 'visual' as TabId, label: 'Visual Analysis', icon: Eye },
-    { id: 'strategy' as TabId, label: 'Brand Strategy', icon: TrendingUp },
+    { id: 'overview' as TabId, label: 'Vue d\'ensemble', icon: Target },
+    { id: 'visual' as TabId, label: 'Analyse Visuelle', icon: Eye },
+    { id: 'strategy' as TabId, label: 'Stratégie de Marque', icon: TrendingUp },
   ];
 
   return (
@@ -150,7 +150,7 @@ function OverviewTab({
           />
           <div className="absolute bottom-4 left-4 bg-black/70 px-3 py-1.5 rounded-full text-xs text-white/80 pointer-events-none flex items-center gap-2">
             <Eye size={14} />
-            Hover for Attention Heatmap
+            Survolez pour la Heatmap d'Attention
           </div>
         </div>
 
@@ -159,7 +159,7 @@ function OverviewTab({
           <div className="bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-500/30 rounded-lg p-4">
             <div className="flex items-center gap-2 text-blue-300 text-xs uppercase tracking-wider mb-2">
               <Sparkles size={14} />
-              Key Differentiator
+              Différenciateur Clé
             </div>
             <div className="text-white font-medium">{product.key_differentiator}</div>
           </div>
@@ -170,19 +170,19 @@ function OverviewTab({
       <div className="space-y-6">
         {/* Positioning */}
         <div>
-          <SectionTitle icon={Target}>Strategic Positioning</SectionTitle>
+          <SectionTitle icon={Target}>Positionnement Stratégique</SectionTitle>
           <p className="text-gray-300 leading-relaxed">{product.positioning}</p>
         </div>
 
         {/* Radar Chart */}
         <div>
-          <SectionTitle>Brand Personality Radar</SectionTitle>
+          <SectionTitle>Radar de Personnalité de Marque</SectionTitle>
           <RadarChartWrapper data={chartData} name={product.brand} />
         </div>
 
         {/* Trust Signals */}
         <div>
-          <SectionTitle icon={ShieldCheck}>Trust Signals (Points of Parity)</SectionTitle>
+          <SectionTitle icon={ShieldCheck}>Signaux de Confiance (Points de Parité)</SectionTitle>
           <TrustMarkMatrix popStatus={product.pop_status} pointsOfParity={pointsOfParity} />
         </div>
       </div>
@@ -197,20 +197,20 @@ function VisualTab({ product, va }: { product: Product; va: NonNullable<Product[
       <div className="space-y-6">
         {/* Visual Anchor */}
         <Card>
-          <SectionTitle icon={Target}>Visual Anchor</SectionTitle>
+          <SectionTitle icon={Target}>Ancre Visuelle</SectionTitle>
           <div className="text-lg font-semibold text-white mb-2">{va.visual_anchor}</div>
           <p className="text-sm text-gray-400 leading-relaxed">{va.visual_anchor_description}</p>
         </Card>
 
         {/* Eye Tracking */}
         <Card>
-          <SectionTitle icon={Eye}>Eye Tracking Flow</SectionTitle>
+          <SectionTitle icon={Eye}>Parcours Oculaire</SectionTitle>
           <EyeTrackingFlow eyeTracking={va.eye_tracking} />
         </Card>
 
         {/* Hierarchy Score */}
         <Card>
-          <SectionTitle>Visual Hierarchy Clarity</SectionTitle>
+          <SectionTitle>Clarté de la Hiérarchie Visuelle</SectionTitle>
           <div className="flex items-center gap-4">
             <div className="text-5xl font-bold text-white">{va.hierarchy_clarity_score}</div>
             <div className="text-gray-400 text-sm">/10</div>
@@ -225,14 +225,14 @@ function VisualTab({ product, va }: { product: Product; va: NonNullable<Product[
 
         {/* Typography */}
         <Card>
-          <SectionTitle icon={Type}>Typography Assessment</SectionTitle>
+          <SectionTitle icon={Type}>Évaluation Typographique</SectionTitle>
           <div className="space-y-3">
             <div>
-              <div className="text-xs text-gray-500 mb-1">Consistency</div>
+              <div className="text-xs text-gray-500 mb-1">Cohérence</div>
               <div className="text-sm text-white">{va.textual_inventory.typography_consistency}</div>
             </div>
             <div>
-              <div className="text-xs text-gray-500 mb-1">Readability</div>
+              <div className="text-xs text-gray-500 mb-1">Lisibilité</div>
               <div className="text-sm text-gray-300">{va.textual_inventory.readability_assessment}</div>
             </div>
           </div>
@@ -243,15 +243,15 @@ function VisualTab({ product, va }: { product: Product; va: NonNullable<Product[
       <div className="space-y-6">
         {/* Color Palette */}
         <Card>
-          <SectionTitle icon={Palette}>Color DNA</SectionTitle>
+          <SectionTitle icon={Palette}>ADN Couleur</SectionTitle>
           <ColorPalette palette={product.palette} />
           <div className="mt-4 pt-4 border-t border-white/10 space-y-2">
             <div className="flex justify-between text-xs">
-              <span className="text-gray-500">Surface Finish</span>
+              <span className="text-gray-500">Finition de Surface</span>
               <span className="text-gray-300">{va.chromatic_mapping.surface_finish}</span>
             </div>
             <div className="flex justify-between text-xs">
-              <span className="text-gray-500">Color Harmony</span>
+              <span className="text-gray-500">Harmonie Couleurs</span>
               <span className="text-gray-300">{va.chromatic_mapping.color_harmony}</span>
             </div>
           </div>
@@ -264,7 +264,7 @@ function VisualTab({ product, va }: { product: Product; va: NonNullable<Product[
 
         {/* Claims */}
         <Card>
-          <SectionTitle icon={ShieldCheck}>On-Pack Claims</SectionTitle>
+          <SectionTitle icon={ShieldCheck}>Claims Packaging</SectionTitle>
           <div className="flex flex-wrap gap-2 mb-4">
             {va.textual_inventory.emphasized_claims?.map((claim, idx) => (
               <Badge key={idx} variant="success">
@@ -272,7 +272,7 @@ function VisualTab({ product, va }: { product: Product; va: NonNullable<Product[
               </Badge>
             ))}
           </div>
-          <div className="text-xs text-gray-500 mb-2">All visible claims:</div>
+          <div className="text-xs text-gray-500 mb-2">Tous les claims visibles :</div>
           <div className="flex flex-wrap gap-1">
             {va.textual_inventory.claims_summary?.map((claim, idx) => (
               <span key={idx} className="text-xs bg-white/5 px-2 py-1 rounded text-gray-400">
@@ -285,7 +285,7 @@ function VisualTab({ product, va }: { product: Product; va: NonNullable<Product[
         {/* Trust Signal Effectiveness */}
         {va.asset_symbolism.trust_signal_effectiveness && (
           <Card>
-            <SectionTitle>Trust Signal Effectiveness</SectionTitle>
+            <SectionTitle>Efficacité des Signaux de Confiance</SectionTitle>
             <p className="text-sm text-gray-300 leading-relaxed">
               {va.asset_symbolism.trust_signal_effectiveness}
             </p>
@@ -310,14 +310,14 @@ function StrategyTab({
       {/* Detailed Analysis */}
       {va?.detailed_analysis && (
         <Card>
-          <SectionTitle icon={Lightbulb}>Detailed Visual Analysis</SectionTitle>
+          <SectionTitle icon={Lightbulb}>Analyse Visuelle Détaillée</SectionTitle>
           <p className="text-gray-300 leading-relaxed">{va.detailed_analysis}</p>
         </Card>
       )}
 
       {/* POD Scores Breakdown */}
       <Card>
-        <SectionTitle icon={TrendingUp}>Points of Difference Scores</SectionTitle>
+        <SectionTitle icon={TrendingUp}>Scores des Points de Différenciation</SectionTitle>
         <div className="space-y-4">
           {product.pod_scores.map((score) => {
             const podDef = pointsOfDifference.find((p) => p.axis_id === score.axis_id);
@@ -356,7 +356,7 @@ function StrategyTab({
       {va?.asset_symbolism.visual_storytelling_elements &&
         va.asset_symbolism.visual_storytelling_elements.length > 0 && (
           <Card>
-            <SectionTitle>Visual Storytelling Elements</SectionTitle>
+            <SectionTitle>Éléments de Storytelling Visuel</SectionTitle>
             <ul className="space-y-2">
               {va.asset_symbolism.visual_storytelling_elements.map((elem, idx) => (
                 <li key={idx} className="flex items-start gap-2 text-sm text-gray-300">

@@ -14,6 +14,13 @@ const typeColors: Record<string, string> = {
   positioning_gap: 'from-orange-500/20 to-yellow-500/20 border-orange-500/30',
 };
 
+const typeLabels: Record<string, string> = {
+  competitive_landscape: 'Paysage Concurrentiel',
+  differentiation_opportunity: 'Opportunité de Différenciation',
+  visual_trend: 'Tendance Visuelle',
+  positioning_gap: 'Écart de Positionnement',
+};
+
 /**
  * Card for displaying strategic insights.
  */
@@ -26,7 +33,7 @@ export function InsightCard({ insight }: InsightCardProps) {
       )}
     >
       <Badge variant="outline" className="mb-3">
-        {insight.insight_type.replace(/_/g, ' ')}
+        {typeLabels[insight.insight_type] || insight.insight_type.replace(/_/g, ' ')}
       </Badge>
       <h4 className="text-lg font-semibold text-white mb-2">{insight.title}</h4>
       <p className="text-sm text-gray-300 leading-relaxed mb-4">{insight.description}</p>
