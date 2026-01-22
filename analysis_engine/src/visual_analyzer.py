@@ -7,8 +7,9 @@ This module analyzes product images using Gemini 3 Pro to understand:
 - Design effectiveness
 - Heatmap generation for visual attention
 
-Uses the Google GenAI Python SDK with structured output for reliable parsing.
+Uses LangChain's ChatGoogleGenerativeAI with structured output for reliable parsing.
 """
+import base64
 import json
 import re
 from pathlib import Path
@@ -16,6 +17,8 @@ from typing import List, Dict, Any, Optional, Tuple
 
 from google import genai
 from google.genai import types
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_core.messages import HumanMessage, SystemMessage
 from PIL import Image
 
 from .config import get_config, DiscoveryConfig
@@ -125,7 +128,7 @@ def load_product_data_for_run(output_dir: Path, run_id: str) -> Dict[str, Dict[s
 class VisualAnalyzer:
     """Analyzes product images for visual hierarchy using Gemini Vision.
     
-    Uses Gemini 2.5 Pro to perform:
+    Uses LangChain's ChatGoogleGenerativeAI with structured output to perform:
     - Eye-tracking simulation
     - Visual element ranking
     - Massing and balance analysis
@@ -139,10 +142,21 @@ class VisualAnalyzer:
             config: Optional configuration. Uses global config if not provided.
         """
         self.config = config or get_config()
-        
-        # Initialize Google GenAI client
-        self.client = genai.Client(api_key=self.config.gemini_vision.api_key)
         self.model = self.config.gemini_vision.model
+        
+        # Initialize LangChain ChatGoogleGenerativeAI with structured output
+        # This handles Pydantic schema conversion properly by design
+        self._llm = ChatGoogleGenerativeAI(
+            model=self.model,
+            google_api_key=self.config.gemini_vision.api_key,
+            temperature=self.config.gemini_vision.temperature,
+        )
+        
+        # Create structured output chain - LangChain handles schema conversion
+        self._structured_llm = self._llm.with_structured_output(VisualHierarchyAnalysis)
+        
+        # Keep raw client for heatmap generation (image output)
+        self.client = genai.Client(api_key=self.config.gemini_vision.api_key)
         
         # Load prompts
         self.system_prompt = load_prompt("visual_analysis_system.txt")
@@ -177,11 +191,13 @@ class VisualAnalyzer:
             print(f"    [!] Unsupported format: {image_path.suffix}")
             return None
         
-        # Read image bytes
+        # Read and encode image as base64 for LangChain multimodal input
         with open(image_path, 'rb') as f:
             image_bytes = f.read()
         
         mime_type = get_mime_type(image_path)
+        image_base64 = base64.b64encode(image_bytes).decode('utf-8')
+        image_data_url = f"data:{mime_type};base64,{image_base64}"
         
         # Build user prompt
         user_prompt = self.user_prompt_template.format(
@@ -190,35 +206,20 @@ class VisualAnalyzer:
             category=category
         )
         
-        # Combine system and user prompts
-        full_prompt = f"{self.system_prompt}\n\n---\n\n{user_prompt}"
-        
         try:
-            # Call Gemini with structured output
-            response = self.client.models.generate_content(
-                model=self.model,
-                contents=[
-                    full_prompt,
-                    types.Part.from_bytes(data=image_bytes, mime_type=mime_type),
-                ],
-                config=types.GenerateContentConfig(
-                    temperature=self.config.gemini_vision.temperature,
-                    response_mime_type='application/json',
-                    response_schema=VisualHierarchyAnalysis,
-                ),
-            )
+            # Create multimodal message with text and image
+            messages = [
+                SystemMessage(content=self.system_prompt),
+                HumanMessage(content=[
+                    {"type": "text", "text": user_prompt},
+                    {"type": "image_url", "image_url": {"url": image_data_url}},
+                ])
+            ]
             
-            # Parse the response
-            if response.parsed:
-                return response.parsed
+            # Call LangChain with structured output - handles schema automatically
+            result = self._structured_llm.invoke(messages)
             
-            # Fallback: try to parse from text
-            if response.text:
-                data = json.loads(response.text)
-                return VisualHierarchyAnalysis(**data)
-            
-            print("    [!] Empty response from model")
-            return None
+            return result
             
         except Exception as e:
             print(f"    [!] Analysis error: {e}")

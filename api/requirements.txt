@@ -1,0 +1,15 @@
+# API Dependencies
+# Pinned versions for reproducibility - last updated: 2026-01-22
+
+# Flask web framework
+flask==3.1.0
+flask-cors==5.0.0
+
+# Celery task queue
+celery==5.4.0
+redis==5.2.1
+flower==2.0.1
+
+# Shared with analysis_engine (same versions for consistency)
+pydantic==2.12.5
+python-dotenv==1.0.1

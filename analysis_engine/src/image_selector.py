@@ -44,7 +44,17 @@ SKIP_PATTERNS = [
 ]
 
 # Valid image extensions
-VALID_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.gif', '.webp'}
+VALID_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.gif', '.webp', '.avif'}
+
+# Content-Type to extension mapping
+CONTENT_TYPE_TO_EXT = {
+    'image/jpeg': '.jpg',
+    'image/png': '.png',
+    'image/gif': '.gif',
+    'image/webp': '.webp',
+    'image/avif': '.avif',
+    'image/svg+xml': '.svg',
+}
 
 
 # =============================================================================
@@ -135,16 +145,18 @@ def generate_image_filename(brand: str, index: int, url: str) -> str:
     return f"{index:02d}_{brand_slug}_{url_hash}{ext}"
 
 
-def download_image(url: str, filepath: Path, timeout: int = 30) -> bool:
+def download_image(url: str, filepath: Path, timeout: int = 30) -> Optional[Path]:
     """Download an image from URL to local filepath.
     
     Args:
         url: Image URL to download
-        filepath: Local path to save the image
+        filepath: Local path to save the image (extension may be corrected based on Content-Type)
         timeout: Download timeout in seconds
         
     Returns:
-        True if successful, False otherwise
+        Actual filepath where image was saved, or None if failed.
+        Note: The returned path may have a different extension than the input filepath
+        if the server returned a different image format than expected.
     """
     # Extract original URL if wrapped in a proxy
     original_url = extract_url_from_proxy(url)
@@ -159,9 +171,10 @@ def download_image(url: str, filepath: Path, timeout: int = 30) -> bool:
         referer = f"{parsed.scheme}://{parsed.netloc}/"
         
         # Create a request with browser-like headers
+        # Note: We avoid requesting AVIF format as PIL doesn't support it well
         headers = {
             'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
+            'Accept': 'image/webp,image/png,image/jpeg,image/*,*/*;q=0.8',
             'Accept-Language': 'en-US,en;q=0.9,fr;q=0.8',
             'Referer': referer,
         }
@@ -169,27 +182,34 @@ def download_image(url: str, filepath: Path, timeout: int = 30) -> bool:
         
         with urllib.request.urlopen(request, timeout=timeout) as response:
             # Check content type
-            content_type = response.headers.get('Content-Type', '')
+            content_type = response.headers.get('Content-Type', '').split(';')[0].strip()
             if not content_type.startswith('image/'):
                 print(f"    [!] Not an image: {content_type}")
-                return False
+                return None
+            
+            # Determine correct extension from Content-Type
+            actual_ext = CONTENT_TYPE_TO_EXT.get(content_type)
+            if actual_ext and filepath.suffix.lower() != actual_ext:
+                # Server returned different format than URL suggested
+                filepath = filepath.with_suffix(actual_ext)
+                print(f"    [i] Format is {content_type}, saving as {actual_ext}")
             
             # Download the image
             filepath.parent.mkdir(parents=True, exist_ok=True)
             with open(filepath, 'wb') as f:
                 f.write(response.read())
             
-            return True
+            return filepath
             
     except urllib.error.HTTPError as e:
         print(f"    [!] HTTP Error {e.code}: {url[:60]}...")
-        return False
+        return None
     except urllib.error.URLError as e:
         print(f"    [!] URL Error: {e.reason}")
-        return False
+        return None
     except Exception as e:
         print(f"    [!] Download error: {e}")
-        return False
+        return None
 
 
 def find_scraped_files(output_dir: Path, run_id: str) -> Tuple[Optional[Path], Optional[str]]:
@@ -419,9 +439,10 @@ class ImageSelector:
             filepath = images_dir / filename
             
             print(f"    Downloading: {selection.selected_url[:60]}...")
-            if download_image(selection.selected_url, filepath):
-                result.local_image_path = str(filepath)
-                print(f"    [✓] Saved: {filename}")
+            actual_filepath = download_image(selection.selected_url, filepath)
+            if actual_filepath:
+                result.local_image_path = str(actual_filepath)
+                print(f"    [✓] Saved: {actual_filepath.name}")
             else:
                 print(f"    [!] Download failed")
         

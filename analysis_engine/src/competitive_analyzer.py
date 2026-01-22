@@ -7,14 +7,15 @@ This module analyzes the visual analysis JSON to:
 - Generate strategic insights
 
 Output is formatted for frontend React consumption (BCG-style presentation).
+Uses LangChain's ChatGoogleGenerativeAI with structured output for reliable parsing.
 """
 import json
 from datetime import datetime
 from pathlib import Path
 from typing import List, Dict, Any, Optional
 
-from google import genai
-from google.genai import types
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_core.messages import HumanMessage, SystemMessage
 
 from .config import get_config, DiscoveryConfig
 from .models import (
@@ -125,7 +126,7 @@ def load_visual_analysis(output_dir: Path, run_id: str) -> Optional[List[Dict[st
 class CompetitiveAnalyzer:
     """Analyzes visual analysis data to extract competitive insights.
     
-    Uses Gemini to:
+    Uses LangChain's ChatGoogleGenerativeAI with structured output to:
     - Identify Points-of-Difference (PODs) for radar charts
     - Identify Points-of-Parity (POPs) for comparison matrices
     - Score products and generate strategic insights
@@ -138,10 +139,18 @@ class CompetitiveAnalyzer:
             config: Optional configuration. Uses global config if not provided.
         """
         self.config = config or get_config()
-        
-        # Initialize Google GenAI client (text-only, no vision needed)
-        self.client = genai.Client(api_key=self.config.gemini.api_key)
         self.model = self.config.gemini.model
+        
+        # Initialize LangChain ChatGoogleGenerativeAI with structured output
+        # This handles Pydantic schema conversion properly by design
+        self._llm = ChatGoogleGenerativeAI(
+            model=self.model,
+            google_api_key=self.config.gemini.api_key,
+            temperature=self.config.gemini.temperature,
+        )
+        
+        # Create structured output chain - LangChain handles schema conversion
+        self._structured_llm = self._llm.with_structured_output(CompetitiveAnalysisResult)
         
         # Load prompts
         self.system_prompt = load_prompt("competitive_analysis_system.txt")
@@ -182,32 +191,17 @@ class CompetitiveAnalyzer:
             products_data=products_text
         )
         
-        # Combine prompts
-        full_prompt = f"{self.system_prompt}\n\n---\n\n{user_prompt}"
-        
         try:
-            # Call Gemini with structured output
-            response = self.client.models.generate_content(
-                model=self.model,
-                contents=[full_prompt],
-                config=types.GenerateContentConfig(
-                    temperature=self.config.gemini.temperature,
-                    response_mime_type='application/json',
-                    response_schema=CompetitiveAnalysisResult,
-                ),
-            )
+            # Create messages for LangChain
+            messages = [
+                SystemMessage(content=self.system_prompt),
+                HumanMessage(content=user_prompt)
+            ]
             
-            # Parse the response
-            if response.parsed:
-                return response.parsed
+            # Call LangChain with structured output - handles schema automatically
+            result = self._structured_llm.invoke(messages)
             
-            # Fallback: try to parse from text
-            if response.text:
-                data = json.loads(response.text)
-                return CompetitiveAnalysisResult(**data)
-            
-            print("    [!] Empty response from model")
-            return None
+            return result
             
         except Exception as e:
             print(f"    [!] Analysis error: {e}")

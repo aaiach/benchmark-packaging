@@ -1,0 +1,29 @@
+# Analysis Engine Dependencies
+# Pinned versions for reproducibility - last updated: 2026-01-22
+
+# Google GenAI SDK (unified SDK for Gemini)
+google-genai==1.60.0
+
+# OpenAI
+openai==2.15.0
+
+# LangChain ecosystem
+langchain==1.2.6
+langchain-core==1.2.7
+langchain-openai==1.1.7
+langchain-google-genai==4.2.0
+
+# Data validation
+pydantic==2.12.5
+
+# Web scraping
+firecrawl-py==4.13.0
+
+# Data processing
+pandas==2.2.3
+
+# Image processing
+pillow==11.1.0
+
+# Environment
+python-dotenv==1.0.1

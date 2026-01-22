@@ -32,8 +32,9 @@ import sys
 from pathlib import Path
 
 from src import get_config
-from src.pipeline import Pipeline, PipelineContext, STEPS, parse_steps_arg, list_steps
+from src.pipeline import PipelineContext, STEPS, list_steps
 from src.image_selector import list_runs
+from src.runner import run_pipeline
 
 
 def main():
@@ -209,65 +210,45 @@ Exemples:
         return 0
     
     # ==========================================================================
-    # Parse and validate steps
+    # Validate category argument
     # ==========================================================================
-    
-    try:
-        step_numbers = parse_steps_arg(args.steps, max_step)
-    except ValueError as e:
-        print(f"[!] Erreur dans --steps: {e}")
-        print(f"    Format valide: '1-4', '3', '2-3,4' (étapes 1-{max_step})")
+
+    # New run requires category
+    if not args.run_id and not args.category:
+        print("[!] Catégorie requise pour un nouveau run")
+        print("    Utilisez: main.py \"catégorie\" --steps 1-4")
+        print("    Ou reprenez un run: main.py --run-id RUN_ID --steps N")
         return 1
-    
-    # ==========================================================================
-    # Create or load pipeline context
-    # ==========================================================================
-    
+
+    # For resuming, load context to get category for printing
     if args.run_id:
-        # Resume existing run
-        ctx = PipelineContext.from_run_id(args.run_id, args.output_dir)
-        if not ctx:
+        temp_ctx = PipelineContext.from_run_id(args.run_id, args.output_dir)
+        if not temp_ctx:
             print(f"[!] Run non trouvé: {args.run_id}")
             print("\nRuns disponibles:")
             for run in list_runs():
                 print(f"  {run['run_id']}  |  {run['category']}")
             return 1
-        
-        # Update count/country if provided
-        if args.count != config.default_count:
-            ctx.count = args.count
-        if args.country != config.default_country:
-            ctx.country = args.country
-            
+        display_category = temp_ctx.category
+        display_run_id = args.run_id
     else:
-        # New run requires category
-        if not args.category:
-            print("[!] Catégorie requise pour un nouveau run")
-            print("    Utilisez: main.py \"catégorie\" --steps 1-4")
-            print("    Ou reprenez un run: main.py --run-id RUN_ID --steps N")
-            return 1
-        
-        ctx = PipelineContext.create_new(
-            category=args.category,
-            country=args.country,
-            count=args.count,
-            output_dir=args.output_dir
-        )
-    
+        display_category = args.category
+        display_run_id = "nouveau"
+
     # ==========================================================================
     # Print configuration
     # ==========================================================================
-    
+
     print("=" * 80)
-    print(f"PIPELINE DE PRODUITS - {ctx.category.upper()}")
+    print(f"PIPELINE DE PRODUITS - {display_category.upper()}")
     print("=" * 80)
     print(f"Configuration:")
-    print(f"  - Run ID:             {ctx.run_id}")
-    print(f"  - Catégorie:          {ctx.category}")
-    print(f"  - Pays:               {ctx.country}")
-    print(f"  - Nombre demandé:     {ctx.count}")
-    print(f"  - Étapes à exécuter:  {args.steps} → {step_numbers}")
-    print(f"  - Répertoire:         {ctx.output_dir}")
+    print(f"  - Run ID:             {display_run_id}")
+    print(f"  - Catégorie:          {display_category}")
+    print(f"  - Pays:               {args.country}")
+    print(f"  - Nombre demandé:     {args.count}")
+    print(f"  - Étapes à exécuter:  {args.steps}")
+    print(f"  - Répertoire:         {args.output_dir}")
     print("-" * 80)
     print("Modèles LLM:")
     print(f"  - Step 1 (Discovery): {config.gemini.model} + Google Search")
@@ -275,53 +256,49 @@ Exemples:
     print(f"  - Step 4 (Images):    {config.openai_mini.model}")
     print(f"  - Step 5-6 (Vision):  {config.gemini_vision.model}")
     print("=" * 80)
-    
+
     # ==========================================================================
-    # Run pipeline
+    # Run pipeline using runner function
     # ==========================================================================
-    
-    pipeline = Pipeline(STEPS, config)
-    
-    # Validate before running
-    is_valid, errors = pipeline.validate_execution_plan(step_numbers, ctx)
-    if not is_valid:
-        print("\n[!] Impossible d'exécuter les étapes demandées:")
-        for error in errors:
-            print(f"    - {error}")
-        print("\nStatut actuel du run:")
-        pipeline.print_status(ctx)
-        return 1
-    
-    # Execute
-    success = pipeline.run(step_numbers, ctx, verbose=True)
-    
+
+    result = run_pipeline(
+        category=args.category or display_category,
+        country=args.country,
+        count=args.count,
+        output_dir=args.output_dir,
+        steps=args.steps,
+        run_id=args.run_id
+    )
+
     # ==========================================================================
     # Print summary
     # ==========================================================================
-    
+
     print("\n" + "=" * 80)
-    if success:
+    if result['status'] == 'success':
         print("✓ PIPELINE TERMINÉ AVEC SUCCÈS")
     else:
         print("✗ PIPELINE TERMINÉ AVEC ERREURS")
+        print("\nErreurs:")
+        for error in result.get('errors', []):
+            print(f"  - {error}")
     print("=" * 80)
-    
-    print(f"\nRun ID: {ctx.run_id}")
-    print("Fichiers créés:")
-    
-    for step_num in step_numbers:
-        step = STEPS[step_num]
-        output_file = step.get_output_file(ctx)
-        if output_file.exists():
-            print(f"  - {output_file}")
-    
-    # Show next steps hint
-    remaining_steps = [s for s in sorted(STEPS.keys()) if s not in step_numbers and s > max(step_numbers)]
-    if remaining_steps and success:
-        print(f"\nPour continuer avec les étapes suivantes:")
-        print(f"  uv run python main.py --run-id {ctx.run_id} --steps {remaining_steps[0]}-{max(remaining_steps)}")
-    
-    return 0 if success else 1
+
+    print(f"\nRun ID: {result['run_id']}")
+
+    if result['status'] == 'success':
+        print("Fichiers créés:")
+        for output_file in result.get('output_files', []):
+            print(f"  - {Path(args.output_dir) / output_file}")
+
+        # Show next steps hint
+        completed = result['completed_steps']
+        remaining_steps = [s for s in sorted(STEPS.keys()) if s not in completed and s > max(completed)]
+        if remaining_steps:
+            print(f"\nPour continuer avec les étapes suivantes:")
+            print(f"  uv run python main.py --run-id {result['run_id']} --steps {remaining_steps[0]}-{max(remaining_steps)}")
+
+    return 0 if result['status'] == 'success' else 1
 
 
 if __name__ == "__main__":

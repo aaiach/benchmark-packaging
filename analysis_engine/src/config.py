@@ -96,8 +96,8 @@ class DiscoveryConfig:
     openai_mini: OpenAIMiniConfig = field(default_factory=OpenAIMiniConfig)
     gemini_vision: GeminiVisionConfig = field(default_factory=GeminiVisionConfig)
     
-    # Output settings
-    output_dir: str = "output"
+    # Output settings - use OUTPUT_DIR env var if available (for Docker/API deployment)
+    output_dir: str = field(default_factory=lambda: os.getenv('OUTPUT_DIR', 'output'))
     images_subdir: str = "images"
     analysis_subdir: str = "analysis"
     verbose: bool = True
