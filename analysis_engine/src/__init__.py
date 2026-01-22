@@ -24,6 +24,8 @@ from .config import (
     OpenAIConfig,
     OpenAIMiniConfig,
     GeminiVisionConfig,
+    ParallelizationConfig,
+    ParallelConfig,
 )
 from .models import (
     Product, 
@@ -49,6 +51,7 @@ from .scraper import ProductScraper
 from .image_selector import ImageSelector, select_images, list_runs
 from .visual_analyzer import VisualAnalyzer, analyze_images, generate_heatmaps, list_runs_with_images
 from .competitive_analyzer import CompetitiveAnalyzer, run_competitive_analysis
+from .parallel_executor import ParallelExecutor, Provider, ProviderLimits, run_parallel
 from .pipeline import Pipeline, PipelineContext, STEPS, parse_steps_arg, list_steps
 
 __all__ = [
@@ -60,6 +63,8 @@ __all__ = [
     'OpenAIConfig',
     'OpenAIMiniConfig',
     'GeminiVisionConfig',
+    'ParallelizationConfig',
+    'ParallelConfig',
     # Models
     'Product',
     'Brand',
@@ -95,6 +100,11 @@ __all__ = [
     # Competitive Analysis
     'CompetitiveAnalyzer',
     'run_competitive_analysis',
+    # Parallel Execution
+    'ParallelExecutor',
+    'Provider',
+    'ProviderLimits',
+    'run_parallel',
     # Pipeline
     'Pipeline',
     'PipelineContext',

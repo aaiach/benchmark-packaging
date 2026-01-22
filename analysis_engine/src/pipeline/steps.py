@@ -69,9 +69,10 @@ def execute_step_1_discovery(ctx: PipelineContext, config: Any) -> List[Any]:
 
 
 def execute_step_2_details(ctx: PipelineContext, config: Any) -> List[Any]:
-    """Step 2: Product Details using OpenAI + Web Search.
+    """Step 2: Product Details using OpenAI + Web Search (PARALLELIZED).
     
     Gets detailed product information for each discovered brand.
+    Uses parallel execution for faster processing.
     Updates the discovered JSON file with full product details.
     
     Returns:
@@ -99,22 +100,17 @@ def execute_step_2_details(ctx: PipelineContext, config: Any) -> List[Any]:
     
     print(f"[Step 2] Getting details for {len(brands)} brands...")
     print(f"  Model: {config.openai.model} + Web Search")
+    print(f"  Mode: PARALLEL ({config.parallel.openai.max_concurrent} concurrent)")
     print("-" * 70)
     
-    products: List[Product] = []
+    # Use parallel execution
+    results = discovery.get_product_details_parallel(brands, ctx.category, ctx.country)
     
-    for i, brand in enumerate(brands, 1):
-        print(f"  [{i:2}/{len(brands)}] {brand.name}...", end=" ", flush=True)
-        
-        details = discovery.get_product_details(brand, ctx.category, ctx.country)
-        
+    products: List[Product] = []
+    for brand, details in results:
         if details:
             product = Product.from_product_details(details, ctx.category)
             products.append(product)
-            site = details.brand_website or "—"
-            print(f"✓ {details.full_name[:40]} | {site}")
-        else:
-            print("✗ Failed")
     
     print("-" * 70)
     print(f"[✓] {len(products)}/{len(brands)} products with details")

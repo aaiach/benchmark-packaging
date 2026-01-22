@@ -226,6 +226,11 @@ class CategoryService:
                     }
                 }
 
+            # Handle case where analysis is None (failed visual analysis)
+            palette = []
+            if analysis:
+                palette = analysis.get('chromatic_mapping', {}).get('color_palette', [])
+
             products.append({
                 'id': product_id,
                 'brand': visual_entry['brand'],
@@ -236,8 +241,9 @@ class CategoryService:
                 'pop_status': comp_entry.get('pop_status', []),
                 'positioning': comp_entry.get('positioning_summary', ''),
                 'key_differentiator': comp_entry.get('key_differentiator', ''),
-                'palette': analysis.get('chromatic_mapping', {}).get('color_palette', []),
-                'visual_analysis': visual_analysis
+                'palette': palette,
+                'visual_analysis': visual_analysis,
+                'analysis_success': visual_entry.get('analysis_success', False)
             })
 
         return products

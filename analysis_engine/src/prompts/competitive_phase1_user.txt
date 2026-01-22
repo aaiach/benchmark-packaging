@@ -1,0 +1,43 @@
+Analyse ce set de {product_count} produits dans la catégorie **{category}** pour identifier les axes de comparaison.
+
+IMPORTANT: Réponds ENTIÈREMENT EN FRANÇAIS pour tous les champs.
+
+## Données d'entrée
+
+Voici un résumé des analyses visuelles de chaque produit:
+
+{products_summary}
+
+## Livrables attendus
+
+### 1. Points-of-Difference (PODs) - 5 axes pour Radar Chart
+
+Identifie les 5 axes de différenciation les plus DISCRIMINANTS pour cette catégorie.
+
+Pour chaque axe:
+- **axis_id**: Identifiant court (ex: "premium_craft", "health_focus")
+- **axis_name**: Nom court EN FRANÇAIS (2-4 mots, ex: "Premium Artisanal")
+- **description**: Ce que l'axe mesure et pourquoi il est discriminant
+- **high_score_indicators**: Quels éléments visuels/textuels indiquent un score élevé (9-10)
+
+Critères de sélection:
+- L'axe doit créer une VRAIE différence entre produits (pas tous à 5/10)
+- Au moins un produit devrait scorer haut (7+) et au moins un bas (4-)
+
+### 2. Points-of-Parity (POPs) - 5 attributs pour Matrix
+
+Identifie les 5 attributs les plus PARTAGÉS dans cette catégorie.
+
+Pour chaque attribut:
+- **pop_id**: Identifiant court (ex: "organic_certified", "no_sugar")
+- **pop_name**: Nom court EN FRANÇAIS (ex: "Certifié Bio")
+- **pop_type**: certification | nutritional_claim | category_attribute | origin_claim
+- **description**: Ce que cet attribut représente
+
+Critères de sélection:
+- L'attribut doit être présent chez AU MOINS 2 produits
+- Priorise les certifications visibles et claims explicites
+
+### 3. Contexte de positionnement
+
+Fournis un bref aperçu (2-3 phrases) de comment les produits de cette catégorie se positionnent les uns par rapport aux autres.

@@ -6,7 +6,15 @@ product discovery pipeline.
 Architecture:
 - Step 1 (Brand Discovery): Gemini with Google Search grounding
 - Step 2 (Product Details): OpenAI with Web Search (Responses API)
-- Step 3 (Image Selection): OpenAI Mini with structured outputs
+- Step 3 (Scraping): Firecrawl (sequential - no concurrency)
+- Step 4 (Image Selection): OpenAI Mini with structured outputs
+- Step 5-6 (Visual Analysis): Gemini Vision
+- Step 7 (Competitive Analysis): Gemini
+
+Parallelization:
+- OpenAI (Tier 5): 30,000 RPM - can use high concurrency (15-20)
+- Gemini: Conservative 30-60 RPM - moderate concurrency (5-10)
+- Firecrawl: No concurrency allowed - sequential only
 """
 from dataclasses import dataclass, field
 from typing import Optional
@@ -15,6 +23,63 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
+
+
+# =============================================================================
+# Parallelization Configuration
+# =============================================================================
+
+@dataclass
+class ParallelConfig:
+    """Configuration for parallel execution."""
+    max_concurrent: int
+    rate_limit_rpm: int
+    min_delay_seconds: float = 0.0
+
+
+@dataclass
+class ParallelizationConfig:
+    """Parallelization settings for all providers.
+    
+    Rate limits based on:
+    - OpenAI Tier 5: 30,000 RPM (using conservative 1000)
+    - Gemini: 15-60 RPM depending on tier (using conservative 30)
+    - Firecrawl: No concurrency (sequential only)
+    """
+    # OpenAI settings (Tier 5: 30,000 RPM available)
+    openai: ParallelConfig = field(default_factory=lambda: ParallelConfig(
+        max_concurrent=15,
+        rate_limit_rpm=1000,  # Conservative: 1000 of 30000
+        min_delay_seconds=0.05
+    ))
+    
+    # OpenAI Mini (same tier)
+    openai_mini: ParallelConfig = field(default_factory=lambda: ParallelConfig(
+        max_concurrent=15,
+        rate_limit_rpm=1000,
+        min_delay_seconds=0.05
+    ))
+    
+    # Gemini text (conservative for free/paid tier)
+    gemini: ParallelConfig = field(default_factory=lambda: ParallelConfig(
+        max_concurrent=5,
+        rate_limit_rpm=30,
+        min_delay_seconds=0.5
+    ))
+    
+    # Gemini Vision (same limits, may be lower for image models)
+    gemini_vision: ParallelConfig = field(default_factory=lambda: ParallelConfig(
+        max_concurrent=5,
+        rate_limit_rpm=30,
+        min_delay_seconds=0.5
+    ))
+    
+    # Firecrawl - NO concurrency (user has no concurrency permissions)
+    firecrawl: ParallelConfig = field(default_factory=lambda: ParallelConfig(
+        max_concurrent=1,
+        rate_limit_rpm=20,
+        min_delay_seconds=3.0
+    ))
 
 
 # =============================================================================
@@ -95,6 +160,9 @@ class DiscoveryConfig:
     openai: OpenAIConfig = field(default_factory=OpenAIConfig)
     openai_mini: OpenAIMiniConfig = field(default_factory=OpenAIMiniConfig)
     gemini_vision: GeminiVisionConfig = field(default_factory=GeminiVisionConfig)
+    
+    # Parallelization settings
+    parallel: ParallelizationConfig = field(default_factory=ParallelizationConfig)
     
     # Output settings - use OUTPUT_DIR env var if available (for Docker/API deployment)
     output_dir: str = field(default_factory=lambda: os.getenv('OUTPUT_DIR', 'output'))

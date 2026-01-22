@@ -1,0 +1,42 @@
+Analyse en profondeur ce produit et score-le sur les axes établis.
+
+IMPORTANT: Réponds ENTIÈREMENT EN FRANÇAIS.
+
+## Produit à analyser
+
+**Marque**: {brand}
+**Produit**: {product_name}
+**Catégorie**: {category}
+
+## Analyse visuelle détaillée du produit
+
+{product_analysis}
+
+## Axes de différenciation (PODs) à scorer
+
+{pods_description}
+
+## Attributs de parité (POPs) à vérifier
+
+{pops_description}
+
+## Livrables attendus
+
+### 1. Scores POD (1-10 pour chaque axe)
+
+Pour chaque axe POD ci-dessus, fournis:
+- **axis_id**: L'identifiant de l'axe
+- **score**: Score de 1 à 10
+- **reasoning**: Justification basée sur les éléments visuels observés (1-2 phrases)
+
+### 2. Statut POP (true/false pour chaque attribut)
+
+Pour chaque POP ci-dessus, fournis:
+- **pop_id**: L'identifiant du POP
+- **has_attribute**: true ou false
+- **evidence**: Si true, quelle est l'évidence visuelle? Si false, laisser null.
+
+### 3. Synthèse de positionnement
+
+- **positioning_summary**: Une phrase décrivant le positionnement unique de ce produit
+- **key_differentiator**: L'élément le plus distinctif (2-5 mots)

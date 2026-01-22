@@ -455,6 +455,66 @@ class CompetitiveAnalysisResult(BaseModel):
     )
 
 
+# =============================================================================
+# Intermediate Models for Multi-Phase Competitive Analysis (Step 7)
+# =============================================================================
+
+class CategoryAxesResult(BaseModel):
+    """Phase 1 output: PODs and POPs identified for the category."""
+    
+    # PODs for Radar Chart
+    points_of_difference: List[PointOfDifference] = Field(
+        description="5 axes of differentiation for radar chart"
+    )
+    
+    # POPs for Matrix
+    points_of_parity: List[PointOfParity] = Field(
+        description="5 common attributes for parity matrix"
+    )
+    
+    # Brief category overview (helps Phase 2 scoring)
+    category_positioning_context: str = Field(
+        description="Brief overview of how products in this category are positioned (2-3 sentences)"
+    )
+
+
+class SingleProductProfile(BaseModel):
+    """Phase 2 output: Complete competitive profile for a single product."""
+    
+    brand: str = Field(description="Brand name")
+    product_name: str = Field(description="Full product name")
+    
+    # Radar chart data
+    pod_scores: List[ProductPODScore] = Field(
+        description="Scores for each Point-of-Difference axis"
+    )
+    
+    # Matrix data
+    pop_status: List[ProductPOPStatus] = Field(
+        description="Status for each Point-of-Parity attribute"
+    )
+    
+    # Summary
+    positioning_summary: str = Field(
+        description="One-sentence positioning summary for this product"
+    )
+    key_differentiator: str = Field(
+        description="The single most distinctive aspect of this product"
+    )
+
+
+class StrategicInsightsResult(BaseModel):
+    """Phase 3 output: Strategic insights from the complete analysis."""
+    
+    strategic_insights: List[StrategicInsight] = Field(
+        description="3-5 key strategic observations"
+    )
+    
+    category_summary: str = Field(
+        description="Executive summary of the competitive landscape (2-3 sentences)"
+    )
+
+
 class VisualHierarchyAnalysis(BaseModel):
     """Complete visual hierarchy analysis result with 4 sections."""
     

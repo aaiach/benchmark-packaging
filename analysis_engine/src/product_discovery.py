@@ -1,13 +1,14 @@
 """Découverte de produits via LLM avec architecture en deux étapes.
 
 Architecture:
-- Étape 1 (Brand Discovery): Gemini + Google Search grounding
-- Étape 2 (Product Details): OpenAI + Web Search (Responses API)
+- Étape 1 (Brand Discovery): Gemini + Google Search grounding (1 call)
+- Étape 2 (Product Details): OpenAI + Web Search (N calls - PARALLELIZED)
 
 Utilise LangChain pour une structure propre et extensible.
+Parallelization via ParallelExecutor for Step 2.
 """
 import json
-from typing import List, Optional
+from typing import List, Optional, Tuple
 from pathlib import Path
 
 from langchain_core.prompts import ChatPromptTemplate
@@ -18,6 +19,13 @@ from langchain_openai import ChatOpenAI
 from .config import get_config, DiscoveryConfig
 from .models import Product, Brand, BrandList, ProductDetails
 from .utils import load_prompt, extract_json
+from .parallel_executor import (
+    ParallelExecutor, 
+    Provider, 
+    ProviderLimits,
+    wrap_sync_func,
+    create_print_progress
+)
 
 
 # =============================================================================
@@ -250,12 +258,78 @@ class ProductDiscovery:
             print(f"  [!] Erreur pour {brand.name}: {e}")
             return None
 
+    def get_product_details_parallel(
+        self,
+        brands: List[Brand],
+        category: str,
+        country: str = "France"
+    ) -> List[Tuple[Brand, Optional[ProductDetails]]]:
+        """Étape 2 PARALLÉLISÉE: Obtient les détails pour toutes les marques.
+        
+        Uses ParallelExecutor for concurrent API calls with rate limiting.
+        
+        Args:
+            brands: Liste de Brand objects
+            category: Catégorie de produit
+            country: Pays cible
+            
+        Returns:
+            List of (brand, details) tuples in original order
+        """
+        if not brands:
+            return []
+        
+        # Create executor with OpenAI limits from config
+        limits = ProviderLimits(
+            max_concurrent=self.config.parallel.openai.max_concurrent,
+            rate_limit_rpm=self.config.parallel.openai.rate_limit_rpm,
+            min_delay_seconds=self.config.parallel.openai.min_delay_seconds
+        )
+        executor = ParallelExecutor(provider=Provider.OPENAI, limits=limits)
+        
+        # Create async wrapper for the sync get_product_details method
+        async def process_brand(brand: Brand) -> Optional[ProductDetails]:
+            import asyncio
+            loop = asyncio.get_event_loop()
+            return await loop.run_in_executor(
+                None, 
+                lambda: self.get_product_details(brand, category, country)
+            )
+        
+        # Progress callback
+        completed_count = [0]
+        def on_progress(completed: int, total: int, status: str, item_id: Optional[str]):
+            completed_count[0] = completed
+            if item_id:
+                print(f"  [{completed:2}/{total}] {item_id}... {status}", flush=True)
+        
+        # Execute in parallel
+        print(f"  [Parallel] Processing {len(brands)} brands with {limits.max_concurrent} concurrent requests")
+        batch_result = executor.execute_sync(
+            items=brands,
+            process_func=process_brand,
+            get_item_id=lambda b: b.name,
+            progress_callback=on_progress
+        )
+        
+        print(f"  [Parallel] Done: {batch_result.successful_count}/{batch_result.total_items} succeeded "
+              f"in {batch_result.total_duration_seconds:.1f}s")
+        
+        # Reconstruct results in original order
+        results: List[Tuple[Brand, Optional[ProductDetails]]] = []
+        ordered_results = batch_result.get_all_results_ordered()
+        for brand, details in zip(brands, ordered_results):
+            results.append((brand, details))
+        
+        return results
+
     def discover_products(
         self,
         category: str,
         count: int = 30,
         country: str = "France",
-        city: Optional[str] = None  # Kept for API compatibility
+        city: Optional[str] = None,  # Kept for API compatibility
+        parallel: bool = True  # Enable parallelization by default
     ) -> List[Product]:
         """Découvre des produits via pipeline LLM en 2 étapes.
 
@@ -264,6 +338,7 @@ class ProductDiscovery:
             count: Nombre de produits à découvrir
             country: Pays cible (défaut: France)
             city: Ville optionnelle (non utilisée actuellement)
+            parallel: Use parallel execution for Step 2 (default: True)
 
         Returns:
             Liste d'objets Product
@@ -282,22 +357,38 @@ class ProductDiscovery:
         # Étape 2: Obtenir les détails pour chaque marque (OpenAI + Web Search)
         print(f"\n[Étape 2] Récupération des détails pour {len(brands)} marques via OpenAI...")
         print(f"  Modèle: {self.config.openai.model} + Web Search")
-        print("-" * 70)
         
-        products: List[Product] = []
-        
-        for i, brand in enumerate(brands, 1):
-            print(f"  [{i:2}/{len(brands)}] {brand.name}...", end=" ", flush=True)
+        if parallel and len(brands) > 1:
+            # PARALLEL execution
+            print(f"  Mode: PARALLEL ({self.config.parallel.openai.max_concurrent} concurrent)")
+            print("-" * 70)
             
-            details = self.get_product_details(brand, category, country)
+            results = self.get_product_details_parallel(brands, category, country)
             
-            if details:
-                product = Product.from_product_details(details, category)
-                products.append(product)
-                site = details.brand_website or "—"
-                print(f"✓ {details.full_name[:40]} | {site}")
-            else:
-                print("✗ Échec")
+            products: List[Product] = []
+            for brand, details in results:
+                if details:
+                    product = Product.from_product_details(details, category)
+                    products.append(product)
+        else:
+            # SEQUENTIAL execution (fallback)
+            print("  Mode: SEQUENTIAL")
+            print("-" * 70)
+            
+            products: List[Product] = []
+            
+            for i, brand in enumerate(brands, 1):
+                print(f"  [{i:2}/{len(brands)}] {brand.name}...", end=" ", flush=True)
+                
+                details = self.get_product_details(brand, category, country)
+                
+                if details:
+                    product = Product.from_product_details(details, category)
+                    products.append(product)
+                    site = details.brand_website or "—"
+                    print(f"✓ {details.full_name[:40]} | {site}")
+                else:
+                    print("✗ Échec")
         
         print("-" * 70)
         print(f"[Résultat] {len(products)}/{len(brands)} produits récupérés")

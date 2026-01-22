@@ -2,6 +2,9 @@
 
 This module analyzes scraped product data and uses GPT-5 Mini to identify
 the highest quality product image from available URLs, then downloads it locally.
+
+Parallelization: Uses ParallelExecutor for concurrent AI selection calls.
+Image downloads remain sequential to avoid overwhelming servers.
 """
 import json
 import os
@@ -19,6 +22,11 @@ from pydantic import BaseModel
 from .config import get_config, DiscoveryConfig
 from .models import ImageSelection, ImageSelectionResult
 from .utils import load_prompt
+from .parallel_executor import (
+    ParallelExecutor,
+    Provider,
+    ProviderLimits,
+)
 
 
 # =============================================================================
@@ -448,18 +456,55 @@ class ImageSelector:
         
         return result
     
+    def _select_image_only(
+        self,
+        product: Dict[str, Any],
+        index: int
+    ) -> Tuple[int, Dict[str, Any], Optional[ImageSelection]]:
+        """Select best image for a product without downloading.
+        
+        This is the parallelizable part - AI selection only.
+        
+        Args:
+            product: Product dictionary
+            index: Product index for ordering
+            
+        Returns:
+            Tuple of (index, product, selection_result)
+        """
+        brand = product.get('brand', 'Unknown')
+        product_name = product.get('full_name', 'Unknown Product')
+        category = product.get('category', '')
+        
+        # Collect available URLs
+        image_urls, og_image = self._collect_image_urls(product)
+        
+        if not image_urls:
+            return (index, product, None)
+        
+        # Select best image using AI
+        selection = self._select_best_image(
+            brand, product_name, category, image_urls, og_image
+        )
+        
+        return (index, product, selection)
+    
     def process_scraped_data(
         self,
         scraped_file: Path,
         run_id: str,
-        category_slug: str
+        category_slug: str,
+        parallel: bool = True
     ) -> List[Dict[str, Any]]:
-        """Process all products in a scraped JSON file.
+        """Process all products in a scraped JSON file (PARALLELIZED).
+        
+        AI selection is parallelized, downloads are sequential.
         
         Args:
             scraped_file: Path to the scraped JSON file
             run_id: Run identifier (timestamp)
             category_slug: Category slug for directory naming
+            parallel: Use parallel execution (default: True)
             
         Returns:
             Updated list of product dictionaries with image paths
@@ -479,31 +524,124 @@ class ImageSelector:
         
         print(f"\n[ImageSelector] Processing {len(products)} products")
         print(f"  Images directory: {images_dir}")
-        print("-" * 70)
         
-        # Process each product
-        updated_products = []
-        success_count = 0
-        
-        for i, product in enumerate(products, 1):
-            brand = product.get('brand', 'Unknown')
-            name = product.get('full_name', 'Unknown')[:40]
-            print(f"[{i:2}/{len(products)}] {brand} - {name}")
+        if parallel and len(products) > 1:
+            # PARALLEL EXECUTION: AI selection in parallel, downloads sequential
+            print(f"  Mode: PARALLEL ({self.config.parallel.openai_mini.max_concurrent} concurrent)")
+            print("-" * 70)
             
-            result = self.select_image_for_product(product, images_dir, index=i)
+            # Phase 1: Parallel AI selection
+            print("  [Phase 1] AI image selection (parallel)...")
             
-            # Update product with image selection results
-            product['selected_image_url'] = result.selected_image_url
-            product['local_image_path'] = result.local_image_path
-            product['image_selection'] = {
-                'confidence': result.selection_confidence,
-                'reasoning': result.selection_reasoning,
-            }
+            limits = ProviderLimits(
+                max_concurrent=self.config.parallel.openai_mini.max_concurrent,
+                rate_limit_rpm=self.config.parallel.openai_mini.rate_limit_rpm,
+                min_delay_seconds=self.config.parallel.openai_mini.min_delay_seconds
+            )
+            executor = ParallelExecutor(provider=Provider.OPENAI_MINI, limits=limits)
             
-            if result.local_image_path:
-                success_count += 1
+            # Create indexed items for parallel processing
+            indexed_products = list(enumerate(products, 1))
             
-            updated_products.append(product)
+            async def select_image_async(item: Tuple[int, Dict[str, Any]]) -> Tuple[int, Dict[str, Any], Optional[ImageSelection]]:
+                import asyncio
+                idx, prod = item
+                loop = asyncio.get_event_loop()
+                return await loop.run_in_executor(
+                    None,
+                    lambda: self._select_image_only(prod, idx)
+                )
+            
+            def on_progress(completed: int, total: int, status: str, item_id: Optional[str]):
+                print(f"    [{completed:2}/{total}] Selection {status}", flush=True)
+            
+            batch_result = executor.execute_sync(
+                items=indexed_products,
+                process_func=select_image_async,
+                get_item_id=lambda x: x[1].get('brand', 'Unknown'),
+                progress_callback=on_progress
+            )
+            
+            print(f"  [Phase 1] Done: {batch_result.successful_count}/{batch_result.total_items} "
+                  f"in {batch_result.total_duration_seconds:.1f}s")
+            
+            # Phase 2: Sequential downloads
+            print("  [Phase 2] Downloading images (sequential)...")
+            
+            updated_products = [None] * len(products)
+            success_count = 0
+            
+            # Sort results by index to maintain order
+            for exec_result in sorted(batch_result.results, key=lambda r: r.index):
+                if not exec_result.success or not exec_result.result:
+                    # Failed selection - use original product
+                    idx, product, _ = indexed_products[exec_result.index]
+                    product['selected_image_url'] = None
+                    product['local_image_path'] = None
+                    product['image_selection'] = {'confidence': 0, 'reasoning': 'Selection failed'}
+                    updated_products[exec_result.index] = product
+                    continue
+                
+                idx, product, selection = exec_result.result
+                
+                # Update product with selection results
+                if selection:
+                    product['selected_image_url'] = selection.selected_url
+                    product['image_selection'] = {
+                        'confidence': selection.confidence,
+                        'reasoning': selection.reasoning,
+                    }
+                    
+                    # Download the image if valid
+                    if selection.is_product_image and selection.confidence >= 0.3:
+                        brand = product.get('brand', 'Unknown')
+                        filename = generate_image_filename(brand, idx, selection.selected_url)
+                        filepath = images_dir / filename
+                        
+                        actual_filepath = download_image(selection.selected_url, filepath)
+                        if actual_filepath:
+                            product['local_image_path'] = str(actual_filepath)
+                            success_count += 1
+                            print(f"    [{idx:2}] ✓ {actual_filepath.name}")
+                        else:
+                            product['local_image_path'] = None
+                            print(f"    [{idx:2}] ✗ Download failed")
+                    else:
+                        product['local_image_path'] = None
+                else:
+                    product['selected_image_url'] = None
+                    product['local_image_path'] = None
+                    product['image_selection'] = {'confidence': 0, 'reasoning': 'No selection'}
+                
+                updated_products[exec_result.index] = product
+            
+        else:
+            # SEQUENTIAL EXECUTION (fallback)
+            print("  Mode: SEQUENTIAL")
+            print("-" * 70)
+            
+            updated_products = []
+            success_count = 0
+            
+            for i, product in enumerate(products, 1):
+                brand = product.get('brand', 'Unknown')
+                name = product.get('full_name', 'Unknown')[:40]
+                print(f"[{i:2}/{len(products)}] {brand} - {name}")
+                
+                result = self.select_image_for_product(product, images_dir, index=i)
+                
+                # Update product with image selection results
+                product['selected_image_url'] = result.selected_image_url
+                product['local_image_path'] = result.local_image_path
+                product['image_selection'] = {
+                    'confidence': result.selection_confidence,
+                    'reasoning': result.selection_reasoning,
+                }
+                
+                if result.local_image_path:
+                    success_count += 1
+                
+                updated_products.append(product)
         
         print("-" * 70)
         print(f"[ImageSelector] Complete: {success_count}/{len(products)} images downloaded")

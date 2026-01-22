@@ -8,6 +8,7 @@ This module analyzes product images using Gemini 3 Pro to understand:
 - Heatmap generation for visual attention
 
 Uses LangChain's ChatGoogleGenerativeAI with structured output for reliable parsing.
+Parallelization: Uses ParallelExecutor for concurrent image analysis (Step 5 & 6).
 """
 import base64
 import json
@@ -32,6 +33,11 @@ from .models import (
     AssetSymbolism
 )
 from .utils import load_prompt
+from .parallel_executor import (
+    ParallelExecutor,
+    Provider,
+    ProviderLimits,
+)
 
 
 # =============================================================================
@@ -228,13 +234,15 @@ class VisualAnalyzer:
     def analyze_run(
         self,
         run_id: str,
-        max_images: Optional[int] = None
+        max_images: Optional[int] = None,
+        parallel: bool = True
     ) -> List[Dict[str, Any]]:
-        """Analyze all images from a previous run.
+        """Analyze all images from a previous run (PARALLELIZED).
         
         Args:
             run_id: Run identifier (timestamp)
             max_images: Optional limit on number of images to process
+            parallel: Use parallel execution (default: True)
             
         Returns:
             List of analysis results (dict with image info + analysis)
@@ -258,69 +266,144 @@ class VisualAnalyzer:
         print(f"\n[VisualAnalyzer] Analyzing {len(images)} images")
         print(f"  Images directory: {images_dir}")
         print(f"  Model: {self.model}")
-        print("-" * 70)
         
-        results = []
-        success_count = 0
-        
-        for i, image_path in enumerate(images, 1):
-            # Get product context
-            product = product_data.get(str(image_path)) or product_data.get(image_path.name, {})
-            brand = product.get('brand', 'Unknown')
-            product_name = product.get('full_name', 'Unknown Product')
-            category = product.get('category', '')
+        if parallel and len(images) > 1:
+            # PARALLEL EXECUTION
+            print(f"  Mode: PARALLEL ({self.config.parallel.gemini_vision.max_concurrent} concurrent)")
+            print("-" * 70)
             
-            print(f"[{i:2}/{len(images)}] {brand} - {product_name[:40]}")
-            print(f"    Image: {image_path.name}")
+            # Prepare items for parallel processing
+            items_to_process = []
+            for i, image_path in enumerate(images):
+                product = product_data.get(str(image_path)) or product_data.get(image_path.name, {})
+                items_to_process.append({
+                    'index': i,
+                    'image_path': image_path,
+                    'brand': product.get('brand', 'Unknown'),
+                    'product_name': product.get('full_name', 'Unknown Product'),
+                    'category': product.get('category', ''),
+                })
             
-            # Analyze the image
-            analysis = self.analyze_image(
-                image_path=image_path,
-                brand=brand,
-                product_name=product_name,
-                category=category
+            # Create executor with Gemini Vision limits
+            limits = ProviderLimits(
+                max_concurrent=self.config.parallel.gemini_vision.max_concurrent,
+                rate_limit_rpm=self.config.parallel.gemini_vision.rate_limit_rpm,
+                min_delay_seconds=self.config.parallel.gemini_vision.min_delay_seconds
+            )
+            executor = ParallelExecutor(provider=Provider.GEMINI_VISION, limits=limits)
+            
+            # Async wrapper for analyze_image
+            async def analyze_item_async(item: Dict[str, Any]) -> Dict[str, Any]:
+                import asyncio
+                loop = asyncio.get_event_loop()
+                
+                def do_analysis():
+                    analysis = self.analyze_image(
+                        image_path=item['image_path'],
+                        brand=item['brand'],
+                        product_name=item['product_name'],
+                        category=item['category']
+                    )
+                    return {
+                        'index': item['index'],
+                        'image_path': str(item['image_path']),
+                        'image_filename': item['image_path'].name,
+                        'brand': item['brand'],
+                        'product_name': item['product_name'],
+                        'category': item['category'],
+                        'analysis': analysis.model_dump() if analysis else None,
+                        'analysis_success': analysis is not None,
+                    }
+                
+                return await loop.run_in_executor(None, do_analysis)
+            
+            def on_progress(completed: int, total: int, status: str, item_id: Optional[str]):
+                print(f"  [{completed:2}/{total}] {item_id or 'Processing'}... {status}", flush=True)
+            
+            batch_result = executor.execute_sync(
+                items=items_to_process,
+                process_func=analyze_item_async,
+                get_item_id=lambda x: x['brand'],
+                progress_callback=on_progress
             )
             
-            # Build result entry
-            result = {
-                'image_path': str(image_path),
-                'image_filename': image_path.name,
-                'brand': brand,
-                'product_name': product_name,
-                'category': category,
-                'analysis': None,
-                'analysis_success': False,
-            }
+            # Collect results in order
+            results = [None] * len(images)
+            success_count = 0
             
-            if analysis:
-                result['analysis'] = analysis.model_dump()
-                result['analysis_success'] = True
-                success_count += 1
-                
-                # Print summary for Section 1: Visual Hierarchy
-                print(f"    [✓] Section 1 - Visual Hierarchy:")
-                print(f"        Anchor: {analysis.visual_anchor[:50]}...")
-                print(f"        Elements: {len(analysis.elements)}, Pattern: {analysis.eye_tracking.pattern_type}")
-                print(f"        Clarity: {analysis.hierarchy_clarity_score}/10")
-                
-                # Print summary for Section 2: Chromatic Mapping
-                print(f"    [✓] Section 2 - Chromatic Mapping:")
-                print(f"        Colors: {len(analysis.chromatic_mapping.color_palette)}, Finish: {analysis.chromatic_mapping.surface_finish}")
-                
-                # Print summary for Section 3: Textual Inventory
-                print(f"    [✓] Section 3 - Textual Inventory:")
-                print(f"        Text blocks: {len(analysis.textual_inventory.all_text_blocks)}, Claims: {len(analysis.textual_inventory.claims_summary)}")
-                
-                # Print summary for Section 4: Asset Symbolism
-                print(f"    [✓] Section 4 - Asset Symbolism:")
-                print(f"        Assets: {len(analysis.asset_symbolism.graphical_assets)}, Trust marks: {len(analysis.asset_symbolism.trust_marks)}")
-            else:
-                print(f"    [✗] Analysis failed")
+            for exec_result in batch_result.results:
+                if exec_result.success and exec_result.result:
+                    result_data = exec_result.result
+                    results[result_data['index']] = result_data
+                    if result_data['analysis_success']:
+                        success_count += 1
+                else:
+                    # Failed - create placeholder
+                    item = items_to_process[exec_result.index]
+                    results[exec_result.index] = {
+                        'image_path': str(item['image_path']),
+                        'image_filename': item['image_path'].name,
+                        'brand': item['brand'],
+                        'product_name': item['product_name'],
+                        'category': item['category'],
+                        'analysis': None,
+                        'analysis_success': False,
+                    }
             
-            results.append(result)
-        
-        print("-" * 70)
-        print(f"[VisualAnalyzer] Complete: {success_count}/{len(images)} images analyzed")
+            print("-" * 70)
+            print(f"[VisualAnalyzer] Complete: {success_count}/{len(images)} images analyzed "
+                  f"in {batch_result.total_duration_seconds:.1f}s")
+            
+        else:
+            # SEQUENTIAL EXECUTION (fallback)
+            print("  Mode: SEQUENTIAL")
+            print("-" * 70)
+            
+            results = []
+            success_count = 0
+            
+            for i, image_path in enumerate(images, 1):
+                # Get product context
+                product = product_data.get(str(image_path)) or product_data.get(image_path.name, {})
+                brand = product.get('brand', 'Unknown')
+                product_name = product.get('full_name', 'Unknown Product')
+                category = product.get('category', '')
+                
+                print(f"[{i:2}/{len(images)}] {brand} - {product_name[:40]}")
+                print(f"    Image: {image_path.name}")
+                
+                # Analyze the image
+                analysis = self.analyze_image(
+                    image_path=image_path,
+                    brand=brand,
+                    product_name=product_name,
+                    category=category
+                )
+                
+                # Build result entry
+                result = {
+                    'image_path': str(image_path),
+                    'image_filename': image_path.name,
+                    'brand': brand,
+                    'product_name': product_name,
+                    'category': category,
+                    'analysis': None,
+                    'analysis_success': False,
+                }
+                
+                if analysis:
+                    result['analysis'] = analysis.model_dump()
+                    result['analysis_success'] = True
+                    success_count += 1
+                    
+                    print(f"    [✓] Analysis complete (clarity: {analysis.hierarchy_clarity_score}/10)")
+                else:
+                    print(f"    [✗] Analysis failed")
+                
+                results.append(result)
+            
+            print("-" * 70)
+            print(f"[VisualAnalyzer] Complete: {success_count}/{len(images)} images analyzed")
         
         return results
     
@@ -518,13 +601,15 @@ class VisualAnalyzer:
     def generate_heatmaps_for_run(
         self,
         run_id: str,
-        max_images: Optional[int] = None
+        max_images: Optional[int] = None,
+        parallel: bool = True
     ) -> List[Dict[str, Any]]:
-        """Generate heatmaps for all analyzed images in a run.
+        """Generate heatmaps for all analyzed images in a run (PARALLELIZED).
         
         Args:
             run_id: Run identifier (timestamp)
             max_images: Optional limit on number of images
+            parallel: Use parallel execution (default: True)
             
         Returns:
             List of results with heatmap paths
@@ -559,50 +644,146 @@ class VisualAnalyzer:
         
         print(f"\n[VisualAnalyzer] Generating heatmaps for {len(analyses)} images")
         print(f"  Model: {self.model}")
-        print("-" * 70)
         
-        results = []
-        success_count = 0
-        
-        for i, item in enumerate(analyses, 1):
-            image_path = Path(item['image_path'])
-            brand = item.get('brand', 'Unknown')
-            product_name = item.get('product_name', 'Unknown Product')
-            analysis = item.get('analysis', {})
+        if parallel and len(analyses) > 1:
+            # PARALLEL EXECUTION
+            print(f"  Mode: PARALLEL ({self.config.parallel.gemini_vision.max_concurrent} concurrent)")
+            print("-" * 70)
             
-            print(f"[{i:2}/{len(analyses)}] {brand} - {product_name[:40]}")
+            # Prepare items for parallel processing
+            items_to_process = []
+            for i, item in enumerate(analyses):
+                image_path = Path(item['image_path'])
+                heatmaps_dir = image_path.parent / "heatmaps"
+                heatmap_filename = image_path.stem + "_heatmap" + image_path.suffix
+                heatmap_path = heatmaps_dir / heatmap_filename
+                
+                items_to_process.append({
+                    'index': i,
+                    'image_path': image_path,
+                    'brand': item.get('brand', 'Unknown'),
+                    'product_name': item.get('product_name', 'Unknown Product'),
+                    'analysis': item.get('analysis', {}),
+                    'heatmap_path': heatmap_path,
+                })
             
-            # Determine heatmap output path (same dir as image, in heatmaps subdir)
-            heatmaps_dir = image_path.parent / "heatmaps"
-            heatmap_filename = image_path.stem + "_heatmap" + image_path.suffix
-            heatmap_path = heatmaps_dir / heatmap_filename
+            # Create executor with Gemini Vision limits
+            limits = ProviderLimits(
+                max_concurrent=self.config.parallel.gemini_vision.max_concurrent,
+                rate_limit_rpm=self.config.parallel.gemini_vision.rate_limit_rpm,
+                min_delay_seconds=self.config.parallel.gemini_vision.min_delay_seconds
+            )
+            executor = ParallelExecutor(provider=Provider.GEMINI_VISION, limits=limits)
             
-            print(f"    Generating: {heatmap_filename}")
+            # Async wrapper for generate_heatmap
+            async def generate_heatmap_async(item: Dict[str, Any]) -> Dict[str, Any]:
+                import asyncio
+                loop = asyncio.get_event_loop()
+                
+                def do_generation():
+                    result_path = self.generate_heatmap(
+                        image_path=item['image_path'],
+                        analysis=item['analysis'],
+                        output_path=item['heatmap_path'],
+                        brand=item['brand'],
+                        product_name=item['product_name']
+                    )
+                    return {
+                        'index': item['index'],
+                        'image_path': str(item['image_path']),
+                        'brand': item['brand'],
+                        'product_name': item['product_name'],
+                        'heatmap_path': str(result_path) if result_path else None,
+                        'heatmap_success': result_path is not None,
+                    }
+                
+                return await loop.run_in_executor(None, do_generation)
             
-            # Generate heatmap
-            result_path = self.generate_heatmap(
-                image_path=image_path,
-                analysis=analysis,
-                output_path=heatmap_path,
-                brand=brand,
-                product_name=product_name
+            def on_progress(completed: int, total: int, status: str, item_id: Optional[str]):
+                print(f"  [{completed:2}/{total}] {item_id or 'Processing'}... {status}", flush=True)
+            
+            batch_result = executor.execute_sync(
+                items=items_to_process,
+                process_func=generate_heatmap_async,
+                get_item_id=lambda x: x['brand'],
+                progress_callback=on_progress
             )
             
-            result = {
-                'image_path': str(image_path),
-                'brand': brand,
-                'product_name': product_name,
-                'heatmap_path': str(result_path) if result_path else None,
-                'heatmap_success': result_path is not None,
-            }
+            # Collect results in order
+            results = [None] * len(analyses)
+            success_count = 0
             
-            if result_path:
-                success_count += 1
-                print(f"    [✓] Saved: {result_path}")
-            else:
-                print(f"    [✗] Generation failed")
+            for exec_result in batch_result.results:
+                if exec_result.success and exec_result.result:
+                    result_data = exec_result.result
+                    results[result_data['index']] = result_data
+                    if result_data['heatmap_success']:
+                        success_count += 1
+                else:
+                    # Failed - create placeholder
+                    item = items_to_process[exec_result.index]
+                    results[exec_result.index] = {
+                        'image_path': str(item['image_path']),
+                        'brand': item['brand'],
+                        'product_name': item['product_name'],
+                        'heatmap_path': None,
+                        'heatmap_success': False,
+                    }
             
-            results.append(result)
+            print("-" * 70)
+            print(f"[VisualAnalyzer] Complete: {success_count}/{len(analyses)} heatmaps generated "
+                  f"in {batch_result.total_duration_seconds:.1f}s")
+            
+        else:
+            # SEQUENTIAL EXECUTION (fallback)
+            print("  Mode: SEQUENTIAL")
+            print("-" * 70)
+            
+            results = []
+            success_count = 0
+            
+            for i, item in enumerate(analyses, 1):
+                image_path = Path(item['image_path'])
+                brand = item.get('brand', 'Unknown')
+                product_name = item.get('product_name', 'Unknown Product')
+                analysis = item.get('analysis', {})
+                
+                print(f"[{i:2}/{len(analyses)}] {brand} - {product_name[:40]}")
+                
+                # Determine heatmap output path (same dir as image, in heatmaps subdir)
+                heatmaps_dir = image_path.parent / "heatmaps"
+                heatmap_filename = image_path.stem + "_heatmap" + image_path.suffix
+                heatmap_path = heatmaps_dir / heatmap_filename
+                
+                print(f"    Generating: {heatmap_filename}")
+                
+                # Generate heatmap
+                result_path = self.generate_heatmap(
+                    image_path=image_path,
+                    analysis=analysis,
+                    output_path=heatmap_path,
+                    brand=brand,
+                    product_name=product_name
+                )
+                
+                result = {
+                    'image_path': str(image_path),
+                    'brand': brand,
+                    'product_name': product_name,
+                    'heatmap_path': str(result_path) if result_path else None,
+                    'heatmap_success': result_path is not None,
+                }
+                
+                if result_path:
+                    success_count += 1
+                    print(f"    [✓] Saved: {result_path}")
+                else:
+                    print(f"    [✗] Generation failed")
+                
+                results.append(result)
+            
+            print("-" * 70)
+            print(f"[VisualAnalyzer] Complete: {success_count}/{len(analyses)} heatmaps generated")
         
         print("-" * 70)
         print(f"[VisualAnalyzer] Complete: {success_count}/{len(analyses)} heatmaps generated")
