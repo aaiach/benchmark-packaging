@@ -1,0 +1,5 @@
+Liste {count} marques de {category} vendues en {country}.
+
+Objectif: identifier les marques les plus connues et pertinentes du marché.
+
+Classement: du plus populaire au moins populaire.

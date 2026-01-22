@@ -1,7 +1,0 @@
-Recherche sur le web et donne les détails du produit phare de la marque "{brand}" dans la catégorie "{category}" en {country}.
-
-Effectue une recherche web pour trouver:
-- Le site officiel de la marque
-- L'URL exacte de la page produit
-
-Réponds avec le JSON uniquement.

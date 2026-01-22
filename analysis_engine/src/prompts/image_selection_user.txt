@@ -1,0 +1,10 @@
+Produit: {brand} - {product_name}
+Catégorie: {category}
+
+URLs d'images disponibles:
+{image_urls}
+
+URL og:image (si disponible): {og_image}
+
+Sélectionne la meilleure image qui montre le produit "{product_name}" de la marque "{brand}".
+Retourne l'URL sélectionnée avec ton niveau de confiance et ton raisonnement.

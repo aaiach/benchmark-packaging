@@ -1,0 +1,998 @@
+{
+  "category": "lait d'avoine",
+  "analysis_date": "2026-01-21T18:13:38.337136",
+  "product_count": 23,
+  "points_of_difference": [
+    {
+      "axis_id": "visual_boldness",
+      "axis_name": "Bold & Playful Identity",
+      "description": "Measures the distinctiveness, personality, and unconventional nature of the branding. High scores indicate quirky illustrations, humor, or disruptive design systems.",
+      "high_score_indicators": [
+        "Unconventional characters (e.g., ducks, sunglasses)",
+        "Hand-drawn or graffiti typography",
+        "Humorous copy",
+        "Non-standard color palettes (e.g., Pink, Teal, Black)"
+      ]
+    },
+    {
+      "axis_id": "functional_health",
+      "axis_name": "Clinical & Nutritional Focus",
+      "description": "Extent to which the product positions itself as a health supplement or medical necessity through scientific claims and clean, clinical aesthetics.",
+      "high_score_indicators": [
+        "Nutri-Score prominence",
+        "Detailed nutrient lists on front (Calcium, Vitamins)",
+        "Clinical white backgrounds",
+        "Specific health benefits (e.g., 'Low Saturated Fat')"
+      ]
+    },
+    {
+      "axis_id": "eco_ethics",
+      "axis_name": "Eco-Ethical Commitment",
+      "description": "Focus on sustainability, sourcing transparency, and environmental impact beyond standard organic certification.",
+      "high_score_indicators": [
+        "Planet-Score",
+        "Biodiversity claims",
+        "Packaging sustainability claims (e.g., renewable plant-based cap)",
+        "Fair Trade / Biopartenaire labels"
+      ]
+    },
+    {
+      "axis_id": "artisanal_craft",
+      "axis_name": "Barista & Craft Quality",
+      "description": "Perception of the product as a premium, artisanal ingredient suitable for coffee or culinary use, rather than a commodity staple.",
+      "high_score_indicators": [
+        "Barista terminology",
+        "Coffee iconography",
+        "Textured/Matte finishes",
+        "Premium dark or gold color codes"
+      ]
+    },
+    {
+      "axis_id": "natural_simplicity",
+      "axis_name": "Raw & Rustic Naturalness",
+      "description": "Emphasis on the raw ingredient, lack of processing, and farm-to-table connection through rustic visual codes.",
+      "high_score_indicators": [
+        "Earth tones (Beige, Brown, Forest Green)",
+        "Images of raw oat stalks/fields",
+        "Cardboard/Kraft textures",
+        "Simple 'Nature' claims"
+      ]
+    }
+  ],
+  "points_of_parity": [
+    {
+      "pop_id": "organic_cert",
+      "pop_name": "Organic Certified (Bio)",
+      "pop_type": "certification",
+      "description": "Presence of AB (Agriculture Biologique) or EU Leaf logo."
+    },
+    {
+      "pop_id": "no_added_sugar",
+      "pop_name": "No Added Sugar",
+      "pop_type": "nutritional_claim",
+      "description": "Explicit claim regarding absence of added sugars."
+    },
+    {
+      "pop_id": "vegan_claim",
+      "pop_name": "Vegan / Plant-Based",
+      "pop_type": "category_attribute",
+      "description": "Explicit text stating '100% Végétal', 'Vegan', or 'Plant-Based'."
+    },
+    {
+      "pop_id": "origin_claim",
+      "pop_name": "Local/European Origin",
+      "pop_type": "origin_claim",
+      "description": "Claims highlighting French, European, or specific country of manufacture/oat origin."
+    },
+    {
+      "pop_id": "nutri_score",
+      "pop_name": "Nutri-Score Label",
+      "pop_type": "nutritional_claim",
+      "description": "Visual presence of the official Nutri-Score grading system (A-E)."
+    }
+  ],
+  "products": [
+    {
+      "brand": "Bjorg",
+      "product_name": "Boisson végétale avoine 1L",
+      "image_path": "output/images/lait_davoine_20260120_184854/01_bjorg_8ec5db.png",
+      "pod_scores": [
+        {
+          "axis_id": "visual_boldness",
+          "score": 3,
+          "reasoning": "Standard corporate design, highly structured layout with safe F-pattern."
+        },
+        {
+          "axis_id": "functional_health",
+          "score": 9,
+          "reasoning": "Heavy emphasis on nutrient claims and nutritional scores."
+        },
+        {
+          "axis_id": "eco_ethics",
+          "score": 9,
+          "reasoning": "Planet-score A, renewable resource cap claims prominently displayed."
+        },
+        {
+          "axis_id": "artisanal_craft",
+          "score": 3,
+          "reasoning": "Mass-market finish, photorealistic but commercial illustration style."
+        },
+        {
+          "axis_id": "natural_simplicity",
+          "score": 5,
+          "reasoning": "Uses green/oat colors but feels industrial rather than rustic."
+        }
+      ],
+      "pop_status": [
+        {
+          "pop_id": "organic_cert",
+          "has_attribute": true,
+          "evidence": "BIO AB, CERTIFIÉ AGRICULTURE BIOLOGIQUE"
+        },
+        {
+          "pop_id": "no_added_sugar",
+          "has_attribute": false,
+          "evidence": "Claim not present in input list"
+        },
+        {
+          "pop_id": "vegan_claim",
+          "has_attribute": true,
+          "evidence": "100% VÉGÉTAL"
+        },
+        {
+          "pop_id": "origin_claim",
+          "has_attribute": false,
+          "evidence": "Not emphasized in top claims"
+        },
+        {
+          "pop_id": "nutri_score",
+          "has_attribute": false,
+          "evidence": "Planet-score present, Nutri-score not listed in input"
+        }
+      ],
+      "positioning_summary": "The functional category leader prioritizing nutritional and environmental metrics.",
+      "key_differentiator": "Planet-score A integration"
+    },
+    {
+      "brand": "Alpro",
+      "product_name": "Boisson végétale avoine onctueuse",
+      "image_path": "output/images/lait_davoine_20260120_184854/02_alpro_c04a16.jpg",
+      "pod_scores": [
+        {
+          "axis_id": "visual_boldness",
+          "score": 6,
+          "reasoning": "Bright, contrasting colors (Blue/Yellow) stand out from earthy competitors."
+        },
+        {
+          "axis_id": "functional_health",
+          "score": 8,
+          "reasoning": "Focus on '5 Essential Nutrients' and vitamin enrichment."
+        },
+        {
+          "axis_id": "eco_ethics",
+          "score": 4,
+          "reasoning": "Standard European oat claim, less focus on eco-metrics than others."
+        },
+        {
+          "axis_id": "artisanal_craft",
+          "score": 4,
+          "reasoning": "Polished commercial look, focused on 'Smooth/Onctueuse' taste profile."
+        },
+        {
+          "axis_id": "natural_simplicity",
+          "score": 5,
+          "reasoning": "Illustration style is clean but distinctively mass-market branding."
+        }
+      ],
+      "pop_status": [
+        {
+          "pop_id": "organic_cert",
+          "has_attribute": false,
+          "evidence": "No AB logo listed in input"
+        },
+        {
+          "pop_id": "no_added_sugar",
+          "has_attribute": false,
+          "evidence": "Not listed in claims"
+        },
+        {
+          "pop_id": "vegan_claim",
+          "has_attribute": true,
+          "evidence": "100% VÉGÉTAL, SANS LACTOSE"
+        },
+        {
+          "pop_id": "origin_claim",
+          "has_attribute": true,
+          "evidence": "FABRIQUÉ EN FRANCE, Avoine européenne"
+        },
+        {
+          "pop_id": "nutri_score",
+          "has_attribute": false,
+          "evidence": "Not present"
+        }
+      ],
+      "positioning_summary": "A taste-driven, mainstream fortified option focusing on texture and enrichment.",
+      "key_differentiator": "Nutrient fortification (5 essential nutrients)"
+    },
+    {
+      "brand": "Carrefour Bio",
+      "product_name": "Boisson Végétale Avoine Bio 1L",
+      "image_path": "output/images/lait_davoine_20260120_184854/03_carrefour-bio_e86fde.jpg",
+      "pod_scores": [
+        {
+          "axis_id": "visual_boldness",
+          "score": 2,
+          "reasoning": "Generic private label aesthetic, very safe analogous color harmony."
+        },
+        {
+          "axis_id": "functional_health",
+          "score": 7,
+          "reasoning": "Nutri-Score A and 'Sans sucres ajoutés' are the heroes."
+        },
+        {
+          "axis_id": "eco_ethics",
+          "score": 6,
+          "reasoning": "Standard Bio certification, no extra eco-claims."
+        },
+        {
+          "axis_id": "artisanal_craft",
+          "score": 2,
+          "reasoning": "Photographic product shot is functional, not atmospheric."
+        },
+        {
+          "axis_id": "natural_simplicity",
+          "score": 7,
+          "reasoning": "Earth tones and textured background clearly signal 'basic organic'."
+        }
+      ],
+      "pop_status": [
+        {
+          "pop_id": "organic_cert",
+          "has_attribute": true,
+          "evidence": "CERTIFIÉ AB"
+        },
+        {
+          "pop_id": "no_added_sugar",
+          "has_attribute": true,
+          "evidence": "Sans sucres ajoutés"
+        },
+        {
+          "pop_id": "vegan_claim",
+          "has_attribute": true,
+          "evidence": "VEGAN"
+        },
+        {
+          "pop_id": "origin_claim",
+          "has_attribute": false,
+          "evidence": "Not specified"
+        },
+        {
+          "pop_id": "nutri_score",
+          "has_attribute": true,
+          "evidence": "NUTRI-SCORE A"
+        }
+      ],
+      "positioning_summary": "An accessible, no-nonsense organic staple emphasizing nutritional value.",
+      "key_differentiator": "Nutri-Score A prominence"
+    },
+    {
+      "brand": "Oatly",
+      "product_name": "Boisson à l’avoine (Oat Drink) 1L",
+      "image_path": "output/images/lait_davoine_20260120_184854/05_oatly_8a6a81.png",
+      "pod_scores": [
+        {
+          "axis_id": "visual_boldness",
+          "score": 9,
+          "reasoning": "Custom hand-drawn typography and conversational copy are highly distinct."
+        },
+        {
+          "axis_id": "functional_health",
+          "score": 2,
+          "reasoning": "Minimal health claims, focuses on lifestyle and dietary exclusion (No milk/soy)."
+        },
+        {
+          "axis_id": "eco_ethics",
+          "score": 7,
+          "reasoning": "Narrative-driven sustainability rather than badge-driven."
+        },
+        {
+          "axis_id": "artisanal_craft",
+          "score": 8,
+          "reasoning": "Hand-made aesthetic suggests craft over industry."
+        },
+        {
+          "axis_id": "natural_simplicity",
+          "score": 6,
+          "reasoning": "Muted colors and simple illustrations, but feels 'urban' rather than 'farm'."
+        }
+      ],
+      "pop_status": [
+        {
+          "pop_id": "organic_cert",
+          "has_attribute": false,
+          "evidence": "Input lists 'Totally vegan' but no Bio/Organic claim"
+        },
+        {
+          "pop_id": "no_added_sugar",
+          "has_attribute": false,
+          "evidence": "Not listed in claims"
+        },
+        {
+          "pop_id": "vegan_claim",
+          "has_attribute": true,
+          "evidence": "Totally vegan"
+        },
+        {
+          "pop_id": "origin_claim",
+          "has_attribute": false,
+          "evidence": "Not listed"
+        },
+        {
+          "pop_id": "nutri_score",
+          "has_attribute": false,
+          "evidence": "Not present"
+        }
+      ],
+      "positioning_summary": "The lifestyle brand defining the category through conversational, anti-corporate design.",
+      "key_differentiator": "Conversational Brand Voice"
+    },
+    {
+      "brand": "Bonneterre",
+      "product_name": "Bonneterre Avoine Nature 1L",
+      "image_path": "output/images/lait_davoine_20260120_184854/07_bonneterre_e89b96.jpg",
+      "pod_scores": [
+        {
+          "axis_id": "visual_boldness",
+          "score": 3,
+          "reasoning": "Traditional organic aesthetic, safe analogous colors."
+        },
+        {
+          "axis_id": "functional_health",
+          "score": 5,
+          "reasoning": "Standard claims (Low sat fat), but not the primary visual driver."
+        },
+        {
+          "axis_id": "eco_ethics",
+          "score": 10,
+          "reasoning": "Claims 'Biodiversity', 'Fair Trade', and 'Biopartenaire' take center stage."
+        },
+        {
+          "axis_id": "artisanal_craft",
+          "score": 4,
+          "reasoning": "Classic product photography, quality but conventional."
+        },
+        {
+          "axis_id": "natural_simplicity",
+          "score": 9,
+          "reasoning": "Oat field backgrounds and deep greens heavily emphasize agricultural origin."
+        }
+      ],
+      "pop_status": [
+        {
+          "pop_id": "organic_cert",
+          "has_attribute": true,
+          "evidence": "Certifié AB, Biopartenaire"
+        },
+        {
+          "pop_id": "no_added_sugar",
+          "has_attribute": true,
+          "evidence": "Sans sucres ajoutés"
+        },
+        {
+          "pop_id": "vegan_claim",
+          "has_attribute": true,
+          "evidence": "100% végétal"
+        },
+        {
+          "pop_id": "origin_claim",
+          "has_attribute": true,
+          "evidence": "Avoine Française, Fabriqué en Italie"
+        },
+        {
+          "pop_id": "nutri_score",
+          "has_attribute": false,
+          "evidence": "Not present"
+        }
+      ],
+      "positioning_summary": "Premium organic specialist focused on biodiversity and fair trade sourcing.",
+      "key_differentiator": "Biodiversity & Fair Trade Commitments"
+    },
+    {
+      "brand": "Isola Bio",
+      "product_name": "Oat Original Drink",
+      "image_path": "output/images/lait_davoine_20260120_184854/08_isola-bio_98e0ea.png",
+      "pod_scores": [
+        {
+          "axis_id": "visual_boldness",
+          "score": 5,
+          "reasoning": "Distinctive cardboard texture background stands out, but layout is standard."
+        },
+        {
+          "axis_id": "functional_health",
+          "score": 6,
+          "reasoning": "Clear 'No Added Sugars' and 'Plant Based' messaging."
+        },
+        {
+          "axis_id": "eco_ethics",
+          "score": 7,
+          "reasoning": "FSC logo and renewable pack claims are prominent."
+        },
+        {
+          "axis_id": "artisanal_craft",
+          "score": 6,
+          "reasoning": "Script text 'From our lands' and illustration style adds a craft touch."
+        },
+        {
+          "axis_id": "natural_simplicity",
+          "score": 10,
+          "reasoning": "Cardboard texture and 100% natural ingredients claim drive this axis."
+        }
+      ],
+      "pop_status": [
+        {
+          "pop_id": "organic_cert",
+          "has_attribute": true,
+          "evidence": "organic, EU Organic Logo"
+        },
+        {
+          "pop_id": "no_added_sugar",
+          "has_attribute": true,
+          "evidence": "WITH NO ADDED SUGARS"
+        },
+        {
+          "pop_id": "vegan_claim",
+          "has_attribute": true,
+          "evidence": "PLANT BASED"
+        },
+        {
+          "pop_id": "origin_claim",
+          "has_attribute": true,
+          "evidence": "MADE IN ITALY"
+        },
+        {
+          "pop_id": "nutri_score",
+          "has_attribute": false,
+          "evidence": "Not present"
+        }
+      ],
+      "positioning_summary": "Authentic Italian organic option emphasizing raw materials and simple processing.",
+      "key_differentiator": "Cardboard/Natural Aesthetic"
+    },
+    {
+      "brand": "Minor Figures",
+      "product_name": "Minor Figures Barista Oat",
+      "image_path": "output/images/lait_davoine_20260120_184854/14_minor-figures_52d2a5.png",
+      "pod_scores": [
+        {
+          "axis_id": "visual_boldness",
+          "score": 10,
+          "reasoning": "Duck costume illustration and lack of claims is radically different from category."
+        },
+        {
+          "axis_id": "functional_health",
+          "score": 1,
+          "reasoning": "Almost zero health claims visible on front."
+        },
+        {
+          "axis_id": "eco_ethics",
+          "score": 4,
+          "reasoning": "Minimal explicit eco-badging compared to Bjorg/Bonneterre."
+        },
+        {
+          "axis_id": "artisanal_craft",
+          "score": 9,
+          "reasoning": "Positioned explicitly for coffee/barista culture via illustration."
+        },
+        {
+          "axis_id": "natural_simplicity",
+          "score": 4,
+          "reasoning": "Cool colors and stark graphics feel urban, not agricultural."
+        }
+      ],
+      "pop_status": [
+        {
+          "pop_id": "organic_cert",
+          "has_attribute": false,
+          "evidence": "Not listed"
+        },
+        {
+          "pop_id": "no_added_sugar",
+          "has_attribute": false,
+          "evidence": "Not listed"
+        },
+        {
+          "pop_id": "vegan_claim",
+          "has_attribute": false,
+          "evidence": "Not explicit on front"
+        },
+        {
+          "pop_id": "origin_claim",
+          "has_attribute": false,
+          "evidence": "Not listed"
+        },
+        {
+          "pop_id": "nutri_score",
+          "has_attribute": false,
+          "evidence": "Not present"
+        }
+      ],
+      "positioning_summary": "The ultra-cool barista choice that rejects traditional category coding.",
+      "key_differentiator": "Character-led Illustration & Minimalism"
+    },
+    {
+      "brand": "Califia Farms",
+      "product_name": "Oat Barista Blend",
+      "image_path": "output/images/lait_davoine_20260120_184854/22_califia-farms_59852d.jpg",
+      "pod_scores": [
+        {
+          "axis_id": "visual_boldness",
+          "score": 7,
+          "reasoning": "Strong typography and bottle shape, but restricted color palette."
+        },
+        {
+          "axis_id": "functional_health",
+          "score": 4,
+          "reasoning": "No Added Sugar claim, but primary focus is performance."
+        },
+        {
+          "axis_id": "eco_ethics",
+          "score": 3,
+          "reasoning": "Less focus on eco-certifications on the front panel."
+        },
+        {
+          "axis_id": "artisanal_craft",
+          "score": 10,
+          "reasoning": "Dedicated entirely to 'Barista Choice', steaming, and foaming performance."
+        },
+        {
+          "axis_id": "natural_simplicity",
+          "score": 5,
+          "reasoning": "Linocut botanicals suggest nature, but the overall vibe is professional/industrial."
+        }
+      ],
+      "pop_status": [
+        {
+          "pop_id": "organic_cert",
+          "has_attribute": false,
+          "evidence": "Not listed"
+        },
+        {
+          "pop_id": "no_added_sugar",
+          "has_attribute": true,
+          "evidence": "NO ADDED SUGAR"
+        },
+        {
+          "pop_id": "vegan_claim",
+          "has_attribute": false,
+          "evidence": "Not explicitly listed on front"
+        },
+        {
+          "pop_id": "origin_claim",
+          "has_attribute": false,
+          "evidence": "Not listed"
+        },
+        {
+          "pop_id": "nutri_score",
+          "has_attribute": false,
+          "evidence": "Not present"
+        }
+      ],
+      "positioning_summary": "Premium professional tool for coffee lovers emphasizing product performance.",
+      "key_differentiator": "Barista Performance Claims"
+    },
+    {
+      "brand": "La Mandorle",
+      "product_name": "La Mandorle Boisson Avoine 240g",
+      "image_path": "output/images/lait_davoine_20260120_184854/21_la-mandorle_f4e589.jpg",
+      "pod_scores": [
+        {
+          "axis_id": "visual_boldness",
+          "score": 4,
+          "reasoning": "Busy layout, functional rather than aesthetic focus."
+        },
+        {
+          "axis_id": "functional_health",
+          "score": 10,
+          "reasoning": "Highly specific claims: Gluten-free, Phosphorus source, Fiber rich, 0% residues."
+        },
+        {
+          "axis_id": "eco_ethics",
+          "score": 8,
+          "reasoning": "Planet Score A and strong 'Anti-gaspi' (powder format) message."
+        },
+        {
+          "axis_id": "artisanal_craft",
+          "score": 5,
+          "reasoning": "Heritage ('Depuis 1989') adds some craft credibility."
+        },
+        {
+          "axis_id": "natural_simplicity",
+          "score": 6,
+          "reasoning": "Natural colors, but the powder format implies processing."
+        }
+      ],
+      "pop_status": [
+        {
+          "pop_id": "organic_cert",
+          "has_attribute": true,
+          "evidence": "AB AGRICULTURE BIOLOGIQUE"
+        },
+        {
+          "pop_id": "no_added_sugar",
+          "has_attribute": true,
+          "evidence": "SANS SUCRES AJOUTÉS"
+        },
+        {
+          "pop_id": "vegan_claim",
+          "has_attribute": false,
+          "evidence": "0% lactose listed, not specific 'vegan' text"
+        },
+        {
+          "pop_id": "origin_claim",
+          "has_attribute": true,
+          "evidence": "FABRICATION FRANÇAISE"
+        },
+        {
+          "pop_id": "nutri_score",
+          "has_attribute": false,
+          "evidence": "Planet Score present"
+        }
+      ],
+      "positioning_summary": "A specialized, high-nutrition powder concentrate focusing on health and waste reduction.",
+      "key_differentiator": "Powder Format (Concentrate)"
+    },
+    {
+      "brand": "Andros Gourmand & Végétal",
+      "product_name": "Douceur orange banane fraise à l'avoine",
+      "image_path": "output/images/lait_davoine_20260120_184854/19_andros-gourmand-vege_03a832.jpg",
+      "pod_scores": [
+        {
+          "axis_id": "visual_boldness",
+          "score": 7,
+          "reasoning": "Bright teal and red palette is energetic and distinct from the beige/green norm."
+        },
+        {
+          "axis_id": "functional_health",
+          "score": 3,
+          "reasoning": "Focus is on pleasure ('Gourmand', 'Douceur') despite 'No added sugar'."
+        },
+        {
+          "axis_id": "eco_ethics",
+          "score": 4,
+          "reasoning": "Triman info only, lacks major eco-differentiation on front."
+        },
+        {
+          "axis_id": "artisanal_craft",
+          "score": 5,
+          "reasoning": "Handwritten fonts suggest care, but brand is a major industrial player."
+        },
+        {
+          "axis_id": "natural_simplicity",
+          "score": 4,
+          "reasoning": "Fruit doodling and bright colors feel more 'snack' than 'raw ingredient'."
+        }
+      ],
+      "pop_status": [
+        {
+          "pop_id": "organic_cert",
+          "has_attribute": false,
+          "evidence": "Not listed"
+        },
+        {
+          "pop_id": "no_added_sugar",
+          "has_attribute": true,
+          "evidence": "Sans sucres ajoutés"
+        },
+        {
+          "pop_id": "vegan_claim",
+          "has_attribute": true,
+          "evidence": "100% Végétale, Vegan"
+        },
+        {
+          "pop_id": "origin_claim",
+          "has_attribute": true,
+          "evidence": "Entreprise Familiale Française"
+        },
+        {
+          "pop_id": "nutri_score",
+          "has_attribute": false,
+          "evidence": "Not present"
+        }
+      ],
+      "positioning_summary": "A dessert-inspired, fruit-blended indulgence focusing on taste over function.",
+      "key_differentiator": "Fruit Blends & Indulgence Positioning"
+    },
+    {
+      "brand": "Bio Village (Marque Repère)",
+      "product_name": "Boisson avoine sans sucres ajoutés bio",
+      "image_path": "output/images/lait_davoine_20260120_184854/04_bio-village-marque-r_a0bd71.jpg",
+      "pod_scores": [
+        {
+          "axis_id": "visual_boldness",
+          "score": 3,
+          "reasoning": "Standard retailer private label design, clean but generic."
+        },
+        {
+          "axis_id": "functional_health",
+          "score": 7,
+          "reasoning": "Nutri-Score B and 'Pauvre en acides gras' clearly displayed."
+        },
+        {
+          "axis_id": "eco_ethics",
+          "score": 6,
+          "reasoning": "Strong Bio branding and French conditionning claim."
+        },
+        {
+          "axis_id": "artisanal_craft",
+          "score": 3,
+          "reasoning": "Wooden mat imagery attempts rustic feel, but effect is staged."
+        },
+        {
+          "axis_id": "natural_simplicity",
+          "score": 8,
+          "reasoning": "Dominance of greens/browns and raw oats visualization."
+        }
+      ],
+      "pop_status": [
+        {
+          "pop_id": "organic_cert",
+          "has_attribute": true,
+          "evidence": "Bio, AB Label"
+        },
+        {
+          "pop_id": "no_added_sugar",
+          "has_attribute": true,
+          "evidence": "Sans sucres ajoutés"
+        },
+        {
+          "pop_id": "vegan_claim",
+          "has_attribute": false,
+          "evidence": "Not explicit in claim list"
+        },
+        {
+          "pop_id": "origin_claim",
+          "has_attribute": true,
+          "evidence": "Origine Avoine - Europe, Conditionné en France"
+        },
+        {
+          "pop_id": "nutri_score",
+          "has_attribute": true,
+          "evidence": "Nutri-Score B"
+        }
+      ],
+      "positioning_summary": "Trustworthy, budget-friendly private label offering standard organic guarantees.",
+      "key_differentiator": "Marque Repère Trust Assurance"
+    },
+    {
+      "brand": "Rude Health",
+      "product_name": "Oat Drink",
+      "image_path": "output/images/lait_davoine_20260120_184854/23_rude-health_e39adc.png",
+      "pod_scores": [
+        {
+          "axis_id": "visual_boldness",
+          "score": 9,
+          "reasoning": "Open mouth illustration and 'UP FOR ANYTHING' copy are high energy."
+        },
+        {
+          "axis_id": "functional_health",
+          "score": 4,
+          "reasoning": "Claims present but subordinated to the bold visual brand."
+        },
+        {
+          "axis_id": "eco_ethics",
+          "score": 5,
+          "reasoning": "Organic status is clear, but not the primary narrative driver."
+        },
+        {
+          "axis_id": "artisanal_craft",
+          "score": 6,
+          "reasoning": "'Great Taste Award' badge signals culinary quality."
+        },
+        {
+          "axis_id": "natural_simplicity",
+          "score": 5,
+          "reasoning": "Vibrant pop-art colors contrast with '100% natural' messaging."
+        }
+      ],
+      "pop_status": [
+        {
+          "pop_id": "organic_cert",
+          "has_attribute": true,
+          "evidence": "Organic"
+        },
+        {
+          "pop_id": "no_added_sugar",
+          "has_attribute": true,
+          "evidence": "NO ADDED SUGAR"
+        },
+        {
+          "pop_id": "vegan_claim",
+          "has_attribute": false,
+          "evidence": "Not explicit in claim list"
+        },
+        {
+          "pop_id": "origin_claim",
+          "has_attribute": false,
+          "evidence": "Not listed"
+        },
+        {
+          "pop_id": "nutri_score",
+          "has_attribute": false,
+          "evidence": "Not present"
+        }
+      ],
+      "positioning_summary": "A vibrant, taste-led brand celebrating enjoyment and versatility.",
+      "key_differentiator": "High Energy Pop-Art Visuals"
+    },
+    {
+      "brand": "Biocoop",
+      "product_name": "Boisson avoine 1L",
+      "image_path": "output/images/lait_davoine_20260120_184854/25_biocoop_681472.jpeg",
+      "pod_scores": [
+        {
+          "axis_id": "visual_boldness",
+          "score": 4,
+          "reasoning": "Structured, trustworthy retailer branding with deep blue."
+        },
+        {
+          "axis_id": "functional_health",
+          "score": 8,
+          "reasoning": "Nutri-Score A prominently displayed."
+        },
+        {
+          "axis_id": "eco_ethics",
+          "score": 10,
+          "reasoning": "Planet-Score A, Bio Équitable, Origin'Info - very heavy on ethics."
+        },
+        {
+          "axis_id": "artisanal_craft",
+          "score": 3,
+          "reasoning": "Clean vector illustrations feel modern but corporate."
+        },
+        {
+          "axis_id": "natural_simplicity",
+          "score": 6,
+          "reasoning": "Deep blues and greens feel natural but controlled."
+        }
+      ],
+      "pop_status": [
+        {
+          "pop_id": "organic_cert",
+          "has_attribute": true,
+          "evidence": "AB, Bio Équitable"
+        },
+        {
+          "pop_id": "no_added_sugar",
+          "has_attribute": false,
+          "evidence": "Not listed in claims"
+        },
+        {
+          "pop_id": "vegan_claim",
+          "has_attribute": false,
+          "evidence": "Not explicit"
+        },
+        {
+          "pop_id": "origin_claim",
+          "has_attribute": true,
+          "evidence": "Avoine France, Bio Équitable en France"
+        },
+        {
+          "pop_id": "nutri_score",
+          "has_attribute": true,
+          "evidence": "Nutri-Score A"
+        }
+      ],
+      "positioning_summary": "The militant ethical choice combining fair trade, organic, and eco-scoring.",
+      "key_differentiator": "'Bio Équitable en France' Certification"
+    },
+    {
+      "brand": "Ecomil",
+      "product_name": "Boisson à l’avoine sans sucres ajoutés Bio",
+      "image_path": "output/images/lait_davoine_20260120_184854/26_ecomil_6c855b.png",
+      "pod_scores": [
+        {
+          "axis_id": "visual_boldness",
+          "score": 8,
+          "reasoning": "Oat grain character wearing sunglasses creates a distinct playful personality."
+        },
+        {
+          "axis_id": "functional_health",
+          "score": 6,
+          "reasoning": "Clear 'No Added Sugars' and '16% Oat' concentration claims."
+        },
+        {
+          "axis_id": "eco_ethics",
+          "score": 6,
+          "reasoning": "Bio-Organic and EU Oat claims."
+        },
+        {
+          "axis_id": "artisanal_craft",
+          "score": 5,
+          "reasoning": "Handwritten fonts suggest small-batch/artisanal feel."
+        },
+        {
+          "axis_id": "natural_simplicity",
+          "score": 7,
+          "reasoning": "Earthy beige/brown palette grounds the playful illustration."
+        }
+      ],
+      "pop_status": [
+        {
+          "pop_id": "organic_cert",
+          "has_attribute": true,
+          "evidence": "BIO-ORGANIC"
+        },
+        {
+          "pop_id": "no_added_sugar",
+          "has_attribute": true,
+          "evidence": "No Added Sugars"
+        },
+        {
+          "pop_id": "vegan_claim",
+          "has_attribute": false,
+          "evidence": "Not explicit"
+        },
+        {
+          "pop_id": "origin_claim",
+          "has_attribute": true,
+          "evidence": "MADE IN SPAIN"
+        },
+        {
+          "pop_id": "nutri_score",
+          "has_attribute": false,
+          "evidence": "Not present"
+        }
+      ],
+      "positioning_summary": "A playful, high-concentration oat drink with sunny Mediterranean origins.",
+      "key_differentiator": "High Oat Content (16%) & Character Mascot"
+    }
+  ],
+  "strategic_insights": [
+    {
+      "insight_type": "competitive_landscape",
+      "title": "The 'Barista' Bifurcation",
+      "description": "The category has split into two distinct visual worlds: 'Functional Breakfast' (Private Labels, Bjorg) utilizing medical/agricultural codes, and 'Lifestyle Coffee' (Oatly, Minor Figures, Califia) using bold, minimalist, and non-food aesthetic codes. This suggests different usage occasions (pouring on cereal vs. frothing for coffee) are driving design strategy.",
+      "affected_brands": [
+        "Oatly",
+        "Minor Figures",
+        "Califia Farms",
+        "Bjorg",
+        "Carrefour Bio"
+      ]
+    },
+    {
+      "insight_type": "differentiation_opportunity",
+      "title": "Eco-Scoring as the New Standard",
+      "description": "While 'Bio/Organic' is a Point-of-Parity (saturated market), 'Planet-Score' and 'Bio Équitable' are emerging as the new premium differentiators. Brands like Bjorg, La Mandorle, and Biocoop are leveraging these to signal superior ethics beyond simple ingredient purity.",
+      "affected_brands": [
+        "Biocoop",
+        "Bjorg",
+        "La Mandorle",
+        "Bonneterre"
+      ]
+    },
+    {
+      "insight_type": "visual_trend",
+      "title": "Visual Homogeneity in Private Labels",
+      "description": "Retailer brands (Carrefour, U Bio, Auchan, Casino) rely heavily on a generic 'Earth Tone' palette (Greens, Beiges, Browns) to signal organic. This creates a 'sea of sameness' on the shelf, making it difficult for consumers to distinguish between retailer offerings without reading the logo.",
+      "affected_brands": [
+        "Carrefour Bio",
+        "U Bio",
+        "Auchan Bio",
+        "Casino Bio",
+        "Bio Village"
+      ]
+    },
+    {
+      "insight_type": "positioning_gap",
+      "title": "The 'No Sugar' Baseline",
+      "description": "The 'No Added Sugar' claim has transitioned from a differentiator to a Point-of-Parity. Almost all analyzed functional brands highlight this. Brands not making this claim explicit (even if true) risk losing health-conscious consumers who now expect it as a default.",
+      "affected_brands": [
+        "Alpro",
+        "Oatly",
+        "Minor Figures"
+      ]
+    }
+  ],
+  "category_summary": "The Oat Milk category is highly crowded and polarized between functional, earth-toned organic staples and bold, minimalist lifestyle brands targeting coffee culture. While organic certification and 'no sugar' claims have become baseline expectations, brands are now differentiating through specific 'Barista' performance claims or deeper ethical commitments like biodiversity and planet-scores."
+}

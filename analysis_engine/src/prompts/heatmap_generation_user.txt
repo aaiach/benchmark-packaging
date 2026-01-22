@@ -1,0 +1,26 @@
+Génère un Eye-Tracking Gaze Plot overlay sur ce packaging: {brand} - {product_name}
+
+## Données de hiérarchie visuelle (utilise pour positionner les points de fixation)
+
+**Ancre visuelle principale (Point de fixation #1):**
+{visual_anchor}
+
+**Éléments par ordre de poids visuel décroissant:**
+{elements_hierarchy}
+
+**Parcours oculaire détecté ({eye_pattern}):**
+- Point d'entrée: {entry_point}
+- Séquence de fixations: {fixation_sequence}
+- Point de sortie: {exit_point}
+- Zones de fixation prolongée (cercles plus grands): {dwell_zones}
+
+## Instructions de génération
+
+1. Place les cercles de fixation aux emplacements des éléments listés ci-dessus
+2. Numérote chaque cercle (1, 2, 3...) selon l'ordre de la séquence de fixations
+3. Ajuste la TAILLE des cercles selon la durée de fixation:
+   - Grands cercles pour les zones de fixation prolongée (dwell_zones)
+   - Cercles moyens pour les éléments importants
+   - Petits cercles pour les éléments secondaires
+4. Relie les cercles par des lignes (saccades) dans l'ordre chronologique
+5. GARDE LE STYLE DISCRET: blanc/transparent, pas de couleurs vives
