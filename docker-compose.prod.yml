@@ -1,8 +1,11 @@
 # =============================================================================
-# Docker Compose - Development Configuration
+# Docker Compose - Production Configuration
 # =============================================================================
+# Domain: packaging-benchmark.tryiceberg.ai
+# Flower: flower-packaging-benchmark.tryiceberg.ai
+#
 # Usage:
-#   docker compose up -d --build
+#   docker compose -f docker-compose.prod.yml up -d --build
 #
 # Environment:
 #   Copy .env.example to .env and fill in the values before running
@@ -14,18 +17,19 @@ services:
   # ---------------------------------------------------------------------------
   redis:
     image: redis:7-alpine
-    container_name: leadgen_redis
-    ports:
-      - "6379:6379"
+    container_name: leadgen_redis_prod
+    restart: unless-stopped
+    command: redis-server --appendonly no --maxmemory 256mb --maxmemory-policy allkeys-lru
     volumes:
       - redis_data:/data
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
-      interval: 5s
-      timeout: 3s
+      interval: 10s
+      timeout: 5s
       retries: 5
+      start_period: 5s
     networks:
-      - leadgen
+      - leadgen_prod
 
   # ---------------------------------------------------------------------------
   # Flask API - REST endpoints for frontend and job management
@@ -34,30 +38,30 @@ services:
     build:
       context: .
       dockerfile: docker/api.Dockerfile
-      target: dev
-    container_name: leadgen_api
+      target: prod
+    container_name: leadgen_api_prod
+    restart: unless-stopped
     ports:
-      - "5000:5000"
+      - "127.0.0.1:5002:5000"
     env_file:
       - .env
     environment:
+      - FLASK_ENV=production
+      - FLASK_DEBUG=0
       - FLASK_APP=src.app:create_app
-      - FLASK_ENV=development
-      - FLASK_DEBUG=1
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/1
       - OUTPUT_DIR=/app/data/output
-      - CORS_ORIGINS=*
+      # CORS settings for production
+      - CORS_ORIGINS=https://packaging-benchmark.tryiceberg.ai
+      # API keys are loaded from .env file
     volumes:
-      - ./api:/app/api
-      - ./analysis_engine:/app/analysis_engine
-      - ./data:/app/data
+      - app_data:/app/data
     depends_on:
       redis:
         condition: service_healthy
-    command: flask run --host=0.0.0.0 --port=5000 --reload
     networks:
-      - leadgen
+      - leadgen_prod
 
   # ---------------------------------------------------------------------------
   # Celery Worker - Executes scraper jobs asynchronously
@@ -66,81 +70,86 @@ services:
     build:
       context: .
       dockerfile: docker/worker.Dockerfile
-      target: dev
-    container_name: leadgen_worker
+      target: prod
+    container_name: leadgen_worker_prod
+    restart: unless-stopped
     env_file:
       - .env
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/1
       - OUTPUT_DIR=/app/data/output
+      # API keys are loaded from .env file
     volumes:
-      - ./api:/app/api
-      - ./analysis_engine:/app/analysis_engine
-      - ./data:/app/data
+      - app_data:/app/data
     depends_on:
       redis:
         condition: service_healthy
-    command: celery -A api.celery_app worker --loglevel=info --concurrency=2
+      api:
+        condition: service_healthy
     networks:
-      - leadgen
+      - leadgen_prod
 
   # ---------------------------------------------------------------------------
   # Flower - Celery monitoring UI
+  # Domain: flower-packaging-benchmark.tryiceberg.ai
   # ---------------------------------------------------------------------------
   flower:
     build:
       context: .
       dockerfile: docker/worker.Dockerfile
-      target: dev
-    container_name: leadgen_flower
+      target: prod
+    container_name: leadgen_flower_prod
+    restart: unless-stopped
     ports:
-      - "5555:5555"
+      - "127.0.0.1:5556:5555"
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/1
+      # Basic auth for Flower (set in .env)
+      - FLOWER_BASIC_AUTH=${FLOWER_BASIC_AUTH:-}
     depends_on:
       redis:
         condition: service_healthy
-    command: celery -A api.celery_app flower --port=5555
+    command: celery -A api.celery_app flower --port=5555 --url_prefix=
     networks:
-      - leadgen
+      - leadgen_prod
 
   # ---------------------------------------------------------------------------
-  # Frontend - React with Vite dev server (hot reload)
+  # Frontend - React SPA served by Nginx
+  # Domain: packaging-benchmark.tryiceberg.ai
   # ---------------------------------------------------------------------------
   frontend:
     build:
       context: ./frontend
       dockerfile: ../docker/frontend.Dockerfile
-      target: dev
-    container_name: leadgen_frontend
+      target: prod
+      args:
+        # API URL without /api suffix - the client adds it
+        - VITE_API_URL=https://packaging-benchmark.tryiceberg.ai
+    container_name: leadgen_frontend_prod
+    restart: unless-stopped
     ports:
-      - "5173:5173"
-    environment:
-      - VITE_API_URL=http://localhost:5000
-    volumes:
-      - ./frontend/src:/app/src
-      - ./frontend/public:/app/public
-      - ./frontend/index.html:/app/index.html
-      - ./frontend/vite.config.ts:/app/vite.config.ts
-      - ./frontend/tsconfig.json:/app/tsconfig.json
-      - ./frontend/tsconfig.app.json:/app/tsconfig.app.json
-      - ./frontend/tsconfig.node.json:/app/tsconfig.node.json
-      - ./frontend/postcss.config.js:/app/postcss.config.js
-    command: npm run dev -- --host 0.0.0.0
+      - "127.0.0.1:3002:80"
+    depends_on:
+      api:
+        condition: service_healthy
     networks:
-      - leadgen
+      - leadgen_prod
 
 # =============================================================================
 # Volumes
 # =============================================================================
 volumes:
   redis_data:
+    name: leadgen_redis_data_prod
+  app_data:
+    name: leadgen_app_data_prod
 
 # =============================================================================
 # Networks
 # =============================================================================
 networks:
-  leadgen:
+  leadgen_prod:
+    name: leadgen_prod
     driver: bridge

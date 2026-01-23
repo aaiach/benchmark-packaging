@@ -1,0 +1,104 @@
+# =============================================================================
+# Nginx Reverse Proxy Configuration - Production
+# =============================================================================
+# This is an EXAMPLE configuration for your external Nginx reverse proxy.
+# Adjust paths and settings according to your server setup.
+#
+# Domains:
+#   - packaging-benchmark.tryiceberg.ai (main app)
+#   - flower-packaging-benchmark.tryiceberg.ai (Celery monitoring)
+#
+# SSL: Handled by Cloudflare (Flexible mode)
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Main Application - packaging-benchmark.tryiceberg.ai
+# -----------------------------------------------------------------------------
+server {
+    listen 80;
+    server_name packaging-benchmark.tryiceberg.ai;
+
+    # Security headers (Cloudflare handles SSL, so these apply to HTTP)
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+
+    # Max upload size (for any file uploads)
+    client_max_body_size 50M;
+
+    # Frontend - React SPA
+    location / {
+        proxy_pass http://127.0.0.1:3002;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        
+        # WebSocket support (for HMR in dev, not needed in prod but harmless)
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+
+    # API endpoints
+    location /api/ {
+        proxy_pass http://127.0.0.1:5002;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        
+        # Longer timeout for LLM API calls
+        proxy_connect_timeout 300s;
+        proxy_send_timeout 300s;
+        proxy_read_timeout 300s;
+    }
+
+    # Image serving (product images, heatmaps)
+    location /images/ {
+        proxy_pass http://127.0.0.1:5002;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        
+        # Cache images
+        proxy_cache_valid 200 1d;
+        expires 1d;
+        add_header Cache-Control "public, immutable";
+    }
+
+    # Health check endpoint (for monitoring)
+    location /health {
+        proxy_pass http://127.0.0.1:5002/api/health;
+        proxy_http_version 1.1;
+        access_log off;
+    }
+}
+
+# -----------------------------------------------------------------------------
+# Flower Monitoring - flower-packaging-benchmark.tryiceberg.ai
+# -----------------------------------------------------------------------------
+server {
+    listen 80;
+    server_name flower-packaging-benchmark.tryiceberg.ai;
+
+    # Restrict access (optional - add your IP or use basic auth)
+    # allow 1.2.3.4;  # Your IP
+    # deny all;
+
+    location / {
+        proxy_pass http://127.0.0.1:5556;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        
+        # WebSocket support (Flower uses WebSockets for real-time updates)
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+}

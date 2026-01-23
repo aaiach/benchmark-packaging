@@ -25,8 +25,18 @@ def create_app() -> Flask:
     app.config['CELERY_RESULT_BACKEND'] = os.getenv('CELERY_RESULT_BACKEND', 'redis://localhost:6379/1')
     app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50MB max request size
 
-    # Enable CORS for frontend
-    CORS(app, resources={r"/api/*": {"origins": "*"}})
+    # CORS configuration
+    # In production, set CORS_ORIGINS to your domain (e.g., "https://packaging-benchmark.tryiceberg.ai")
+    # Multiple origins can be comma-separated
+    cors_origins = os.getenv('CORS_ORIGINS', '*')
+    if cors_origins != '*':
+        cors_origins = [origin.strip() for origin in cors_origins.split(',')]
+    
+    # Enable CORS for API and images endpoints
+    CORS(app, resources={
+        r"/api/*": {"origins": cors_origins},
+        r"/images/*": {"origins": cors_origins}
+    })
 
     # Register blueprints
     from .routes.health import health_bp
