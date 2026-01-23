@@ -6,15 +6,15 @@ product discovery pipeline.
 Architecture:
 - Step 1 (Brand Discovery): Gemini with Google Search grounding
 - Step 2 (Product Details): OpenAI with Web Search (Responses API)
-- Step 3 (Scraping): Firecrawl (sequential - no concurrency)
+- Step 3 (Scraping): Firecrawl (parallel - up to 5 concurrent)
 - Step 4 (Image Selection): OpenAI Mini with structured outputs
 - Step 5-6 (Visual Analysis): Gemini Vision
 - Step 7 (Competitive Analysis): Gemini
 
 Parallelization:
-- OpenAI (Tier 5): 30,000 RPM - can use high concurrency (15-20)
-- Gemini: Conservative 30-60 RPM - moderate concurrency (5-10)
-- Firecrawl: No concurrency allowed - sequential only
+- OpenAI (Tier 5): 30,000 RPM - high concurrency (15)
+- Gemini: 60 RPM - 10 concurrent requests (upgraded tier)
+- Firecrawl: Up to 5 concurrent requests (upgraded subscription)
 """
 from dataclasses import dataclass, field
 from typing import Optional
@@ -60,25 +60,26 @@ class ParallelizationConfig:
         min_delay_seconds=0.05
     ))
     
-    # Gemini text (conservative for free/paid tier)
+    # Gemini text (upgraded tier - 10 concurrent)
     gemini: ParallelConfig = field(default_factory=lambda: ParallelConfig(
-        max_concurrent=5,
-        rate_limit_rpm=30,
-        min_delay_seconds=0.5
+        max_concurrent=10,
+        rate_limit_rpm=60,
+        min_delay_seconds=0.2
     ))
     
-    # Gemini Vision (same limits, may be lower for image models)
+    # Gemini Vision (same limits as text)
     gemini_vision: ParallelConfig = field(default_factory=lambda: ParallelConfig(
-        max_concurrent=5,
-        rate_limit_rpm=30,
-        min_delay_seconds=0.5
+        max_concurrent=10,
+        rate_limit_rpm=60,
+        min_delay_seconds=0.2
     ))
     
-    # Firecrawl - NO concurrency (user has no concurrency permissions)
+    # Firecrawl - up to 5 concurrent (upgraded subscription)
+    # Note: Multiple users may hit limits, so retry logic is implemented in scraper
     firecrawl: ParallelConfig = field(default_factory=lambda: ParallelConfig(
-        max_concurrent=1,
-        rate_limit_rpm=20,
-        min_delay_seconds=3.0
+        max_concurrent=5,
+        rate_limit_rpm=60,  # Conservative estimate
+        min_delay_seconds=0.1  # Minimal delay since we scrape different domains
     ))
 
 

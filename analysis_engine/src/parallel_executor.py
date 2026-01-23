@@ -94,23 +94,22 @@ DEFAULT_PROVIDER_LIMITS: Dict[Provider, ProviderLimits] = {
         rate_limit_rpm=1000,
         min_delay_seconds=0.05
     ),
-    # Gemini: More conservative, typically 15-60 RPM for free tier
-    # Using 30 RPM as safe default, can be increased for paid tier
+    # Gemini: Upgraded tier - 10 concurrent, 60 RPM
     Provider.GEMINI: ProviderLimits(
-        max_concurrent=5,
-        rate_limit_rpm=30,
-        min_delay_seconds=0.5
+        max_concurrent=10,
+        rate_limit_rpm=60,
+        min_delay_seconds=0.2
     ),
     Provider.GEMINI_VISION: ProviderLimits(
-        max_concurrent=5,
-        rate_limit_rpm=30,
-        min_delay_seconds=0.5
+        max_concurrent=10,
+        rate_limit_rpm=60,
+        min_delay_seconds=0.2
     ),
-    # Firecrawl: No concurrency allowed
+    # Firecrawl: Up to 5 concurrent (upgraded subscription)
     Provider.FIRECRAWL: ProviderLimits(
-        max_concurrent=1,
-        rate_limit_rpm=20,
-        min_delay_seconds=3.0  # Keep existing 3s delay
+        max_concurrent=5,
+        rate_limit_rpm=60,
+        min_delay_seconds=0.1  # Minimal delay since scraping different domains
     ),
 }
 

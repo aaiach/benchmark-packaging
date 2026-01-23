@@ -132,9 +132,10 @@ def execute_step_2_details(ctx: PipelineContext, config: Any) -> List[Any]:
 
 
 def execute_step_3_scraping(ctx: PipelineContext, config: Any) -> List[Any]:
-    """Step 3: Web Scraping using Firecrawl.
+    """Step 3: Web Scraping using Firecrawl (PARALLELIZED).
     
     Scrapes product pages to extract prices, descriptions, images, etc.
+    Uses parallel execution for faster processing.
     Saves scraped data to JSON file.
     
     Returns:
@@ -164,9 +165,10 @@ def execute_step_3_scraping(ctx: PipelineContext, config: Any) -> List[Any]:
         products = ctx.data['products']
     
     print(f"[Step 3] Scraping {len(products)} products with Firecrawl...")
+    print(f"  Mode: PARALLEL ({config.parallel.firecrawl.max_concurrent} concurrent)")
     
-    scraper = ProductScraper()
-    scraped_products = scraper.scrape_products_batch(products)
+    scraper = ProductScraper(config=config)
+    scraped_products = scraper.scrape_products_batch(products, parallel=True)
     
     # Save scraped data
     output_file = ctx.output_dir / f"{ctx.category_slug}_scraped_{ctx.run_id}.json"
@@ -342,7 +344,7 @@ STEPS: Dict[int, Step] = {
     3: Step(
         number=3,
         name="scraping",
-        description="Web Scraping (Firecrawl)",
+        description="Web Scraping (Firecrawl - Parallel)",
         output_pattern="{category}_scraped_{run_id}.json",
         requires=[1, 2],
         executor=execute_step_3_scraping,
