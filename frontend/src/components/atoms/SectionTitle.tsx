@@ -8,8 +8,8 @@ type SectionTitleProps = {
 
 export function SectionTitle({ children, icon: Icon }: SectionTitleProps) {
   return (
-    <h3 className="flex items-center gap-2 text-sm uppercase tracking-wider text-gray-400 mb-4 font-medium">
-      {Icon && <Icon size={16} className="text-blue-400" />}
+    <h3 className="flex items-center gap-2.5 text-sm uppercase tracking-widest text-gray-500 mb-6 font-semibold">
+      {Icon && <Icon size={16} className="text-gray-800" />}
       {children}
     </h3>
   );

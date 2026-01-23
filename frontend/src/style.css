@@ -1,30 +1,82 @@
 @import "tailwindcss";
 
 @theme {
-  --color-glass: rgba(255, 255, 255, 0.1);
-  --color-glassBorder: rgba(255, 255, 255, 0.2);
-  --backdrop-blur-xs: 2px;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+
+  /* Glassmorphism Colors */
+  --color-glass-100: rgba(255, 255, 255, 0.1);
+  --color-glass-200: rgba(255, 255, 255, 0.2);
+  --color-glass-300: rgba(255, 255, 255, 0.3);
+  --color-glass-400: rgba(255, 255, 255, 0.4);
+  --color-glass-500: rgba(255, 255, 255, 0.5);
+  --color-glass-600: rgba(255, 255, 255, 0.6);
+  --color-glass-700: rgba(255, 255, 255, 0.7);
+  --color-glass-800: rgba(255, 255, 255, 0.8);
+  --color-glass-900: rgba(255, 255, 255, 0.9);
+
+  /* Shadows for depth */
+  --shadow-glass-sm: 0 2px 4px 0 rgba(0, 0, 0, 0.02);
+  --shadow-glass-md: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
+  --shadow-glass-lg: 0 16px 48px 0 rgba(31, 38, 135, 0.07);
+  
+  /* Text Colors */
+  --color-text-primary: #111827;
+  --color-text-secondary: #4b5563;
+  --color-text-light: #6b7280;
+
+  /* Animations */
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-pulse-slow: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-:root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+@layer base {
+  :root {
+    color-scheme: light;
+    color: var(--color-text-primary);
+    background-color: #fafafa;
+    --glass-border: rgba(255, 255, 255, 0.4);
+    --glass-highlight: rgba(255, 255, 255, 0.6);
+  }
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: var(--font-sans);
+    background: #fafafa;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 }
 
-body {
-  margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
-  background: linear-gradient(to bottom right, #1a1a2e, #16213e, #0f3460); 
-  color: white;
+@layer utilities {
+  .glass {
+    @apply backdrop-blur-xl bg-white/40 border border-white/40 shadow-glass-md;
+  }
+  
+  .glass-card {
+    @apply backdrop-blur-2xl bg-white/50 border border-white/60 shadow-glass-md rounded-2xl;
+  }
+
+  .glass-panel {
+    @apply backdrop-blur-3xl bg-white/30 border border-white/40 shadow-glass-lg rounded-3xl;
+  }
+
+  .glass-input {
+    @apply backdrop-blur-md bg-white/30 border border-white/30 shadow-sm rounded-xl focus:ring-2 focus:ring-white/50 focus:border-white/60 transition-all outline-none;
+  }
+
+  .glass-button {
+    @apply backdrop-blur-md bg-white/40 border border-white/50 shadow-sm rounded-xl hover:bg-white/60 hover:shadow-glass-md active:scale-95 transition-all cursor-pointer;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
 }

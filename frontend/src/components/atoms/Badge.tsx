@@ -10,19 +10,19 @@ type BadgeProps = {
 };
 
 const variants: Record<BadgeVariant, string> = {
-  default: 'bg-white/10 text-white border-white/20',
-  success: 'bg-green-500/20 text-green-300 border-green-500/30',
-  outline: 'border-white/30 text-white/70',
-  info: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
-  warning: 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30',
-  error: 'bg-red-500/20 text-red-300 border-red-500/30',
+  default: 'bg-white/40 text-gray-700 border-white/50 backdrop-blur-md',
+  success: 'bg-green-100/50 text-green-700 border-green-200/50 backdrop-blur-md',
+  outline: 'border-white/60 text-gray-600 bg-transparent',
+  info: 'bg-blue-100/50 text-blue-700 border-blue-200/50 backdrop-blur-md',
+  warning: 'bg-yellow-100/50 text-yellow-700 border-yellow-200/50 backdrop-blur-md',
+  error: 'bg-red-100/50 text-red-700 border-red-200/50 backdrop-blur-md',
 };
 
 export function Badge({ children, className, variant = 'default' }: BadgeProps) {
   return (
     <span
       className={cn(
-        'px-2.5 py-0.5 rounded-full text-xs font-medium border inline-flex items-center gap-1',
+        'px-3 py-1 rounded-full text-xs font-semibold border inline-flex items-center gap-1.5 shadow-sm',
         variants[variant],
         className
       )}

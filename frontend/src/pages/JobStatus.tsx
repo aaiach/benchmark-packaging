@@ -17,8 +17,8 @@ export function JobStatus() {
   if (!jobId) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <Card className="text-center py-8 max-w-md">
-          <div className="text-red-400 text-xl mb-4">Aucun ID de tâche fourni</div>
+        <Card className="text-center py-8 max-w-md bg-white/50 border-white/60">
+          <div className="text-red-500 text-xl mb-4 font-bold">Aucun ID de tâche fourni</div>
           <Link to="/categories">
             <Button>
               <Home size={16} />
@@ -36,7 +36,7 @@ export function JobStatus() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4">
           <Spinner size="lg" />
-          <div className="text-white text-lg">Chargement du statut...</div>
+          <div className="text-gray-600 text-lg font-medium">Chargement du statut...</div>
         </div>
       </div>
     );
@@ -46,9 +46,9 @@ export function JobStatus() {
   if (error && !status) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <Card className="text-center py-8 max-w-md">
-          <div className="text-red-400 text-xl mb-2">Échec du chargement du statut</div>
-          <div className="text-gray-400 text-sm mb-4">{error}</div>
+        <Card className="text-center py-8 max-w-md bg-white/50 border-white/60">
+          <div className="text-red-500 text-xl mb-2 font-bold">Échec du chargement du statut</div>
+          <div className="text-gray-500 text-sm mb-6">{error}</div>
           <div className="flex gap-4 justify-center">
             <Button onClick={() => window.location.reload()}>Réessayer</Button>
             <Link to="/categories">
@@ -78,7 +78,7 @@ export function JobStatus() {
         {/* Back Navigation */}
         <Link
           to="/categories"
-          className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
+          className="inline-flex items-center gap-2 text-gray-500 hover:text-gray-900 transition-colors font-medium"
         >
           <ArrowLeft size={16} />
           Toutes les Catégories
@@ -86,8 +86,8 @@ export function JobStatus() {
 
         {/* Header */}
         <header className="space-y-2">
-          <h1 className="text-3xl font-bold text-white">Progression de la Tâche</h1>
-          <p className="text-gray-400 text-sm font-mono">{jobId}</p>
+          <h1 className="text-3xl font-bold text-gray-900">Progression de la Tâche</h1>
+          <p className="text-gray-500 text-sm font-mono bg-white/40 inline-block px-2 py-1 rounded border border-white/50">{jobId}</p>
         </header>
 
         {/* Progress Card */}
@@ -96,7 +96,7 @@ export function JobStatus() {
         {/* Actions */}
         <div className="flex gap-4">
           {isComplete && status?.result && (
-            <Button onClick={handleViewResults} size="lg" className="flex-1">
+            <Button onClick={handleViewResults} size="lg" className="flex-1 shadow-lg shadow-blue-500/20">
               <ExternalLink size={18} />
               Voir les Résultats
             </Button>
@@ -111,17 +111,17 @@ export function JobStatus() {
           )}
 
           {!isComplete && !isFailed && (
-            <div className="text-sm text-gray-500 text-center flex-1">
+            <div className="text-sm text-gray-500 text-center flex-1 bg-white/30 p-3 rounded-xl border border-white/40 backdrop-blur-sm">
               Cette page se met à jour automatiquement. Vous pouvez partir et revenir plus tard.
             </div>
           )}
         </div>
 
         {/* Job ID for reference */}
-        <Card className="bg-white/5">
-          <div className="text-xs text-gray-500 mb-1">ID de tâche (pour référence)</div>
-          <code className="text-sm text-gray-300 font-mono break-all">{jobId}</code>
-        </Card>
+        <div className="bg-white/30 p-4 rounded-xl border border-white/40">
+          <div className="text-xs text-gray-500 mb-1 font-medium uppercase tracking-wide">ID de tâche (système)</div>
+          <code className="text-xs text-gray-600 font-mono break-all">{jobId}</code>
+        </div>
       </div>
     </div>
   );

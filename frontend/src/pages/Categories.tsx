@@ -21,14 +21,13 @@ export function Categories() {
       <div className="max-w-7xl mx-auto space-y-12">
         {/* Header */}
         <header className="space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-300 text-xs font-medium uppercase tracking-wider">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50/80 border border-blue-100 text-blue-600 text-xs font-bold uppercase tracking-wider shadow-sm backdrop-blur-md">
             Plateforme d'Intelligence Concurrentielle
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-white">Analyse par Catégorie</h1>
-          <p className="text-lg text-gray-400 max-w-2xl">
+          <h1 className="text-4xl md:text-6xl font-black text-gray-900 tracking-tight">Analyse par Catégorie</h1>
+          <p className="text-xl text-gray-500 max-w-2xl leading-relaxed font-light">
             Explorez les analyses concurrentielles existantes ou lancez-en une nouvelle. 
-            Chaque analyse fournit des insights approfondis sur le positionnement produit, 
-            le design visuel et les opportunités de marché.
+            Chaque analyse fournit des insights approfondis sur le positionnement produit.
           </p>
         </header>
 
@@ -40,12 +39,14 @@ export function Categories() {
 
           {/* Categories List */}
           <div className="lg:col-span-2 space-y-6">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between bg-white/30 p-4 rounded-2xl backdrop-blur-md border border-white/40">
               <div className="flex items-center gap-3">
-                <FolderOpen className="text-blue-400" size={24} />
-                <h2 className="text-2xl font-bold">Analyses Existantes</h2>
+                <div className="p-2 bg-blue-50 rounded-lg">
+                  <FolderOpen className="text-blue-500" size={24} />
+                </div>
+                <h2 className="text-2xl font-bold text-gray-800">Analyses Existantes</h2>
               </div>
-              <Button variant="ghost" onClick={refetch} disabled={loading}>
+              <Button variant="ghost" onClick={refetch} disabled={loading} className="hover:bg-white/50">
                 <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
                 Actualiser
               </Button>
@@ -58,18 +59,18 @@ export function Categories() {
             )}
 
             {error && (
-              <Card className="text-center py-8">
-                <div className="text-red-400 mb-2">Échec du chargement des catégories</div>
+              <Card className="text-center py-8 border-red-100 bg-red-50/50">
+                <div className="text-red-500 mb-2 font-medium">Échec du chargement des catégories</div>
                 <div className="text-gray-500 text-sm mb-4">{error}</div>
                 <Button onClick={refetch}>Réessayer</Button>
               </Card>
             )}
 
             {!loading && !error && categories.length === 0 && (
-              <Card className="text-center py-12">
-                <FolderOpen size={48} className="mx-auto mb-4 text-gray-600" />
-                <div className="text-gray-400 mb-2">Aucune analyse pour le moment</div>
-                <div className="text-gray-500 text-sm">
+              <Card className="text-center py-16 border-dashed border-2 border-gray-200 bg-white/20">
+                <FolderOpen size={48} className="mx-auto mb-4 text-gray-300" />
+                <div className="text-gray-500 mb-2 font-medium">Aucune analyse pour le moment</div>
+                <div className="text-gray-400 text-sm">
                   Lancez votre première analyse avec le formulaire à gauche.
                 </div>
               </Card>

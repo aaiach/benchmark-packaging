@@ -56,14 +56,14 @@ export function TopTrustMarkers({ products, pointsOfParity }: TopTrustMarkersPro
 
   if (popCounts.length === 0) {
     return (
-      <div className="text-center py-4 text-gray-500 text-sm">
+      <div className="text-center py-6 text-gray-400 text-sm italic glass-panel">
         Aucun point de parité défini
       </div>
     );
   }
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       {popCounts.map((pop) => {
         const Icon = icons[pop.pop_id] || ShieldCheck;
         const hasProducts = pop.count > 0;
@@ -72,27 +72,26 @@ export function TopTrustMarkers({ products, pointsOfParity }: TopTrustMarkersPro
           <div
             key={pop.pop_id}
             className={cn(
-              'flex items-center gap-3 p-2.5 rounded-lg border transition-all',
+              'flex items-center gap-3 p-3 rounded-xl border transition-all duration-300',
               hasProducts
-                ? 'bg-emerald-500/10 border-emerald-500/20'
-                : 'bg-white/5 border-white/10 opacity-60'
+                ? 'bg-white/60 border-white/80 shadow-sm hover:shadow-glass-md hover:bg-white/80'
+                : 'bg-gray-50/30 border-gray-100/50 opacity-60 hover:opacity-80'
             )}
           >
             {/* Icon */}
-            <Icon
-              size={18}
-              className={cn(
-                'flex-shrink-0',
-                hasProducts ? 'text-emerald-400' : 'text-gray-500'
-              )}
-            />
+            <div className={cn(
+              'p-2 rounded-lg backdrop-blur-sm',
+              hasProducts ? 'bg-emerald-100/50 text-emerald-600' : 'bg-gray-100/50 text-gray-400'
+            )}>
+              <Icon size={18} className="flex-shrink-0" />
+            </div>
 
             {/* Content */}
             <div className="flex-1 min-w-0">
               <div
                 className={cn(
-                  'text-sm font-medium truncate',
-                  hasProducts ? 'text-emerald-100' : 'text-gray-400'
+                  'text-sm font-semibold truncate',
+                  hasProducts ? 'text-gray-800' : 'text-gray-500'
                 )}
               >
                 {pop.name}
@@ -102,12 +101,12 @@ export function TopTrustMarkers({ products, pointsOfParity }: TopTrustMarkersPro
             {/* Stats */}
             <div className="flex-shrink-0 text-right">
               <div className={cn(
-                'text-sm font-semibold',
-                hasProducts ? 'text-white' : 'text-gray-500'
+                'text-sm font-bold',
+                hasProducts ? 'text-emerald-600' : 'text-gray-400'
               )}>
                 {pop.percentage}%
               </div>
-              <div className="text-xs text-gray-500">{pop.count} produits</div>
+              <div className="text-xs text-gray-400 font-medium">{pop.count} produits</div>
             </div>
           </div>
         );

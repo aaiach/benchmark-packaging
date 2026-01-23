@@ -69,19 +69,25 @@ export function JobForm({ onJobStarted }: JobFormProps) {
   };
 
   return (
-    <Card>
-      <h3 className="text-xl font-bold text-white mb-6">Nouvelle Analyse</h3>
+    <Card className="glass-panel border-white/60 bg-white/40 shadow-glass-lg backdrop-blur-2xl">
+      <div className="flex items-center gap-3 mb-8">
+        <div className="p-2.5 bg-blue-500/10 rounded-xl text-blue-600 shadow-sm">
+          <Play size={20} fill="currentColor" className="opacity-20" />
+        </div>
+        <h3 className="text-xl font-bold text-gray-900">Nouvelle Analyse</h3>
+      </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-6">
         <Input
           label="Catégorie de Produit"
           placeholder="ex: lait d'avoine, muesli bio, café moulu"
           value={category}
           onChange={setCategory}
           disabled={loading}
+          className="bg-white/40"
         />
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-6">
           <Select
             label="Pays"
             value={country}
@@ -110,14 +116,19 @@ export function JobForm({ onJobStarted }: JobFormProps) {
         />
 
         {error && (
-          <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-300 text-sm">
+          <div className="p-4 bg-red-50/80 border border-red-200 rounded-xl text-red-600 text-sm font-medium shadow-sm backdrop-blur-sm">
             {error}
           </div>
         )}
 
-        <Button type="submit" loading={loading} className="w-full" size="lg">
-          <Play size={18} />
-          Lancer l'Analyse
+        <Button 
+          type="submit" 
+          loading={loading} 
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/20 border-transparent h-12 text-base" 
+          size="lg"
+        >
+          {loading ? 'Analyse en cours...' : "Lancer l'Analyse"}
+          {!loading && <Play size={18} className="ml-2" />}
         </Button>
       </form>
     </Card>

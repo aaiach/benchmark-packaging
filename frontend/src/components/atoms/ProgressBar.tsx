@@ -10,10 +10,10 @@ type ProgressBarProps = {
 };
 
 const variants = {
-  default: 'from-blue-500 to-blue-400',
-  success: 'from-green-500 to-green-400',
-  warning: 'from-yellow-500 to-yellow-400',
-  error: 'from-red-500 to-red-400',
+  default: 'from-blue-400 to-blue-300',
+  success: 'from-green-400 to-green-300',
+  warning: 'from-yellow-400 to-yellow-300',
+  error: 'from-red-400 to-red-300',
 };
 
 export function ProgressBar({
@@ -27,14 +27,14 @@ export function ProgressBar({
 
   return (
     <div className={cn('space-y-1', className)}>
-      <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+      <div className="h-2.5 bg-white/40 rounded-full overflow-hidden shadow-inner border border-white/20 backdrop-blur-sm">
         <div
-          className={cn('h-full bg-gradient-to-r rounded-full transition-all duration-300', variants[variant])}
+          className={cn('h-full bg-gradient-to-r rounded-full transition-all duration-500 ease-out shadow-sm', variants[variant])}
           style={{ width: `${percentage}%` }}
         />
       </div>
       {showLabel && (
-        <div className="text-xs text-gray-400 text-right">{Math.round(percentage)}%</div>
+        <div className="text-xs text-gray-500 font-medium text-right">{Math.round(percentage)}%</div>
       )}
     </div>
   );
