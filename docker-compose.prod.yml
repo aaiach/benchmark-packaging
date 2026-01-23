@@ -57,7 +57,7 @@ services:
       - CORS_ORIGINS=https://packaging-benchmark.tryiceberg.ai
       # API keys are loaded from .env file
     volumes:
-      - app_data:/app/data
+      - ./data:/app/data
     depends_on:
       redis:
         condition: service_healthy
@@ -82,7 +82,7 @@ services:
       - OUTPUT_DIR=/app/data/output
       # API keys are loaded from .env file
     volumes:
-      - app_data:/app/data
+      - ./data:/app/data
     depends_on:
       redis:
         condition: service_healthy
@@ -146,8 +146,8 @@ services:
 volumes:
   redis_data:
     name: leadgen_redis_data_prod
-  app_data:
-    name: leadgen_app_data_prod
+  # Note: app_data uses bind mount (./data) instead of named volume
+  # to persist data on host and share between dev/prod
 
 # =============================================================================
 # Networks
