@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, ExternalLink, Home } from 'lucide-react';
+import { ExternalLink, Home } from 'lucide-react';
 import { useJobStatus } from '../hooks/useJobStatus';
 import { Spinner, Button, Card } from '../components/atoms';
 import { JobProgress } from '../components/organisms';
