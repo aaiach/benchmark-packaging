@@ -208,20 +208,6 @@ function VisualTab({ product, va }: { product: Product; va: NonNullable<Product[
           <EyeTrackingFlow eyeTracking={va.eye_tracking} />
         </Card>
 
-        {/* Hierarchy Score */}
-        <Card>
-          <SectionTitle>Clarté de la Hiérarchie Visuelle</SectionTitle>
-          <div className="flex items-center gap-4">
-            <div className="text-5xl font-bold text-white">{va.hierarchy_clarity_score}</div>
-            <div className="text-gray-400 text-sm">/10</div>
-            <div className="flex-1 h-3 bg-white/10 rounded-full overflow-hidden ml-4">
-              <div
-                className="h-full bg-gradient-to-r from-blue-500 to-green-500 rounded-full transition-all"
-                style={{ width: `${va.hierarchy_clarity_score * 10}%` }}
-              />
-            </div>
-          </div>
-        </Card>
 
         {/* Typography */}
         <Card>
@@ -315,34 +301,29 @@ function StrategyTab({
         </Card>
       )}
 
-      {/* POD Scores Breakdown */}
+      {/* POD Breakdown */}
       <Card>
-        <SectionTitle icon={TrendingUp}>Scores des Points de Différenciation</SectionTitle>
+        <SectionTitle icon={TrendingUp}>Points de Différenciation</SectionTitle>
         <div className="space-y-4">
-          {product.pod_scores.map((score) => {
-            const podDef = pointsOfDifference.find((p) => p.axis_id === score.axis_id);
+          {product.pod_scores.map((podScore) => {
+            const podDef = pointsOfDifference.find((p) => p.axis_id === podScore.axis_id);
             return (
               <div
-                key={score.axis_id}
+                key={podScore.axis_id}
                 className="border-b border-white/5 pb-4 last:border-0 last:pb-0"
               >
                 <div className="flex items-center justify-between mb-2">
                   <div className="font-medium text-white">
-                    {podDef?.axis_name || score.axis_id}
+                    {podDef?.axis_name || podScore.axis_id}
                   </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-24 h-2 bg-white/10 rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-blue-500 rounded-full"
-                        style={{ width: `${score.score * 10}%` }}
-                      />
-                    </div>
-                    <span className="text-sm text-gray-400 tabular-nums w-8">
-                      {score.score}/10
-                    </span>
+                  <div className="w-24 h-2 bg-white/10 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-blue-500 rounded-full"
+                      style={{ width: `${podScore.score * 10}%` }}
+                    />
                   </div>
                 </div>
-                <p className="text-sm text-gray-400">{score.reasoning}</p>
+                <p className="text-sm text-gray-400">{podScore.reasoning}</p>
                 {podDef && (
                   <p className="text-xs text-gray-500 mt-2 italic">{podDef.description}</p>
                 )}

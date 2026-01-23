@@ -14,6 +14,7 @@ const countryOptions = [
   { value: 'USA', label: 'États-Unis' },
   { value: 'Spain', label: 'Espagne' },
   { value: 'Italy', label: 'Italie' },
+  { value: 'Europe', label: 'Europe' },
 ];
 
 const stepOptions = [

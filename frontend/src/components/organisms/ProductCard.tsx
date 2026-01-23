@@ -1,5 +1,4 @@
 import React from 'react';
-import { Eye } from 'lucide-react';
 import { ColorPaletteCompact } from '../molecules/ColorPalette';
 import type { Product, PointOfParity } from '../../types';
 
@@ -24,12 +23,6 @@ export function ProductCard({ product, onClick, pointsOfParity }: ProductCardPro
           alt={product.name}
           className="w-full h-full object-contain p-2 transition-transform duration-500 group-hover:scale-105"
         />
-        {product.visual_analysis && (
-          <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-sm px-2 py-1 rounded-full text-xs text-white/80 flex items-center gap-1">
-            <Eye size={12} />
-            {product.visual_analysis.hierarchy_clarity_score}/10
-          </div>
-        )}
       </div>
 
       <div className="mt-auto">

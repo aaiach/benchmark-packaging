@@ -89,7 +89,11 @@ export function CategoryAnalysis() {
 
         {/* Global Analysis */}
         <section>
-          <CategoryLandscape products={products} axisDescriptions={axisDescriptions} />
+          <CategoryLandscape
+            products={products}
+            axisDescriptions={axisDescriptions}
+            pointsOfParity={overview.points_of_parity}
+          />
         </section>
 
         {/* Strategic Insights */}
