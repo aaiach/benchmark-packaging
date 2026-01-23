@@ -9,6 +9,9 @@
 #   - flower-packaging-benchmark.tryiceberg.ai (Celery monitoring)
 #
 # SSL: Handled by Cloudflare (Flexible mode)
+#
+# IMPORTANT: If nginx runs in Docker, use the HOST IP (not 127.0.0.1)
+#            Replace YOUR_HOST_IP with your server's IP (e.g., 188.165.206.77)
 # =============================================================================
 
 # -----------------------------------------------------------------------------
@@ -28,22 +31,17 @@ server {
 
     # Frontend - React SPA
     location / {
-        proxy_pass http://127.0.0.1:3002;
-        proxy_http_version 1.1;
+        # Use host IP since nginx is in Docker (not 127.0.0.1)
+        proxy_pass http://188.165.206.77:3002;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
-        
-        # WebSocket support (for HMR in dev, not needed in prod but harmless)
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
     }
 
     # API endpoints
     location /api/ {
-        proxy_pass http://127.0.0.1:5002;
-        proxy_http_version 1.1;
+        proxy_pass http://188.165.206.77:5002;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -57,23 +55,20 @@ server {
 
     # Image serving (product images, heatmaps)
     location /images/ {
-        proxy_pass http://127.0.0.1:5002;
-        proxy_http_version 1.1;
+        proxy_pass http://188.165.206.77:5002;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
         
         # Cache images
-        proxy_cache_valid 200 1d;
         expires 1d;
         add_header Cache-Control "public, immutable";
     }
 
     # Health check endpoint (for monitoring)
     location /health {
-        proxy_pass http://127.0.0.1:5002/api/health;
-        proxy_http_version 1.1;
+        proxy_pass http://188.165.206.77:5002/api/health;
         access_log off;
     }
 }
@@ -90,8 +85,7 @@ server {
     # deny all;
 
     location / {
-        proxy_pass http://127.0.0.1:5556;
-        proxy_http_version 1.1;
+        proxy_pass http://188.165.206.77:5556;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;

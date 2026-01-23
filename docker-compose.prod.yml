@@ -42,7 +42,8 @@ services:
     container_name: leadgen_api_prod
     restart: unless-stopped
     ports:
-      - "127.0.0.1:5002:5000"
+      # Use 127.0.0.1 for reverse proxy setup, 0.0.0.0 for direct access
+      - "0.0.0.0:5002:5000"
     env_file:
       - .env
     environment:
@@ -102,7 +103,8 @@ services:
     container_name: leadgen_flower_prod
     restart: unless-stopped
     ports:
-      - "127.0.0.1:5556:5555"
+      # Use 127.0.0.1 for reverse proxy setup, 0.0.0.0 for direct access
+      - "0.0.0.0:5556:5555"
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/1
@@ -130,7 +132,8 @@ services:
     container_name: leadgen_frontend_prod
     restart: unless-stopped
     ports:
-      - "127.0.0.1:3002:80"
+      # Use 127.0.0.1 for reverse proxy setup, 0.0.0.0 for direct access
+      - "0.0.0.0:3002:80"
     depends_on:
       api:
         condition: service_healthy
