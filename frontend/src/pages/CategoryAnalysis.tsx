@@ -65,15 +65,6 @@ export function CategoryAnalysis() {
   return (
     <div className="min-h-screen p-8 md:p-12 font-sans selection:bg-blue-100 selection:text-blue-900">
       <div className="max-w-7xl mx-auto space-y-12">
-        {/* Back Navigation */}
-        <Link
-          to="/categories"
-          className="inline-flex items-center gap-2 text-gray-500 hover:text-gray-900 transition-colors font-medium"
-        >
-          <ArrowLeft size={16} />
-          Toutes les Catégories
-        </Link>
-
         {/* Header */}
         <header className="space-y-4">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-100 text-blue-600 text-xs font-bold uppercase tracking-wider shadow-sm">

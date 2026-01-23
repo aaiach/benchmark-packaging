@@ -75,15 +75,6 @@ export function JobStatus() {
   return (
     <div className="min-h-screen p-8 md:p-12 font-sans">
       <div className="max-w-2xl mx-auto space-y-8">
-        {/* Back Navigation */}
-        <Link
-          to="/categories"
-          className="inline-flex items-center gap-2 text-gray-500 hover:text-gray-900 transition-colors font-medium"
-        >
-          <ArrowLeft size={16} />
-          Toutes les Catégories
-        </Link>
-
         {/* Header */}
         <header className="space-y-2">
           <h1 className="text-3xl font-bold text-gray-900">Progression de la Tâche</h1>
