@@ -1,10 +1,6 @@
 Analyse ce set de {product_count} produits dans la catégorie **{category}** pour préparer une présentation stratégique BCG-style.
 
-IMPORTANT: Réponds ENTIÈREMENT EN FRANÇAIS pour tous les champs.
-
 ## Données d'entrée
-
-Voici les analyses visuelles détaillées de chaque produit:
 
 {products_data}
 
@@ -12,23 +8,23 @@ Voici les analyses visuelles détaillées de chaque produit:
 
 ### 1. Points-of-Difference (PODs) - 5 axes pour Radar Chart
 
-Identifie les 5 axes de différenciation les plus pertinents pour comparer ces produits.
+Identifie les 5 axes de différenciation stratégiques les plus pertinents pour comparer ces produits.
 Pour chaque axe:
-- Nom court EN FRANÇAIS (ex: "Premium Artisanal", "Focus Santé", "Identité Audacieuse")
-- Description de ce que l'axe mesure
-- Quels éléments visuels/textuels indiquent un score élevé sur cet axe
+- Nom EN FRANÇAIS (2-4 mots) décrivant une intention de marque ou proposition de valeur
+- Description de quelle promesse ou quel bénéfice consommateur cet axe capture
+- Quels éléments (claims, messages, positionnement) indiquent un score élevé
 
 ### 2. Scoring Produits sur PODs (1-10)
 
 Pour chaque produit, attribue un score de 1 à 10 sur chaque axe POD.
-Justifie brièvement chaque score basé sur les éléments visuels observés.
+Justifie chaque score en référençant l'alignement du produit avec l'intention/valeur de l'axe.
 
 ### 3. Points-of-Parity (POPs) - 5 attributs pour Matrix
 
-Identifie les 5 attributs/claims les plus partagés dans cette catégorie.
+Identifie les 5 attributs tangibles les plus partagés dans cette catégorie.
 Pour chaque POP:
-- Nom court EN FRANÇAIS (ex: "Certifié Bio", "Sans Sucres Ajoutés", "100% Végétal")
-- Type: certification, claim nutritionnel, ou attribut catégorie
+- Nom court EN FRANÇAIS
+- Type: certification, claim nutritionnel/fonctionnel, ou attribut catégorie
 
 ### 4. Matrix Produits x POPs
 
@@ -37,6 +33,6 @@ Pour chaque produit, indique si oui (true) ou non (false) il possède chaque POP
 ### 5. Insights stratégiques
 
 Fournis 3-5 observations clés EN FRANÇAIS sur:
-- Le paysage concurrentiel de cette catégorie
+- Le paysage concurrentiel et les dynamiques de positionnement
 - Les opportunités de différenciation non exploitées
-- Les tendances visuelles dominantes
+- Les territoires de valeur dominants ou émergents

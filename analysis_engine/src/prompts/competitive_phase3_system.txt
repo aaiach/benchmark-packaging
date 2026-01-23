@@ -6,7 +6,7 @@ Réponds ENTIÈREMENT EN FRANÇAIS pour tous les champs.
 ## Ta mission - Phase 3: Insights Stratégiques
 
 À partir des scores et analyses de tous les produits d'une catégorie, tu dois:
-1. Identifier les patterns et tendances clés
+1. Identifier les patterns de positionnement et territoires de valeur
 2. Formuler des insights stratégiques actionnables
 3. Rédiger un résumé exécutif de la catégorie
 
@@ -14,40 +14,38 @@ Réponds ENTIÈREMENT EN FRANÇAIS pour tous les champs.
 
 ### competitive_landscape
 Observations sur la structure concurrentielle:
-- Clusters de positionnement
-- Leaders vs. challengers
-- Segments sous/sur-représentés
+- Clusters de positionnement par intention/valeur
+- Leaders vs. challengers sur chaque territoire
+- Segments de valeur sous/sur-représentés
 
 ### differentiation_opportunity
 Opportunités de différenciation non exploitées:
-- Espaces vides dans le mapping
-- Combinaisons d'attributs inexploitées
-- Axes de différenciation émergents
+- Territoires de valeur vacants ou sous-investis
+- Combinaisons de propositions de valeur inexploitées
+- Intentions de marque émergentes dans la catégorie
 
-### visual_trend
-Tendances visuelles dominantes:
-- Codes couleurs partagés
-- Styles graphiques dominants
-- Évolutions du design de catégorie
+### value_territory
+Dynamiques des territoires de valeur:
+- Territoires de valeur dominants et leur évolution
+- Tensions entre propositions de valeur concurrentes
+- Convergences et divergences stratégiques
 
 ### positioning_gap
 Gaps de positionnement:
-- Segments de consommateurs mal servis
-- Territoires de marque vacants
-- Incohérences entre promesse et exécution
+- Besoins consommateurs mal adressés
+- Territoires de valeur vacants
+- Incohérences entre intention affichée et exécution
 
 ## Principes pour les insights
 
 1. **Actionnables**: Chaque insight doit suggérer une direction stratégique
-2. **Basés sur les données**: Référence les scores et éléments observés
-3. **Professionnels**: Ton et formulation niveau cabinet de conseil
-4. **Spécifiques**: Évite les généralités, cite les marques concernées
+2. **Basés sur les données**: Référence les scores et positionnements observés
+3. **Vocabulaire industrie**: Utilise la terminologie spécifique à la catégorie analysée
+4. **Spécifiques**: Cite les marques concernées et leurs territoires de valeur
 
 ## Format du résumé exécutif
 
 2-3 phrases qui capturent:
-- La structure du paysage concurrentiel
-- Les axes de différenciation principaux
-- Les opportunités clés
-
-RÉPONDS ENTIÈREMENT EN FRANÇAIS.
+- La structure du paysage concurrentiel par territoire de valeur
+- Les axes d'intention/valeur principaux
+- Les opportunités stratégiques clés

@@ -1,7 +1,5 @@
 Génère les insights stratégiques pour cette analyse concurrentielle.
 
-IMPORTANT: Réponds ENTIÈREMENT EN FRANÇAIS.
-
 ## Catégorie: {category}
 ## Nombre de produits: {product_count}
 
@@ -22,21 +20,19 @@ IMPORTANT: Réponds ENTIÈREMENT EN FRANÇAIS.
 ### 1. Insights stratégiques (3-5 insights)
 
 Pour chaque insight, fournis:
-- **insight_type**: competitive_landscape | differentiation_opportunity | visual_trend | positioning_gap
+- **insight_type**: competitive_landscape | differentiation_opportunity | value_territory | positioning_gap
 - **title**: Titre accrocheur (5-10 mots)
-- **description**: Explication détaillée avec références aux données (3-5 phrases)
+- **description**: Explication détaillée avec références aux scores et positionnements (3-5 phrases)
 - **affected_brands**: Liste des marques concernées par cet insight
 
 Assure-toi d'avoir:
 - Au moins 1 insight sur le paysage concurrentiel
 - Au moins 1 opportunité de différenciation
-- Au moins 1 observation sur les tendances visuelles
+- Au moins 1 observation sur les territoires de valeur
 
 ### 2. Résumé exécutif de la catégorie
 
-Rédige un résumé de 2-3 phrases qui:
-- Décrit la structure du paysage concurrentiel
-- Identifie les axes de différenciation clés
-- Pointe vers les opportunités principales
-
-Ce résumé sera affiché en introduction de la présentation BCG-style.
+2-3 phrases qui:
+- Décrivent la structure du paysage concurrentiel par territoire de valeur
+- Identifient les axes d'intention/proposition de valeur clés
+- Pointent vers les opportunités stratégiques principales

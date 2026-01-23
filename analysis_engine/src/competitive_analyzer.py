@@ -50,9 +50,10 @@ from .parallel_executor import (
 # =============================================================================
 
 def format_product_summary(product_data: Dict[str, Any]) -> str:
-    """Format a concise product summary for Phase 1 (axis identification).
+    """Format a detailed product summary for Phase 1 (axis identification).
     
-    Provides enough context to identify differentiating axes without overwhelming detail.
+    Provides rich factual context to identify differentiating axes.
+    Includes: all_text_blocks, elements, color hex codes, trust_marks details.
     """
     brand = product_data.get('brand', 'Unknown')
     product_name = product_data.get('product_name', 'Unknown Product')
@@ -65,35 +66,61 @@ def format_product_summary(product_data: Dict[str, Any]) -> str:
     visual_anchor = analysis.get('visual_anchor', 'N/A')
     hierarchy_score = analysis.get('hierarchy_clarity_score', 'N/A')
     
-    # Eye tracking
-    eye_tracking = analysis.get('eye_tracking', {})
-    pattern_type = eye_tracking.get('pattern_type', 'N/A')
-    
-    # Chromatic mapping
+    # Chromatic mapping with hex codes
     chromatic = analysis.get('chromatic_mapping', {})
     surface_finish = chromatic.get('surface_finish', 'N/A')
     color_harmony = chromatic.get('color_harmony', 'N/A')
     colors = chromatic.get('color_palette', [])
-    color_summary = ", ".join([c.get('color_name', '') for c in colors[:3]])
+    colors_text = "\n".join([
+        f"    - {c.get('color_name', 'N/A')} ({c.get('hex_code', 'N/A')}): {c.get('usage', 'N/A')} | {c.get('coverage_percentage', 'N/A')}%"
+        for c in colors[:5]
+    ]) if colors else "    Aucune"
     
-    # Textual inventory
+    # Massing / structure
+    massing = analysis.get('massing', {})
+    balance_type = massing.get('balance_type', 'N/A')
+    
+    # All text blocks with typography details
     textual = analysis.get('textual_inventory', {})
-    claims = textual.get('claims_summary', [])
+    all_text_blocks = textual.get('all_text_blocks', [])
+    text_blocks_text = "\n".join([
+        f"    - \"{tb.get('text_content', 'N/A')[:50]}\" | {tb.get('font_category', 'N/A')} | {tb.get('font_weight', 'N/A')} | {tb.get('text_size', 'N/A')} | H{tb.get('hierarchy_level', 'N/A')}"
+        for tb in all_text_blocks[:8]
+    ]) if all_text_blocks else "    Aucun"
     
-    # Asset symbolism
+    # Visual elements with weights
+    elements = analysis.get('elements', [])
+    elements_text = "\n".join([
+        f"    - [{e.get('element_type', 'N/A').upper()}] {e.get('description', 'N/A')[:60]} | poids={e.get('visual_weight', 'N/A')}/10 | {e.get('size_percentage', 'N/A')}%"
+        for e in elements[:6]
+    ]) if elements else "    Aucun"
+    
+    # Trust marks with full details
     assets = analysis.get('asset_symbolism', {})
     trust_marks = assets.get('trust_marks', [])
-    trust_names = [tm.get('name', '') for tm in trust_marks]
-    photo_ratio = assets.get('photography_vs_illustration_ratio', 'N/A')
+    trust_marks_text = "\n".join([
+        f"    - {tm.get('name', 'N/A')} | type={tm.get('mark_type', 'N/A')} | prominence={tm.get('prominence', 'N/A')}"
+        for tm in trust_marks
+    ]) if trust_marks else "    Aucune"
     
     return f"""### {brand} - {product_name}
-- Anchor: {visual_anchor}
-- Pattern: {pattern_type} | Clarté: {hierarchy_score}/10
+**Identité visuelle**
+- Ancre: {visual_anchor}
+- Clarté hiérarchie: {hierarchy_score}/10
+- Équilibre: {balance_type}
 - Finition: {surface_finish} | Harmonie: {color_harmony}
-- Couleurs: {color_summary}
-- Claims: {', '.join(claims[:3]) if claims else 'Aucun'}
-- Certifications: {', '.join(trust_names) if trust_names else 'Aucune'}
-- Photo/Illus: {photo_ratio}
+
+**Palette couleurs**
+{colors_text}
+
+**Éléments visuels**
+{elements_text}
+
+**Textes du packaging**
+{text_blocks_text}
+
+**Certifications & badges**
+{trust_marks_text}
 ---
 """
 

@@ -1,6 +1,4 @@
-Analyse en profondeur ce produit et score-le sur les axes établis.
-
-IMPORTANT: Réponds ENTIÈREMENT EN FRANÇAIS.
+Analyse ce produit et score-le sur les axes stratégiques établis.
 
 ## Produit à analyser
 
@@ -8,7 +6,7 @@ IMPORTANT: Réponds ENTIÈREMENT EN FRANÇAIS.
 **Produit**: {product_name}
 **Catégorie**: {category}
 
-## Analyse visuelle détaillée du produit
+## Analyse du produit
 
 {product_analysis}
 
@@ -24,19 +22,19 @@ IMPORTANT: Réponds ENTIÈREMENT EN FRANÇAIS.
 
 ### 1. Scores POD (1-10 pour chaque axe)
 
-Pour chaque axe POD ci-dessus, fournis:
+Pour chaque axe POD, fournis:
 - **axis_id**: L'identifiant de l'axe
 - **score**: Score de 1 à 10
-- **reasoning**: Justification basée sur les éléments visuels observés (1-2 phrases)
+- **reasoning**: Justification basée sur l'alignement du produit avec l'intention/valeur de cet axe (1-2 phrases)
 
 ### 2. Statut POP (true/false pour chaque attribut)
 
-Pour chaque POP ci-dessus, fournis:
+Pour chaque POP, fournis:
 - **pop_id**: L'identifiant du POP
 - **has_attribute**: true ou false
-- **evidence**: Si true, quelle est l'évidence visuelle? Si false, laisser null.
+- **evidence**: Si true, quelle est l'évidence? Si false, laisser null.
 
 ### 3. Synthèse de positionnement
 
-- **positioning_summary**: Une phrase décrivant le positionnement unique de ce produit
-- **key_differentiator**: L'élément le plus distinctif (2-5 mots)
+- **positioning_summary**: Une phrase décrivant l'intention de marque et la proposition de valeur principale
+- **key_differentiator**: Le territoire de valeur le plus distinctif (2-5 mots)
