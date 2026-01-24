@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ExternalLink, Home } from 'lucide-react';
 import { useJobStatus } from '../hooks/useJobStatus';
-import { Spinner, Button, Card } from '../components/atoms';
+import { Spinner, Button, Card, Footer } from '../components/atoms';
 import { JobProgress } from '../components/organisms';
+import { EmailModal } from '../landing_page/components/EmailModal';
+import { api } from '../api/client';
 
 /**
  * Job status page with real-time progress updates.
@@ -11,7 +13,33 @@ import { JobProgress } from '../components/organisms';
 export function JobStatus() {
   const { jobId } = useParams<{ jobId: string }>();
   const navigate = useNavigate();
-  const { status, loading, error, isComplete, isFailed } = useJobStatus(jobId || null);
+  const { status, loading, error, isComplete, isFailed, refresh } = useJobStatus(jobId || null);
+  const [showEmailModal, setShowEmailModal] = useState(false);
+
+  // Check for DRAFT status to show modal
+  useEffect(() => {
+    if (status && status.state === 'DRAFT') {
+        setShowEmailModal(true);
+    } else {
+        setShowEmailModal(false);
+    }
+  }, [status]);
+
+  const handleEmailSuccess = async (email: string) => {
+    if (!jobId) return;
+    
+    // Close modal immediately after email validation success
+    setShowEmailModal(false);
+    
+    try {
+        await api.scraper.start(jobId, email);
+        // Refresh status to update from DRAFT to PENDING
+        refresh();
+    } catch (err) {
+        console.error("Failed to start job after email:", err);
+        // Optionally show an error toast here
+    }
+  };
 
   // No job ID
   if (!jobId) {
@@ -73,12 +101,12 @@ export function JobStatus() {
   };
 
   return (
-    <div className="min-h-screen p-8 md:p-12 font-sans">
+    <div className="min-h-screen p-8 md:p-12 font-sans relative">
       <div className="max-w-2xl mx-auto space-y-8">
         {/* Header */}
         <header className="space-y-2">
           <h1 className="text-3xl font-bold text-gray-900">Analyse en cours</h1>
-          <p className="text-gray-500 text-sm">Veuillez patienter pendant que notre IA analyse la catégorie.</p>
+          <p className="text-gray-500 text-sm">Veuillez patienter pendant que notre IA analyse la catégorie. (Temps total estimé: 8 minutes)</p>
         </header>
 
         {/* Progress Card */}
@@ -107,6 +135,19 @@ export function JobStatus() {
             </div>
           )}
         </div>
+      </div>
+
+      {/* Email Modal Overlay */}
+      <EmailModal 
+        isOpen={showEmailModal} 
+        onClose={() => {}} 
+        onSuccess={handleEmailSuccess}
+        canClose={false}
+      />
+
+      {/* Footer */}
+      <div className="absolute bottom-0 left-0 right-0">
+        <Footer variant="light" />
       </div>
     </div>
   );

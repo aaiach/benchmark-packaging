@@ -3,6 +3,7 @@ import { AmbientBackground } from './components/AmbientBackground';
 import { RunForm } from './components/RunForm';
 import { ExampleCards } from './components/ExampleCards';
 import { LandingTitle, LandingSubtitle } from './components/Typography';
+import { Footer } from '../components/atoms';
 import { motion } from 'framer-motion';
 import { LANDING_CONTENT } from './content';
 
@@ -42,9 +43,9 @@ const LandingPageContent: React.FC = () => {
           <ExampleCards />
         </motion.div>
         
-        <footer className="absolute bottom-4 text-center w-full text-black/20 text-xs font-light">
-          {LANDING_CONTENT.footer}
-        </footer>
+        <div className="absolute bottom-0 left-0 right-0">
+          <Footer variant="light" />
+        </div>
       </main>
     </div>
   );

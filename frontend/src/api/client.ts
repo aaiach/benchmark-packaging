@@ -64,7 +64,25 @@ export const api = {
 
   scraper: {
     /**
-     * Trigger new scraper pipeline run
+     * Initialize scraper job (Draft mode)
+     */
+    init: (params: { category: string; country?: string; count?: number; steps?: string }) =>
+      request<{ job_id: string; status: string }>('/api/scraper/init', {
+        method: 'POST',
+        body: JSON.stringify(params),
+      }),
+
+    /**
+     * Start initialized scraper job with validated email
+     */
+    start: (jobId: string, email: string) =>
+      request<{ job_id: string; status: string }>('/api/scraper/start/' + jobId, {
+        method: 'POST',
+        body: JSON.stringify({ email }),
+      }),
+
+    /**
+     * Trigger new scraper pipeline run (Direct)
      */
     run: (params: { category: string; country?: string; count?: number; steps?: string }) =>
       request<{ job_id: string; status: string }>('/api/scraper/run', {

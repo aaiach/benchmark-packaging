@@ -9,7 +9,7 @@ export const LANDING_CONTENT = {
   runForm: {
     title: "Nouvelle Analyse",
     description: "Démarrez une analyse concurrentielle complète en un clic.",
-    inputLabel: "Quelle catégorie de produit souhaitez-vous benchmarker ?",
+    inputLabel: "Catégorie à benchmarker...",
     inputPlaceholder: "Ex: Lait d'avoine, Bougie parfumée...",
     tags: {
       location: "🇫🇷 France",
@@ -31,6 +31,5 @@ export const LANDING_CONTENT = {
     defaultSummary: "Analyse concurrentielle détaillée...",
     viewAnalysis: "Voir l'analyse",
     productsCountSuffix: " produits"
-  },
-  footer: "Design System: Minimalist Ultra Glassmorphism • Powered by AI"
+  }
 };

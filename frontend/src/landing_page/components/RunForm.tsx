@@ -25,13 +25,15 @@ export const RunForm: React.FC = () => {
     setError(null);
 
     try {
-      const response = await api.scraper.run({
+      // Initialize job in DRAFT mode
+      const response = await api.scraper.init({
         category: category.trim(),
         country: 'France',
         count: 6,
         steps: '1-7'
       });
       
+      // Redirect to job page immediately
       navigate(`/jobs/${response.job_id}`);
     } catch (err: any) {
       console.error(err);
@@ -41,29 +43,29 @@ export const RunForm: React.FC = () => {
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto relative z-10">
+    <div className="w-full max-w-3xl mx-auto relative z-10 px-4 sm:px-0">
        <form onSubmit={handleSubmit} className="relative">
          <div className="relative group">
             {/* Input Wrapper with Gradient Border on Focus */}
-            <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-200 to-pink-200 rounded-2xl blur opacity-30 group-hover:opacity-60 transition duration-500"></div>
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-200 to-pink-200 rounded-2xl sm:rounded-3xl blur opacity-30 group-hover:opacity-60 transition duration-500"></div>
             
-            <div className="relative flex items-center bg-white/40 backdrop-blur-xl rounded-2xl border border-white/50 shadow-[0_8px_32px_rgba(0,0,0,0.05)] transition-all duration-300 focus-within:bg-white/60 focus-within:shadow-[0_12px_40px_rgba(0,0,0,0.08)] focus-within:scale-[1.01]">
+            <div className="relative flex items-center bg-white/40 backdrop-blur-xl rounded-2xl sm:rounded-3xl border border-white/50 shadow-[0_8px_32px_rgba(0,0,0,0.05)] transition-all duration-300 focus-within:bg-white/60 focus-within:shadow-[0_12px_40px_rgba(0,0,0,0.08)] focus-within:scale-[1.01]">
                 <input
                     type="text"
-                    className="w-full bg-transparent border-none px-6 py-5 text-xl font-light text-black placeholder-black/30 focus:outline-none focus:ring-0"
+                    className="w-full bg-transparent border-none px-4 py-4 sm:px-8 sm:py-6 text-base sm:text-xl md:text-2xl font-light text-black placeholder-black/30 focus:outline-none focus:ring-0"
                     placeholder={LANDING_CONTENT.runForm.inputLabel}
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
                     autoFocus
                 />
                 
-                <div className="pr-2">
+                <div className="pr-2 sm:pr-3">
                     <motion.button 
                       type="submit" 
                       disabled={loading}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      className="group relative h-14 w-14 rounded-xl overflow-hidden shadow-lg hover:shadow-purple-500/25 transition-shadow duration-300"
+                      className="group relative h-12 w-12 sm:h-16 sm:w-16 rounded-xl sm:rounded-2xl overflow-hidden shadow-lg hover:shadow-purple-500/25 transition-shadow duration-300"
                     >
                         {/* Animated Gradient Background */}
                         <div className="absolute inset-0 bg-gradient-to-tr from-black via-gray-900 to-black group-hover:from-purple-600 group-hover:via-pink-600 group-hover:to-orange-500 transition-colors duration-500" />
@@ -81,7 +83,7 @@ export const RunForm: React.FC = () => {
                                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full" />
                              </motion.div>
                            ) : (
-                             <Sparkles className="w-6 h-6 text-white/90 group-hover:text-white transition-colors" strokeWidth={1.5} />
+                             <Sparkles className="w-5 h-5 sm:w-7 sm:h-7 text-white/90 group-hover:text-white transition-colors" strokeWidth={1.5} />
                            )}
                         </div>
                     </motion.button>

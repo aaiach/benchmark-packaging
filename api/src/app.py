@@ -42,10 +42,12 @@ def create_app() -> Flask:
     from .routes.health import health_bp
     from .routes.scraper import scraper_bp
     from .routes.categories import categories_bp
+    from .routes.email import email_bp
 
     app.register_blueprint(health_bp)
     app.register_blueprint(scraper_bp, url_prefix='/api/scraper')
     app.register_blueprint(categories_bp, url_prefix='/api/categories')
+    app.register_blueprint(email_bp, url_prefix='/api/email')
 
     # Static file serving for images and heatmaps
     @app.route('/images/<path:filename>')

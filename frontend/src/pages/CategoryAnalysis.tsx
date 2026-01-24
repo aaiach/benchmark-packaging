@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Lightbulb, Home } from 'lucide-react';
 import { useCategoryData } from '../hooks/useCategoryData';
-import { Spinner, Button } from '../components/atoms';
+import { Spinner, Button, Footer } from '../components/atoms';
 import {
   CategoryLandscape,
   InsightCard,
@@ -122,6 +122,9 @@ export function CategoryAnalysis() {
             ))}
           </div>
         </section>
+
+        {/* Footer */}
+        <Footer variant="light" />
       </div>
 
       {/* Detail Modal */}
