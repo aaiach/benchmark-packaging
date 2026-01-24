@@ -1,6 +1,4 @@
-/**
- * Page components.
- */
-export { Categories } from './Categories';
-export { CategoryAnalysis } from './CategoryAnalysis';
-export { JobStatus } from './JobStatus';
+export * from './Categories';
+export * from './CategoryAnalysis';
+export * from './JobStatus';
+export * from './LandingPage';

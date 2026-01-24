@@ -1,82 +1,68 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --color-brand-50: oklch(0.97 0.01 291.07);
+  --color-brand-100: oklch(0.941 0.02 291.07);
+  --color-brand-200: oklch(0.885 0.038 291.07);
+  --color-brand-300: oklch(0.793 0.076 291.07);
+  --color-brand-400: oklch(0.668 0.126 291.07);
+  --color-brand-500: oklch(0.561 0.155 291.07);
+  --color-brand-600: oklch(0.463 0.138 291.07);
+  --color-brand-700: oklch(0.385 0.108 291.07);
+  --color-brand-800: oklch(0.323 0.086 291.07);
+  --color-brand-900: oklch(0.276 0.07 291.07);
+  --color-brand-950: oklch(0.17 0.045 291.07);
 
-  /* Glassmorphism Colors */
-  --color-glass-100: rgba(255, 255, 255, 0.1);
-  --color-glass-200: rgba(255, 255, 255, 0.2);
-  --color-glass-300: rgba(255, 255, 255, 0.3);
-  --color-glass-400: rgba(255, 255, 255, 0.4);
-  --color-glass-500: rgba(255, 255, 255, 0.5);
-  --color-glass-600: rgba(255, 255, 255, 0.6);
-  --color-glass-700: rgba(255, 255, 255, 0.7);
-  --color-glass-800: rgba(255, 255, 255, 0.8);
-  --color-glass-900: rgba(255, 255, 255, 0.9);
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
 
-  /* Shadows for depth */
-  --shadow-glass-sm: 0 2px 4px 0 rgba(0, 0, 0, 0.02);
-  --shadow-glass-md: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
-  --shadow-glass-lg: 0 16px 48px 0 rgba(31, 38, 135, 0.07);
-  
-  /* Text Colors */
-  --color-text-primary: #111827;
-  --color-text-secondary: #4b5563;
-  --color-text-light: #6b7280;
+  --animate-shine: shine 1.5s ease-in-out infinite;
 
-  /* Animations */
-  --animate-float: float 6s ease-in-out infinite;
-  --animate-pulse-slow: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  @keyframes shine {
+    0% { transform: translateX(-100%) skewX(-12deg); }
+    100% { transform: translateX(200%) skewX(-12deg); }
+  }
 }
 
-@layer base {
-  :root {
-    color-scheme: light;
-    color: var(--color-text-primary);
-    background-color: #fafafa;
-    --glass-border: rgba(255, 255, 255, 0.4);
-    --glass-highlight: rgba(255, 255, 255, 0.6);
+@utility container {
+  margin-inline: auto;
+  padding-inline: 2rem;
+  @media (width >= --theme(--breakpoint-sm)) {
+    max-width: none;
   }
+  @media (width >= 1400px) {
+    max-width: 1400px;
+  }
+}
 
-  body {
-    margin: 0;
-    min-height: 100vh;
-    font-family: var(--font-sans);
-    background: #fafafa;
-    overflow-x: hidden;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+/*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
   }
 }
 
 @layer utilities {
-  .glass {
-    @apply backdrop-blur-xl bg-white/40 border border-white/40 shadow-glass-md;
+  .glass-panel {
+    @apply backdrop-blur-xl bg-white/70 border border-white/50;
   }
   
   .glass-card {
-    @apply backdrop-blur-2xl bg-white/50 border border-white/60 shadow-glass-md rounded-2xl;
+    @apply backdrop-blur-md bg-white/40 border border-white/30 shadow-sm;
   }
 
-  .glass-panel {
-    @apply backdrop-blur-3xl bg-white/30 border border-white/40 shadow-glass-lg rounded-3xl;
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-brand-600 to-purple-600;
   }
-
-  .glass-input {
-    @apply backdrop-blur-md bg-white/30 border border-white/30 shadow-sm rounded-xl focus:ring-2 focus:ring-white/50 focus:border-white/60 transition-all outline-none;
-  }
-
-  .glass-button {
-    @apply backdrop-blur-md bg-white/40 border border-white/50 shadow-sm rounded-xl hover:bg-white/60 hover:shadow-glass-md active:scale-95 transition-all cursor-pointer;
-  }
-
-  .text-balance {
-    text-wrap: balance;
-  }
-}
-
-@keyframes float {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-  100% { transform: translateY(0px); }
 }

@@ -141,9 +141,6 @@ export function JobProgress({ job }: JobProgressProps) {
       {job.state === 'SUCCESS' && job.result && (
         <div className="mt-8 p-5 bg-emerald-50/80 border border-emerald-200 rounded-xl shadow-sm backdrop-blur-sm">
           <p className="text-emerald-800 text-sm font-bold mb-1">Analyse Terminée avec succès !</p>
-          <p className="text-emerald-600/80 text-xs font-mono">
-            ID: {job.result.run_id}
-          </p>
         </div>
       )}
     </Card>

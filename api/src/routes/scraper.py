@@ -99,33 +99,33 @@ def get_job_status(job_id):
         }
 
         if task.state == 'PENDING':
-            response['status'] = 'Job is waiting to start'
+            response['status'] = 'Analyse en attente de démarrage'
             response['progress'] = 0
 
         elif task.state == 'STARTED':
-            response['status'] = 'Job has started'
+            response['status'] = 'Analyse démarrée'
             response['progress'] = 5
             if task.info:
                 response.update(task.info)
 
         elif task.state == 'PROGRESS':
-            response['status'] = 'Job is in progress'
+            response['status'] = 'Analyse en cours'
             if task.info:
                 response.update(task.info)
                 response['progress'] = task.info.get('progress_percent', 0)
 
         elif task.state == 'SUCCESS':
-            response['status'] = 'Job completed successfully'
+            response['status'] = 'Analyse terminée avec succès'
             response['progress'] = 100
             response['result'] = task.result
 
         elif task.state == 'FAILURE':
-            response['status'] = 'Job failed'
+            response['status'] = 'Échec de l\'analyse'
             response['progress'] = 0
-            response['error'] = str(task.info) if task.info else 'Unknown error'
+            response['error'] = str(task.info) if task.info else 'Erreur inconnue'
 
         else:
-            response['status'] = f'Unknown state: {task.state}'
+            response['status'] = f'État inconnu : {task.state}'
 
         return jsonify(response), 200
 

@@ -1,14 +1,22 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { Categories, CategoryAnalysis, JobStatus } from './pages';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { Categories, CategoryAnalysis, JobStatus, LandingPage } from './pages';
 
 import { AmbientBackground } from './components/atoms';
+
+const BackgroundWrapper = () => {
+  const location = useLocation();
+  const isLanding = location.pathname === '/';
+  
+  if (isLanding) return null;
+  return <AmbientBackground />;
+};
 
 /**
  * Main application component with routing.
  *
  * Routes:
- * - / → Redirects to default "lait d'avoine" analysis (or first available)
+ * - / → Landing Page
  * - /categories → Category list + new job form
  * - /category/:categoryId → Category analysis page
  * - /jobs/:jobId → Job progress page
@@ -16,10 +24,10 @@ import { AmbientBackground } from './components/atoms';
 export default function App() {
   return (
     <BrowserRouter>
-      <AmbientBackground />
+      <BackgroundWrapper />
       <Routes>
-        {/* Default route - shows lait d'avoine analysis */}
-        <Route path="/" element={<CategoryAnalysis />} />
+        {/* Landing Page */}
+        <Route path="/" element={<LandingPage />} />
 
         {/* Categories list with new job form */}
         <Route path="/categories" element={<Categories />} />

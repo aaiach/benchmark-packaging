@@ -77,8 +77,8 @@ export function JobStatus() {
       <div className="max-w-2xl mx-auto space-y-8">
         {/* Header */}
         <header className="space-y-2">
-          <h1 className="text-3xl font-bold text-gray-900">Progression de la Tâche</h1>
-          <p className="text-gray-500 text-sm font-mono bg-white/40 inline-block px-2 py-1 rounded border border-white/50">{jobId}</p>
+          <h1 className="text-3xl font-bold text-gray-900">Analyse en cours</h1>
+          <p className="text-gray-500 text-sm">Veuillez patienter pendant que notre IA analyse la catégorie.</p>
         </header>
 
         {/* Progress Card */}
@@ -106,12 +106,6 @@ export function JobStatus() {
               Cette page se met à jour automatiquement. Vous pouvez partir et revenir plus tard.
             </div>
           )}
-        </div>
-
-        {/* Job ID for reference */}
-        <div className="bg-white/30 p-4 rounded-xl border border-white/40">
-          <div className="text-xs text-gray-500 mb-1 font-medium uppercase tracking-wide">ID de tâche (système)</div>
-          <code className="text-xs text-gray-600 font-mono break-all">{jobId}</code>
         </div>
       </div>
     </div>
