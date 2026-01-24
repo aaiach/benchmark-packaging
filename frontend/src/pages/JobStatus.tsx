@@ -101,39 +101,42 @@ export function JobStatus() {
   };
 
   return (
-    <div className="min-h-screen p-8 md:p-12 font-sans relative">
-      <div className="max-w-2xl mx-auto space-y-8">
-        {/* Header */}
-        <header className="space-y-2">
-          <h1 className="text-3xl font-bold text-gray-900">Analyse en cours</h1>
-          <p className="text-gray-500 text-sm">Veuillez patienter pendant que notre IA analyse la catégorie. (Temps total estimé: 8 minutes)</p>
-        </header>
+    <div className="min-h-screen flex flex-col font-sans">
+      {/* Main content */}
+      <div className="flex-1 p-8 md:p-12">
+        <div className="max-w-2xl mx-auto space-y-8">
+          {/* Header */}
+          <header className="space-y-2">
+            <h1 className="text-3xl font-bold text-gray-900">Analyse en cours</h1>
+            <p className="text-gray-500 text-sm">Veuillez patienter pendant que notre IA analyse la catégorie. (Temps total estimé: 8 minutes)</p>
+          </header>
 
-        {/* Progress Card */}
-        {status && <JobProgress job={status} />}
+          {/* Progress Card */}
+          {status && <JobProgress job={status} />}
 
-        {/* Actions */}
-        <div className="flex gap-4">
-          {isComplete && status?.result && (
-            <Button onClick={handleViewResults} size="lg" className="flex-1 shadow-lg shadow-blue-500/20">
-              <ExternalLink size={18} />
-              Voir les Résultats
-            </Button>
-          )}
-
-          {isFailed && (
-            <Link to="/categories" className="flex-1">
-              <Button variant="secondary" size="lg" className="w-full">
-                Nouvelle Analyse
+          {/* Actions */}
+          <div className="flex gap-4 pb-8">
+            {isComplete && status?.result && (
+              <Button onClick={handleViewResults} size="lg" className="flex-1 shadow-lg shadow-blue-500/20">
+                <ExternalLink size={18} />
+                Voir les Résultats
               </Button>
-            </Link>
-          )}
+            )}
 
-          {!isComplete && !isFailed && (
-            <div className="text-sm text-gray-500 text-center flex-1 bg-white/30 p-3 rounded-xl border border-white/40 backdrop-blur-sm">
-              Cette page se met à jour automatiquement. Vous pouvez partir et revenir plus tard.
-            </div>
-          )}
+            {isFailed && (
+              <Link to="/categories" className="flex-1">
+                <Button variant="secondary" size="lg" className="w-full">
+                  Nouvelle Analyse
+                </Button>
+              </Link>
+            )}
+
+            {!isComplete && !isFailed && (
+              <div className="text-sm text-gray-500 text-center flex-1 bg-white/30 p-3 rounded-xl border border-white/40 backdrop-blur-sm">
+                Cette page se met à jour automatiquement. Vous pouvez partir et revenir plus tard.
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -145,10 +148,8 @@ export function JobStatus() {
         canClose={false}
       />
 
-      {/* Footer */}
-      <div className="absolute bottom-0 left-0 right-0">
-        <Footer variant="light" />
-      </div>
+      {/* Footer - now in normal flow, not absolute */}
+      <Footer variant="light" />
     </div>
   );
 }
