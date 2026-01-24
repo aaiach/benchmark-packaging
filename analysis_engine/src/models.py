@@ -60,6 +60,69 @@ class ImageSelection(BaseModel):
     )
 
 
+# =============================================================================
+# Pydantic Models for Front Extraction (Step 4.5)
+# =============================================================================
+
+class FrontExtractionBoundingBox(BaseModel):
+    """Bounding box for the front-facing product packaging.
+    
+    Coordinates are normalized to 0-1000 scale (relative to image dimensions).
+    Format: [ymin, xmin, ymax, xmax] as per Gemini's standard.
+    """
+    ymin: int = Field(
+        description="Top edge Y coordinate (0-1000 scale)",
+        ge=0,
+        le=1000
+    )
+    xmin: int = Field(
+        description="Left edge X coordinate (0-1000 scale)",
+        ge=0,
+        le=1000
+    )
+    ymax: int = Field(
+        description="Bottom edge Y coordinate (0-1000 scale)",
+        ge=0,
+        le=1000
+    )
+    xmax: int = Field(
+        description="Right edge X coordinate (0-1000 scale)",
+        ge=0,
+        le=1000
+    )
+
+
+class FrontExtractionResult(BaseModel):
+    """Result of front-facing packaging extraction analysis.
+    
+    The AI identifies the front face of the product packaging and returns
+    bounding box coordinates for cropping. No image modification is performed -
+    only coordinates are returned for lossless cropping.
+    """
+    can_extract: bool = Field(
+        description="Whether a front-facing view can be extracted from this image"
+    )
+    bounding_box: Optional[FrontExtractionBoundingBox] = Field(
+        None,
+        description="Bounding box coordinates for the front face (only if can_extract is True)"
+    )
+    confidence: float = Field(
+        description="Confidence score from 0.0 to 1.0 for the extraction",
+        ge=0.0,
+        le=1.0
+    )
+    image_type: str = Field(
+        description="Type of product image: 'front_facing', 'angled', 'multiple_items', 'lifestyle', 'cropped', 'other'"
+    )
+    reasoning: str = Field(
+        description="Explanation of the image composition and extraction decision"
+    )
+    extraction_notes: Optional[str] = Field(
+        None,
+        description="Any notes about the extraction (e.g., 'slight angle corrected', 'selected main product from group')"
+    )
+
+
 class ImageSelectionResult(BaseModel):
     """Complete result for a product's image selection."""
     brand: str = Field(description="Brand name")

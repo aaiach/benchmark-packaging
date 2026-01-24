@@ -145,6 +145,27 @@ class GeminiVisionConfig:
         return key
 
 
+@dataclass
+class FrontExtractionConfig:
+    """Configuration for Front Extraction model (Step 4.5 - after image download).
+    
+    Uses Gemini 3 Pro Image Preview for detecting front-facing product packaging
+    in e-commerce images. The model identifies bounding box coordinates for
+    lossless cropping - no image modification is performed by the AI.
+    """
+    model: str = "gemini-3-pro-image-preview"  # As specified by user
+    temperature: float = 0.5  # Lower temperature for more precise coordinate detection
+    enabled: bool = True  # Can be disabled to skip front extraction
+    min_confidence: float = 0.5  # Minimum confidence threshold for extraction
+    
+    @property
+    def api_key(self) -> str:
+        key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
+        if not key:
+            raise ValueError("GOOGLE_API_KEY or GEMINI_API_KEY environment variable required")
+        return key
+
+
 # =============================================================================
 # Pipeline Configuration
 # =============================================================================
@@ -161,6 +182,7 @@ class DiscoveryConfig:
     openai: OpenAIConfig = field(default_factory=OpenAIConfig)
     openai_mini: OpenAIMiniConfig = field(default_factory=OpenAIMiniConfig)
     gemini_vision: GeminiVisionConfig = field(default_factory=GeminiVisionConfig)
+    front_extraction: FrontExtractionConfig = field(default_factory=FrontExtractionConfig)
     
     # Parallelization settings
     parallel: ParallelizationConfig = field(default_factory=ParallelizationConfig)

@@ -3,8 +3,11 @@
 This module analyzes scraped product data and uses GPT-5 Mini to identify
 the highest quality product image from available URLs, then downloads it locally.
 
+After download, images are processed through front extraction to isolate
+the front-facing view of the product packaging (if enabled).
+
 Parallelization: Uses ParallelExecutor for concurrent AI selection calls.
-Image downloads remain sequential to avoid overwhelming servers.
+Image downloads and front extraction remain sequential to avoid overwhelming servers.
 """
 import json
 import os
@@ -278,6 +281,8 @@ class ImageSelector:
     
     Uses GPT-5 Mini to analyze image URLs and select the best product image
     for each scraped product, then downloads it to a local directory.
+    After download, images are processed through front extraction to isolate
+    the front-facing view of the product packaging.
     """
     
     def __init__(self, config: Optional[DiscoveryConfig] = None):
@@ -296,7 +301,15 @@ class ImageSelector:
         self.system_prompt = load_prompt("image_selection_system.txt")
         self.user_prompt_template = load_prompt("image_selection_user.txt")
         
+        # Initialize front extractor if enabled
+        self._front_extractor = None
+        if self.config.front_extraction.enabled:
+            from .front_extractor import FrontExtractor
+            self._front_extractor = FrontExtractor(config=self.config)
+        
         print(f"[ImageSelector] Initialized with {self.model}")
+        if self._front_extractor:
+            print(f"[ImageSelector] Front extraction enabled ({self.config.front_extraction.model})")
     
     def _collect_image_urls(self, product: Dict[str, Any]) -> Tuple[List[str], Optional[str]]:
         """Collect all available image URLs from a product.
@@ -328,6 +341,42 @@ class ImageSelector:
         urls = [url for url in urls if is_valid_image_url(url)]
         
         return urls, og_image
+    
+    def _extract_front_from_image(
+        self,
+        image_path: Path,
+        brand: str,
+        product_name: str,
+        category: str
+    ) -> Tuple[Path, Optional[Dict[str, Any]]]:
+        """Extract front-facing view from a downloaded image.
+        
+        Uses the FrontExtractor to detect and crop the front face of the
+        product packaging. If extraction fails, the original image is kept.
+        
+        Args:
+            image_path: Path to the downloaded image
+            brand: Brand name for context
+            product_name: Product name for context
+            category: Category for context
+            
+        Returns:
+            Tuple of (final_image_path, extraction_metadata)
+        """
+        if not self._front_extractor:
+            return image_path, None
+        
+        try:
+            success, final_path, metadata = self._front_extractor.extract_front(
+                image_path=image_path,
+                brand=brand,
+                product_name=product_name,
+                category=category
+            )
+            return final_path, metadata
+        except Exception as e:
+            print(f"    [!] Front extraction error: {e}")
+            return image_path, {'error': str(e)}
     
     def _select_best_image(
         self,
@@ -565,11 +614,15 @@ class ImageSelector:
             print(f"  [Phase 1] Done: {batch_result.successful_count}/{batch_result.total_items} "
                   f"in {batch_result.total_duration_seconds:.1f}s")
             
-            # Phase 2: Sequential downloads
-            print("  [Phase 2] Downloading images (sequential)...")
+            # Phase 2: Sequential downloads + front extraction
+            phase2_desc = "Downloading images"
+            if self._front_extractor:
+                phase2_desc += " + front extraction"
+            print(f"  [Phase 2] {phase2_desc} (sequential)...")
             
             updated_products = [None] * len(products)
             success_count = 0
+            extraction_count = 0
             
             # Sort results by index to maintain order
             for exec_result in sorted(batch_result.results, key=lambda r: r.index):
@@ -579,6 +632,7 @@ class ImageSelector:
                     product['selected_image_url'] = None
                     product['local_image_path'] = None
                     product['image_selection'] = {'confidence': 0, 'reasoning': 'Selection failed'}
+                    product['front_extraction'] = None
                     updated_products[exec_result.index] = product
                     continue
                 
@@ -595,38 +649,61 @@ class ImageSelector:
                     # Download the image if valid
                     if selection.is_product_image and selection.confidence >= 0.3:
                         brand = product.get('brand', 'Unknown')
+                        product_name = product.get('full_name', 'Unknown Product')
+                        category = product.get('category', '')
                         filename = generate_image_filename(brand, idx, selection.selected_url)
                         filepath = images_dir / filename
                         
                         actual_filepath = download_image(selection.selected_url, filepath)
                         if actual_filepath:
-                            product['local_image_path'] = str(actual_filepath)
+                            # Apply front extraction
+                            final_path, extraction_metadata = self._extract_front_from_image(
+                                image_path=actual_filepath,
+                                brand=brand,
+                                product_name=product_name,
+                                category=category
+                            )
+                            product['local_image_path'] = str(final_path)
+                            product['front_extraction'] = extraction_metadata
                             success_count += 1
-                            print(f"    [{idx:2}] ✓ {actual_filepath.name}")
+                            
+                            # Track extraction success
+                            if extraction_metadata and extraction_metadata.get('extracted'):
+                                extraction_count += 1
+                                print(f"    [{idx:2}] ✓ {final_path.name} (front extracted)")
+                            else:
+                                print(f"    [{idx:2}] ✓ {final_path.name}")
                         else:
                             product['local_image_path'] = None
+                            product['front_extraction'] = None
                             print(f"    [{idx:2}] ✗ Download failed")
                     else:
                         product['local_image_path'] = None
+                        product['front_extraction'] = None
                 else:
                     product['selected_image_url'] = None
                     product['local_image_path'] = None
                     product['image_selection'] = {'confidence': 0, 'reasoning': 'No selection'}
+                    product['front_extraction'] = None
                 
                 updated_products[exec_result.index] = product
             
         else:
             # SEQUENTIAL EXECUTION (fallback)
             print("  Mode: SEQUENTIAL")
+            if self._front_extractor:
+                print("  Front extraction: ENABLED")
             print("-" * 70)
             
             updated_products = []
             success_count = 0
+            extraction_count = 0
             
             for i, product in enumerate(products, 1):
                 brand = product.get('brand', 'Unknown')
-                name = product.get('full_name', 'Unknown')[:40]
-                print(f"[{i:2}/{len(products)}] {brand} - {name}")
+                product_name = product.get('full_name', 'Unknown')
+                category = product.get('category', '')
+                print(f"[{i:2}/{len(products)}] {brand} - {product_name[:40]}")
                 
                 result = self.select_image_for_product(product, images_dir, index=i)
                 
@@ -637,14 +714,31 @@ class ImageSelector:
                     'confidence': result.selection_confidence,
                     'reasoning': result.selection_reasoning,
                 }
+                product['front_extraction'] = None
                 
+                # Apply front extraction if download succeeded
                 if result.local_image_path:
                     success_count += 1
+                    
+                    final_path, extraction_metadata = self._extract_front_from_image(
+                        image_path=Path(result.local_image_path),
+                        brand=brand,
+                        product_name=product_name,
+                        category=category
+                    )
+                    product['local_image_path'] = str(final_path)
+                    product['front_extraction'] = extraction_metadata
+                    
+                    if extraction_metadata and extraction_metadata.get('extracted'):
+                        extraction_count += 1
                 
                 updated_products.append(product)
         
         print("-" * 70)
-        print(f"[ImageSelector] Complete: {success_count}/{len(products)} images downloaded")
+        summary = f"[ImageSelector] Complete: {success_count}/{len(products)} images downloaded"
+        if self._front_extractor:
+            summary += f", {extraction_count} fronts extracted"
+        print(summary)
         
         return updated_products
     

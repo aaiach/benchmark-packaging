@@ -1,0 +1,28 @@
+Analyze this product image and identify the front-facing view of the packaging.
+
+**Product Context:**
+- Brand: {brand}
+- Product: {product_name}
+- Category: {category}
+
+**Your Task:**
+
+1. Examine the image and identify what type of product shot this is (front-facing, angled, multiple items, lifestyle, etc.)
+
+2. Determine if a front-facing view can be extracted:
+   - Is the front face of the packaging visible?
+   - Can you clearly identify the boundaries?
+   - Is there a single main product to extract?
+
+3. If extraction is possible, provide PRECISE bounding box coordinates:
+   - Format: [ymin, xmin, ymax, xmax] normalized to 0-1000 scale
+   - Include the ENTIRE front face with minimal padding
+   - Exclude external marketing elements, shadows, reflections
+
+4. Explain your analysis and any notable observations about the image composition.
+
+**Remember:**
+- The bounding box will be used for DIRECT PIXEL CROPPING - no perspective correction
+- For angled products, select the rectangular area that best captures the front face
+- For multiple products, isolate the MAIN product only
+- Accuracy of coordinates is critical - the crop will be exactly as you specify
