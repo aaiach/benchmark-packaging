@@ -1,5 +1,5 @@
 export const LANDING_EXAMPLES = [
-  'sel_de_guérande_20260124_131125',
-  'Bougie_de_luxe_20260123_181251',
-  'Lait_davoine_20260122_182125'
+  'Gaspacho_20260124_151954',
+  'Chips_à_lancienne_20260124_152124',
+  'Gel_hydroalcoolique_20260124_152559'
 ];
