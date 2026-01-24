@@ -13,7 +13,7 @@ import { api } from '../api/client';
 export function JobStatus() {
   const { jobId } = useParams<{ jobId: string }>();
   const navigate = useNavigate();
-  const { status, loading, error, isComplete, isFailed, refresh } = useJobStatus(jobId || null);
+  const { status, loading, error, isComplete, isFailed, refetch } = useJobStatus(jobId || null);
   const [showEmailModal, setShowEmailModal] = useState(false);
 
   // Check for DRAFT status to show modal
@@ -34,7 +34,7 @@ export function JobStatus() {
     try {
         await api.scraper.start(jobId, email);
         // Refresh status to update from DRAFT to PENDING
-        refresh();
+        refetch();
     } catch (err) {
         console.error("Failed to start job after email:", err);
         // Optionally show an error toast here

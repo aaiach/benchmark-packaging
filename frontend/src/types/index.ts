@@ -135,7 +135,7 @@ export type CategoryListItem = {
 
 // --- Job Types ---
 
-export type JobState = 'PENDING' | 'STARTED' | 'PROGRESS' | 'SUCCESS' | 'FAILURE';
+export type JobState = 'DRAFT' | 'PENDING' | 'STARTED' | 'PROGRESS' | 'SUCCESS' | 'FAILURE';
 
 export type JobStatus = {
   job_id: string;

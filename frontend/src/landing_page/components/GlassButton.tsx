@@ -3,9 +3,14 @@ import { motion } from 'framer-motion';
 import { cn } from '../../lib/utils';
 import { Loader2 } from 'lucide-react';
 
-interface GlassButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface GlassButtonProps {
   variant?: 'primary' | 'secondary' | 'ghost';
   isLoading?: boolean;
+  children?: React.ReactNode;
+  className?: string;
+  disabled?: boolean;
+  type?: 'button' | 'submit' | 'reset';
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
 }
 
 export const GlassButton: React.FC<GlassButtonProps> = ({ 
@@ -14,7 +19,8 @@ export const GlassButton: React.FC<GlassButtonProps> = ({
   variant = 'primary',
   isLoading,
   disabled,
-  ...props 
+  type,
+  onClick,
 }) => {
   const variants = {
     primary: "bg-black/80 text-white hover:bg-black border border-transparent shadow-lg",
@@ -24,6 +30,8 @@ export const GlassButton: React.FC<GlassButtonProps> = ({
 
   return (
     <motion.button
+      type={type}
+      onClick={onClick}
       className={cn(
         "relative flex items-center justify-center rounded-xl px-6 py-3 font-medium transition-all duration-200",
         "disabled:opacity-50 disabled:cursor-not-allowed",
@@ -33,7 +41,6 @@ export const GlassButton: React.FC<GlassButtonProps> = ({
       whileHover={!disabled && !isLoading ? { scale: 1.02 } : undefined}
       whileTap={!disabled && !isLoading ? { scale: 0.98 } : undefined}
       disabled={disabled || isLoading}
-      {...props}
     >
       {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
       {children}
