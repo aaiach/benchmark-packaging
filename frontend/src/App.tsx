@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { Categories, CategoryAnalysis, JobStatus, LandingPage } from './pages';
+import { Categories, CategoryAnalysis, JobStatus, LandingPage, SingleImageAnalysis, SingleImageResult } from './pages';
 
 import { AmbientBackground } from './components/atoms';
 
@@ -37,6 +37,10 @@ export default function App() {
 
         {/* Job progress page */}
         <Route path="/jobs/:jobId" element={<JobStatus />} />
+
+        {/* Single image analysis */}
+        <Route path="/analyze" element={<SingleImageAnalysis />} />
+        <Route path="/analyze/:jobId" element={<SingleImageResult />} />
 
         {/* Catch-all redirect to home */}
         <Route path="*" element={<Navigate to="/" replace />} />

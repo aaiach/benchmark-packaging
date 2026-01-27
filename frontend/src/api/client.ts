@@ -4,7 +4,7 @@
  * This module provides typed methods for all backend API endpoints.
  */
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 export class ApiError extends Error {
   constructor(public status: number, message: string) {
@@ -110,5 +110,47 @@ export const api = {
      * Check API health
      */
     check: () => request<{ status: string; service: string; version: string }>('/api/health'),
+  },
+
+  imageAnalysis: {
+    /**
+     * Upload an image for visual analysis
+     */
+    upload: async (file: File, brand?: string, productName?: string) => {
+      const formData = new FormData();
+      formData.append('file', file);
+      if (brand) formData.append('brand', brand);
+      if (productName) formData.append('product_name', productName);
+
+      const url = `${API_URL}/api/image-analysis/upload`;
+      
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          body: formData,
+          // Note: Don't set Content-Type header - browser will set it with boundary
+        });
+
+        if (!response.ok) {
+          const error = await response.json().catch(() => ({ error: 'Unknown error' }));
+          throw new ApiError(response.status, error.error || response.statusText);
+        }
+
+        return response.json() as Promise<{ job_id: string; status: string; message: string }>;
+      } catch (error) {
+        if (error instanceof ApiError) throw error;
+        throw new ApiError(0, 'Network error - could not connect to API server');
+      }
+    },
+
+    /**
+     * Get status of image analysis job
+     */
+    getStatus: (jobId: string) => request<any>(`/api/image-analysis/status/${jobId}`),
+
+    /**
+     * Get full analysis result for a completed job
+     */
+    getResult: (jobId: string) => request<any>(`/api/image-analysis/result/${jobId}`),
   },
 };
