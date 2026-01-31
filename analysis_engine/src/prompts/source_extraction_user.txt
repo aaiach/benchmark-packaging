@@ -1,0 +1,26 @@
+Extract the brand elements from this source packaging image.
+
+BRAND IDENTITY & CONSTRAINTS:
+{brand_identity}
+
+Based on the above identity and constraints, extract all relevant visual elements that should be preserved or used in rebranding.
+
+For EACH element, provide:
+1. element_id - Unique identifier (logo, brand_text, product_name, trust_mark_1, etc.)
+2. element_type - logo, text, trust_mark, product_image, icon, badge, pattern, decorative
+3. content - Exact text or description
+4. position - Location on packaging
+5. box_2d - Bounding box as [ymin, xmin, ymax, xmax] normalized to 0-1000 scale
+6. visual_description - Colors (hex), fonts, style details
+7. size_percentage - % of image area
+8. hierarchy_level - Importance 1-5
+
+Also provide:
+- brand_name: The brand name as it appears
+- product_name: The product/variant name
+- available_claims: List ALL claims, certifications, trust marks visible (e.g., "Sans sucre ajouté", "100% végétal", "Bio", flags, etc.)
+- color_palette: Brand colors with hex codes and usage
+
+The bounding boxes must be precise enough for pixel-perfect cropping of each element.
+
+Extract elements that match what the brand identity says should be preserved.

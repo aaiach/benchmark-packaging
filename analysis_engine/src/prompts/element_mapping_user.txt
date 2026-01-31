@@ -1,0 +1,43 @@
+Create a complete element-by-element mapping for rebranding.
+
+{inspiration_elements}
+
+{source_elements}
+
+{composition}
+
+## BRAND IDENTITY & CONSTRAINTS
+{brand_identity}
+
+## SOURCE BRAND INFO
+- Brand Name: {source_brand}
+- Product Name: {source_product}
+- Available Claims: {source_claims}
+
+## MAPPING TASK
+
+Inspiration element IDs to map: {inspiration_element_ids}
+Source element IDs available: {source_element_ids}
+
+You MUST create exactly {total_mappings_needed} mapping entries - one for each inspiration element.
+
+For each mapping, decide:
+- **keep**: Use inspiration element (for generic/decorative elements)
+- **replace**: Use source element or constraint text (for brand-specific elements)
+- **omit**: Remove (only if constraints explicitly forbid something)
+
+When action is "replace":
+- replacement_source: The source element_id OR "constraint_text"
+- replacement_content: The actual content to use
+
+Include detailed styling_notes for how each element should appear (colors, fonts, positioning adjustments).
+
+The composition_description must describe the final layout precisely:
+- Exact positions of each element
+- Visual hierarchy
+- Spacing and alignment
+- Color application
+
+Use source brand colors in the color_scheme output.
+
+Output valid JSON only.

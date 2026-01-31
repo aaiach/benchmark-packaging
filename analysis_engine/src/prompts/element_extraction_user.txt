@@ -1,0 +1,30 @@
+Analyze this packaging image and extract ALL visual elements.
+
+For EACH element, provide:
+1. element_id - Unique identifier (text_1, text_2, logo, trust_mark_1, product_image, etc.)
+2. element_type - text, logo, trust_mark, product_image, illustration, icon, pattern, badge, background, decorative
+3. content - EXACT text (for text elements) or detailed description (for visual elements)
+4. position - Where on the packaging (top-left, top-center, top-right, center-left, center, center-right, bottom-left, bottom-center, bottom-right)
+5. box_2d - Bounding box as [ymin, xmin, ymax, xmax] normalized to 0-1000 scale
+6. visual_description - Colors (with hex codes), fonts, textures, effects, styling
+7. size_percentage - Approximate % of total image area
+8. hierarchy_level - Visual prominence from 1 (most important) to 5
+
+Also provide:
+
+COMPOSITION:
+- layout_type: Overall layout structure (centered, asymmetric, grid, diagonal, etc.)
+- visual_flow: How the eye moves (top-to-bottom, Z-pattern, circular, etc.)
+- balance: symmetric, asymmetric, or radial
+- dominant_zone: Where the visual weight is concentrated
+- whitespace_zones: List of areas with breathing room
+- overall_style: Design aesthetic (minimalist, premium, playful, organic, etc.)
+
+COLOR_PALETTE:
+For each distinct color:
+- hex_code: The exact hex value
+- color_name: Descriptive name
+- usage: Where/how it's used
+- coverage_percentage: Approximate surface coverage
+
+Be thorough - extract EVERY element visible on the packaging. Small text, tiny icons, background patterns - everything.

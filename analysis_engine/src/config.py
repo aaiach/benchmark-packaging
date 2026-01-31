@@ -166,6 +166,41 @@ class FrontExtractionConfig:
         return key
 
 
+@dataclass
+class AnthropicConfig:
+    """Configuration for Anthropic Claude (Rebrand Prompt Generation)."""
+    model: str = "claude-opus-4-5"  # Latest Opus 4.5 model
+    temperature: float = 0.7  # Some creativity for prompt generation
+    max_tokens: int = 8192  # Allow long detailed prompts
+    
+    @property
+    def api_key(self) -> str:
+        key = os.getenv("ANTHROPIC_API_KEY")
+        if not key:
+            raise ValueError("ANTHROPIC_API_KEY environment variable required")
+        return key
+
+
+@dataclass
+class GeminiImageGenConfig:
+    """Configuration for Gemini Image Generation (Rebrand Step 4).
+    
+    Uses Gemini 3 Pro Image Preview for high-quality image generation.
+    Supports aspect ratio and resolution (1K, 2K, 4K) configuration.
+    """
+    model: str = "gemini-3-pro-image-preview"  # Latest Gemini 3 Pro image model
+    temperature: float = 1.0  # Recommended for Gemini models
+    default_aspect_ratio: str = "1:1"  # Default aspect ratio
+    default_image_size: str = "1K"  # 1K, 2K, or 4K
+    
+    @property
+    def api_key(self) -> str:
+        key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
+        if not key:
+            raise ValueError("GOOGLE_API_KEY or GEMINI_API_KEY environment variable required")
+        return key
+
+
 # =============================================================================
 # Pipeline Configuration
 # =============================================================================
@@ -183,6 +218,8 @@ class DiscoveryConfig:
     openai_mini: OpenAIMiniConfig = field(default_factory=OpenAIMiniConfig)
     gemini_vision: GeminiVisionConfig = field(default_factory=GeminiVisionConfig)
     front_extraction: FrontExtractionConfig = field(default_factory=FrontExtractionConfig)
+    anthropic: AnthropicConfig = field(default_factory=AnthropicConfig)
+    gemini_image_gen: GeminiImageGenConfig = field(default_factory=GeminiImageGenConfig)
     
     # Parallelization settings
     parallel: ParallelizationConfig = field(default_factory=ParallelizationConfig)

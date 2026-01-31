@@ -24,7 +24,8 @@ def make_celery() -> Celery:
         backend=result_backend,
         include=[
             'api.src.tasks.scraper_tasks',
-            'api.src.tasks.image_analysis_tasks'
+            'api.src.tasks.image_analysis_tasks',
+            'api.src.tasks.rebrand_tasks'
         ]
     )
 

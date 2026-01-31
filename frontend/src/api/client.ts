@@ -152,5 +152,57 @@ export const api = {
      * Get full analysis result for a completed job
      */
     getResult: (jobId: string) => request<any>(`/api/image-analysis/result/${jobId}`),
+
+    /**
+     * List all completed analyses
+     */
+    listAnalyses: () => request<{ analyses: any[] }>(`/api/image-analysis/list`),
+  },
+
+  rebrand: {
+    /**
+     * Start a rebrand job with two images
+     */
+    start: async (sourceFile: File, inspirationFile: File, brandIdentity: string) => {
+      const formData = new FormData();
+      formData.append('source_image', sourceFile);
+      formData.append('inspiration_image', inspirationFile);
+      formData.append('brand_identity', brandIdentity);
+
+      const url = `${API_URL}/api/rebrand/start`;
+      
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          body: formData,
+          // Note: Don't set Content-Type header - browser will set it with boundary
+        });
+
+        if (!response.ok) {
+          const error = await response.json().catch(() => ({ error: 'Unknown error' }));
+          throw new ApiError(response.status, error.error || response.statusText);
+        }
+
+        return response.json() as Promise<{ job_id: string; status: string; message: string }>;
+      } catch (error) {
+        if (error instanceof ApiError) throw error;
+        throw new ApiError(0, 'Network error - could not connect to API server');
+      }
+    },
+
+    /**
+     * Get status of rebrand job
+     */
+    getStatus: (jobId: string) => request<any>(`/api/rebrand/status/${jobId}`),
+
+    /**
+     * Get full rebrand result for a completed job
+     */
+    getResult: (jobId: string) => request<any>(`/api/rebrand/result/${jobId}`),
+
+    /**
+     * List all completed rebrand jobs
+     */
+    list: () => request<{ jobs: any[] }>(`/api/rebrand/list`),
   },
 };

@@ -1,0 +1,18 @@
+Create a product packaging design following these specifications.
+
+{composition_instructions}
+
+## IMAGE SPECIFICATIONS
+
+- Dimensions: approximately {target_width}x{target_height} pixels
+- Style: Professional product packaging photography
+- Quality: High resolution, clean edges, photorealistic
+
+## PROVIDED ELEMENTS
+
+You have been given {num_crops} cropped element images. These are the actual visual assets to incorporate:
+- Place each provided image at its described position
+- Maintain the original look of logos and brand marks
+- Preserve the quality and details of product images
+
+The output should be a single, professional packaging image ready for commercial use.

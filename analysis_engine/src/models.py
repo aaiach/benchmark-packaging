@@ -646,6 +646,276 @@ class VisualHierarchyAnalysis(BaseModel):
 
 
 # =============================================================================
+# Pydantic Models for 4-Step Rebrand Pipeline
+# =============================================================================
+
+class ElementBoundingBox(BaseModel):
+    """Normalized coordinates (0-1000 scale) for element cropping."""
+    xmin: int = Field(
+        description="Left edge X coordinate (0-1000 scale)",
+        ge=0,
+        le=1000
+    )
+    ymin: int = Field(
+        description="Top edge Y coordinate (0-1000 scale)",
+        ge=0,
+        le=1000
+    )
+    xmax: int = Field(
+        description="Right edge X coordinate (0-1000 scale)",
+        ge=0,
+        le=1000
+    )
+    ymax: int = Field(
+        description="Bottom edge Y coordinate (0-1000 scale)",
+        ge=0,
+        le=1000
+    )
+
+
+class ExtractedElement(BaseModel):
+    """A single visual element extracted from an image with bounding box for cropping."""
+    element_id: str = Field(
+        description="Unique identifier (e.g., 'text_1', 'logo', 'trust_mark_1', 'product_image')"
+    )
+    element_type: Literal[
+        "text", "logo", "trust_mark", "product_image", 
+        "illustration", "icon", "pattern", "badge", "background", "decorative"
+    ] = Field(
+        description="Type of visual element"
+    )
+    content: str = Field(
+        description="Exact text content (for text elements) or visual description (for images)"
+    )
+    position: str = Field(
+        description="Position on packaging: 'top-left', 'top-center', 'top-right', 'center-left', 'center', 'center-right', 'bottom-left', 'bottom-center', 'bottom-right'"
+    )
+    bounding_box: ElementBoundingBox = Field(
+        description="Bounding box coordinates for cropping this element"
+    )
+    visual_description: str = Field(
+        description="Detailed visual description: colors (hex), fonts, style, effects"
+    )
+    size_percentage: float = Field(
+        description="Approximate percentage of image area occupied (0-100)",
+        ge=0,
+        le=100
+    )
+    hierarchy_level: int = Field(
+        description="Visual hierarchy level: 1 (most prominent) to 5 (least prominent)",
+        ge=1,
+        le=5
+    )
+
+
+class CompositionDescription(BaseModel):
+    """Overall composition structure of a packaging image."""
+    layout_type: str = Field(
+        description="Layout structure (e.g., 'centered', 'asymmetric', 'grid', 'diagonal')"
+    )
+    visual_flow: str = Field(
+        description="Eye movement pattern (e.g., 'top-to-bottom', 'Z-pattern', 'circular')"
+    )
+    balance: str = Field(
+        description="Visual balance type: 'symmetric', 'asymmetric', 'radial'"
+    )
+    dominant_zone: str = Field(
+        description="Area with highest visual weight"
+    )
+    whitespace_zones: List[str] = Field(
+        description="Areas with breathing room/empty space"
+    )
+    overall_style: str = Field(
+        description="Design style (e.g., 'minimalist', 'premium', 'playful', 'organic')"
+    )
+
+
+class ColorInfo(BaseModel):
+    """Color information with hex code and usage."""
+    hex_code: str = Field(
+        description="Hex color code (e.g., '#FF5733')"
+    )
+    color_name: str = Field(
+        description="Descriptive color name (e.g., 'Deep Navy Blue')"
+    )
+    usage: str = Field(
+        description="Where this color is used (e.g., 'background', 'primary text', 'accent')"
+    )
+    coverage_percentage: Optional[int] = Field(
+        None,
+        description="Approximate percentage of surface using this color"
+    )
+
+
+class InspirationExtraction(BaseModel):
+    """Step 1 output: All elements extracted from inspiration image."""
+    elements: List[ExtractedElement] = Field(
+        description="All visual elements extracted with bounding boxes"
+    )
+    composition: CompositionDescription = Field(
+        description="Overall composition structure"
+    )
+    color_palette: List[ColorInfo] = Field(
+        description="Color palette extracted from the image"
+    )
+    total_elements: int = Field(
+        description="Total number of elements extracted"
+    )
+    image_dimensions: Optional[Dict[str, int]] = Field(
+        None,
+        description="Original image dimensions (width, height)"
+    )
+
+
+class SourceExtraction(BaseModel):
+    """Step 2 output: Elements extracted from source image matching constraints."""
+    elements: List[ExtractedElement] = Field(
+        description="Visual elements extracted based on brand identity"
+    )
+    brand_name: str = Field(
+        description="Detected brand name"
+    )
+    product_name: str = Field(
+        description="Detected product name"
+    )
+    available_claims: List[str] = Field(
+        description="List of claims/trust marks available from source"
+    )
+    color_palette: List[ColorInfo] = Field(
+        description="Brand color palette"
+    )
+    total_elements: int = Field(
+        description="Total number of elements extracted"
+    )
+
+
+class ElementMappingEntry(BaseModel):
+    """Step 3: Single mapping decision for one inspiration element."""
+    inspiration_element_id: str = Field(
+        description="References the element_id from InspirationExtraction"
+    )
+    action: Literal["keep", "replace", "omit"] = Field(
+        description="Action to take: keep inspiration element, replace with source, or omit"
+    )
+    replacement_source: Optional[str] = Field(
+        None,
+        description="If action='replace': source element_id OR literal text from constraints"
+    )
+    replacement_content: Optional[str] = Field(
+        default="",
+        description="The actual content to use (element content or constraint text). Empty for keep/omit actions."
+    )
+    styling_notes: Optional[str] = Field(
+        default="",
+        description="How to style the element (colors, fonts, positioning adjustments)"
+    )
+    reasoning: Optional[str] = Field(
+        None,
+        description="Brief explanation of why this mapping decision was made"
+    )
+
+
+class RebrandColorScheme(BaseModel):
+    """Color scheme for the rebranded output."""
+    primary: str = Field(description="Primary brand color hex")
+    secondary: str = Field(description="Secondary color hex")
+    background: str = Field(description="Background color hex")
+    text_primary: str = Field(description="Primary text color hex")
+    text_secondary: Optional[str] = Field(None, description="Secondary text color hex")
+    accent: Optional[str] = Field(None, description="Accent color hex")
+
+
+class RebrandMapping(BaseModel):
+    """Step 3 output: Complete element-by-element mapping."""
+    mappings: List[ElementMappingEntry] = Field(
+        description="Mapping for each inspiration element"
+    )
+    composition_description: str = Field(
+        description="Textual description of final composition with precise positioning"
+    )
+    color_scheme: RebrandColorScheme = Field(
+        description="Color scheme for the rebranded output"
+    )
+    assembly_notes: str = Field(
+        description="Additional notes for assembling the final image"
+    )
+
+
+class RebrandStepResult(BaseModel):
+    """Verbose output for a single pipeline step - for frontend visualization."""
+    step_name: str = Field(
+        description="Step identifier: 'inspiration_extraction', 'source_extraction', 'element_mapping', 'image_generation'"
+    )
+    step_number: int = Field(
+        description="Step number (1-4)",
+        ge=1,
+        le=4
+    )
+    status: Literal["pending", "in_progress", "complete", "error"] = Field(
+        description="Current status of this step"
+    )
+    duration_ms: Optional[int] = Field(
+        None,
+        description="Duration in milliseconds (once complete)"
+    )
+    input_summary: str = Field(
+        description="Brief description of inputs to this step"
+    )
+    output_summary: str = Field(
+        description="Brief description of outputs from this step"
+    )
+    details: Dict[str, Any] = Field(
+        default_factory=dict,
+        description="Step-specific detailed data"
+    )
+    cropped_images: List[str] = Field(
+        default_factory=list,
+        description="URLs/paths to cropped element images (for steps 1 & 2)"
+    )
+    error_message: Optional[str] = Field(
+        None,
+        description="Error message if status='error'"
+    )
+
+
+class RebrandResult(BaseModel):
+    """Complete rebrand pipeline result with all intermediate step data."""
+    status: Literal["success", "error", "partial"] = Field(
+        description="Overall pipeline status"
+    )
+    job_id: str = Field(
+        description="Unique job identifier"
+    )
+    steps: List[RebrandStepResult] = Field(
+        description="Results from each pipeline step"
+    )
+    generated_image_path: Optional[str] = Field(
+        None,
+        description="Path to final generated image"
+    )
+    source_image_path: str = Field(
+        description="Path to original source image"
+    )
+    inspiration_image_path: str = Field(
+        description="Path to original inspiration image"
+    )
+    brand_identity: str = Field(
+        description="Brand identity text provided by user"
+    )
+    created_at: str = Field(
+        description="ISO timestamp of job creation"
+    )
+    completed_at: Optional[str] = Field(
+        None,
+        description="ISO timestamp of job completion"
+    )
+    errors: List[str] = Field(
+        default_factory=list,
+        description="List of error messages if any"
+    )
+
+
+# =============================================================================
 # Dataclass for Internal Product Representation
 # =============================================================================
 

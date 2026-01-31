@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import {
   ArrowLeft,
   Eye,
@@ -10,14 +9,12 @@ import {
   ShieldCheck,
   Lightbulb,
   RefreshCw,
-  Image as ImageIcon,
   ChevronRight,
 } from 'lucide-react';
 import { api, API_URL } from '../api/client';
 import { Spinner, Badge, Card, SectionTitle, Footer } from '../components/atoms';
 import { ColorPalette, EyeTrackingFlow } from '../components/molecules';
-import { JobProgress } from '../components/organisms';
-import type { VisualAnalysis, JobStatus as JobStatusType } from '../types';
+import type { VisualAnalysis } from '../types';
 
 type TabId = 'visual' | 'strategy';
 
@@ -34,75 +31,58 @@ function getImageUrl(path: string | undefined): string | undefined {
 
 /**
  * Single image analysis result page.
- * Shows job progress while analyzing, then displays full visual analysis.
+ * Displays full visual analysis for a completed analysis.
+ * This page is result-only - for job progress, see SingleImageProgress.
  */
 export function SingleImageResult() {
-  const { jobId } = useParams<{ jobId: string }>();
-  const [status, setStatus] = useState<JobStatusType | null>(null);
+  const { analysisId } = useParams<{ analysisId: string }>();
   const [result, setResult] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<TabId>('visual');
 
-  // Poll for status
+  // Load result directly
   useEffect(() => {
-    if (!jobId) return;
+    if (!analysisId) return;
 
     let isMounted = true;
-    let pollInterval: ReturnType<typeof setInterval>;
 
-    const fetchStatus = async () => {
+    const fetchResult = async () => {
       try {
-        const statusResponse = await api.imageAnalysis.getStatus(jobId);
-        
-        if (!isMounted) return;
-
-        setStatus(statusResponse);
-        setLoading(false);
-
-        // If completed, fetch full result
-        if (statusResponse.state === 'SUCCESS') {
-          clearInterval(pollInterval);
-          try {
-            const resultResponse = await api.imageAnalysis.getResult(jobId);
-            if (isMounted) {
-              setResult(resultResponse);
-            }
-          } catch (resultErr: any) {
-            if (isMounted) {
-              setError(resultErr.message || 'Erreur lors de la récupération des résultats');
-            }
-          }
-        } else if (statusResponse.state === 'FAILURE') {
-          clearInterval(pollInterval);
-          setError(statusResponse.error || 'L\'analyse a échoué');
+        const resultResponse = await api.imageAnalysis.getResult(analysisId);
+        if (isMounted) {
+          setResult(resultResponse);
+          setLoading(false);
         }
       } catch (err: any) {
         if (isMounted) {
-          setError(err.message || 'Erreur lors de la récupération du statut');
+          if (err.status === 404) {
+            setError('Analyse non trouvée');
+          } else if (err.status === 202) {
+            // Analysis still in progress - redirect to progress page
+            window.location.href = `/analyze/${analysisId}`;
+            return;
+          } else {
+            setError(err.message || 'Erreur lors de la récupération des résultats');
+          }
           setLoading(false);
         }
       }
     };
 
-    // Initial fetch
-    fetchStatus();
-
-    // Poll every 2 seconds while in progress
-    pollInterval = setInterval(fetchStatus, 2000);
+    fetchResult();
 
     return () => {
       isMounted = false;
-      clearInterval(pollInterval);
     };
-  }, [jobId]);
+  }, [analysisId]);
 
-  // No job ID
-  if (!jobId) {
+  // No analysis ID
+  if (!analysisId) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Card className="text-center py-8 max-w-md bg-white/50 border-white/60">
-          <div className="text-red-500 text-xl mb-4 font-bold">Aucun ID de tâche fourni</div>
+          <div className="text-red-500 text-xl mb-4 font-bold">Aucun ID d'analyse fourni</div>
           <Link to="/analyze">
             <button className="px-6 py-3 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition-colors">
               Nouvelle analyse
@@ -113,25 +93,25 @@ export function SingleImageResult() {
     );
   }
 
-  // Loading initial status
-  if (loading && !status) {
+  // Loading
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4">
           <Spinner size="lg" />
-          <div className="text-gray-600 text-lg font-medium">Chargement du statut...</div>
+          <div className="text-gray-600 text-lg font-medium">Chargement des résultats...</div>
         </div>
       </div>
     );
   }
 
   // Error state
-  if (error && !result) {
+  if (error || !result) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
         <Card className="text-center py-8 max-w-md bg-white/50 border-white/60">
           <div className="text-red-500 text-xl mb-2 font-bold">Erreur</div>
-          <div className="text-gray-500 text-sm mb-6">{error}</div>
+          <div className="text-gray-500 text-sm mb-6">{error || 'Aucun résultat disponible'}</div>
           <div className="flex gap-4 justify-center">
             <button 
               onClick={() => window.location.reload()}
@@ -147,43 +127,6 @@ export function SingleImageResult() {
             </Link>
           </div>
         </Card>
-      </div>
-    );
-  }
-
-  // Still processing - show progress
-  if (status && status.state !== 'SUCCESS') {
-    return (
-      <div className="min-h-screen flex flex-col font-sans">
-        <div className="flex-1 p-8 md:p-12">
-          <div className="max-w-2xl mx-auto space-y-8">
-            {/* Back link */}
-            <Link 
-              to="/analyze" 
-              className="inline-flex items-center gap-2 text-gray-500 hover:text-gray-900 transition-colors"
-            >
-              <ArrowLeft size={16} />
-              <span className="text-sm font-medium">Nouvelle analyse</span>
-            </Link>
-
-            {/* Header */}
-            <header className="space-y-2">
-              <h1 className="text-3xl font-bold text-gray-900">Analyse en cours</h1>
-              <p className="text-gray-500 text-sm">
-                Notre IA analyse votre image. Veuillez patienter quelques instants...
-              </p>
-            </header>
-
-            {/* Progress Card */}
-            <JobProgress job={status} />
-
-            {/* Info */}
-            <div className="text-sm text-gray-500 text-center bg-white/30 p-3 rounded-xl border border-white/40 backdrop-blur-sm">
-              Cette page se met à jour automatiquement.
-            </div>
-          </div>
-        </div>
-        <Footer variant="light" />
       </div>
     );
   }
