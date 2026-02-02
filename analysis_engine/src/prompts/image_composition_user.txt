@@ -10,9 +10,22 @@ Create a product packaging design following these specifications.
 
 ## PROVIDED ELEMENTS
 
-You have been given {num_crops} cropped element images. These are the actual visual assets to incorporate:
-- Place each provided image at its described position
-- Maintain the original look of logos and brand marks
-- Preserve the quality and details of product images
+You have been given {num_crops} cropped element images:
 
-The output should be a single, professional packaging image ready for commercial use.
+**USE DIRECTLY (brand assets):**
+- Logos and brand marks → incorporate exactly as provided
+- Product images → use as provided
+
+**RECREATE IN TARGET STYLE (do not copy):**
+- Illustrations → Create NEW artwork inspired by the concept, in the target brand style
+- Patterns → Design NEW patterns using the specified colors
+- Decorative elements → Draw NEW decorative elements matching the aesthetic
+
+## CRITICAL REMINDERS
+
+1. **NEVER** copy decorative elements, illustrations, or patterns from the reference images
+2. **ALWAYS** recreate non-brand visual elements fresh in the specified style
+3. The final design should look like it was created entirely for the target brand
+4. Only logos and explicit brand marks should come from provided images
+
+The output should be a single, professional packaging image that looks authentically designed for the target brand.

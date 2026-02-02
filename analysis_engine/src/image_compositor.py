@@ -169,15 +169,21 @@ def format_mapping_for_generation(
         position = coords_to_natural_position(bbox.xmin, bbox.ymin, bbox.xmax, bbox.ymax)
         size = coords_to_size_description(bbox.xmin, bbox.ymin, bbox.xmax, bbox.ymax)
         
-        if entry.action == "keep":
-            lines.append(f"**Element {element_num}: {insp_elem.element_type.upper()}**")
+        if entry.action == "adapt" or entry.action == "keep":
+            # ADAPT: Recreate element in source style - DO NOT copy original
+            lines.append(f"**Element {element_num}: {insp_elem.element_type.upper()} (CREATE NEW)**")
             lines.append(f"- Position: {position}")
             lines.append(f"- Size: {size}")
-            lines.append(f"- Content: Keep the original {insp_elem.element_type} showing \"{insp_elem.content}\"")
-            if entry.inspiration_element_id in inspiration_crops:
-                lines.append(f"- Use the provided cropped image for this element")
+            
+            # Describe what to create conceptually
+            concept = entry.adaptation_concept if hasattr(entry, 'adaptation_concept') and entry.adaptation_concept else insp_elem.content
+            lines.append(f"- Concept: Create a NEW {insp_elem.element_type} representing \"{concept}\"")
+            lines.append(f"- **IMPORTANT: DO NOT copy the original - design fresh artwork in the target brand style**")
+            
             if entry.styling_notes:
-                lines.append(f"- Style notes: {entry.styling_notes}")
+                lines.append(f"- Style requirements: {entry.styling_notes}")
+            else:
+                lines.append(f"- Style: Match the target brand's visual language and color scheme")
             
         elif entry.action == "replace":
             lines.append(f"**Element {element_num}: {insp_elem.element_type.upper()} (REPLACED)**")
@@ -209,11 +215,13 @@ def format_mapping_for_generation(
         lines.append("")
     
     # Final instruction
-    lines.append("## IMPORTANT")
+    lines.append("## CRITICAL REQUIREMENTS")
+    lines.append("- **NEVER COPY** decorative elements, illustrations, or patterns from references")
+    lines.append("- CREATE ALL decorative elements FRESH in the target brand's style")
+    lines.append("- Only use provided source brand images (logos, product images) directly")
     lines.append("- Maintain the relative positions of all elements as described")
-    lines.append("- Use the provided cropped images where indicated")
     lines.append("- Ensure text is crisp and readable")
-    lines.append("- Create a cohesive, professional packaging design")
+    lines.append("- The final design should look authentically created for the target brand")
     
     return "\n".join(lines)
 
@@ -227,24 +235,28 @@ def select_crops_for_generation(
     
     Returns only the crops that are actually needed based on the mapping.
     
+    IMPORTANT: For "adapt" actions, we do NOT send the inspiration crop.
+    The model should CREATE NEW artwork, not copy existing elements.
+    Only "replace" actions with source references get their crops included.
+    
     Args:
         mapping: The element-by-element mapping
-        inspiration_crops: All inspiration crop paths
+        inspiration_crops: All inspiration crop paths (NOT USED for adapt actions)
         source_crops: All source crop paths
         
     Returns:
-        List of paths to include in generation
+        List of paths to include in generation (only source brand assets)
     """
     needed_crops = []
     
     for entry in mapping.mappings:
-        if entry.action == "keep":
-            # Need the inspiration crop
-            if entry.inspiration_element_id in inspiration_crops:
-                needed_crops.append(inspiration_crops[entry.inspiration_element_id])
+        if entry.action == "adapt" or entry.action == "keep":
+            # DO NOT send inspiration crops for adapt actions
+            # The model must create new artwork, not copy
+            pass
                 
         elif entry.action == "replace":
-            # Need the source crop if it references one
+            # Only send source crop if it's a brand asset (logo, product image)
             if entry.replacement_source and entry.replacement_source in source_crops:
                 needed_crops.append(source_crops[entry.replacement_source])
     

@@ -22,13 +22,19 @@ Source element IDs available: {source_element_ids}
 You MUST create exactly {total_mappings_needed} mapping entries - one for each inspiration element.
 
 For each mapping, decide:
-- **keep**: Use inspiration element (for generic/decorative elements)
-- **replace**: Use source element or constraint text (for brand-specific elements)
+- **adapt**: REINTERPRET the inspiration element in the source brand's style (for decorative/illustrative elements)
+- **replace**: Use source element or constraint text (for brand-specific elements like logos, text, certifications)
 - **omit**: Remove (only if constraints explicitly forbid something)
+
+**CRITICAL: NEVER COPY inspiration elements literally. All decorative elements must be RECREATED in the source brand's visual style.**
 
 When action is "replace":
 - replacement_source: The source element_id OR "constraint_text"
 - replacement_content: The actual content to use
+
+When action is "adapt":
+- adaptation_concept: What the element represents (e.g., "leaf illustration", "wave pattern")
+- styling_notes: DETAILED instructions for recreating in source style (must reference source brand's colors, illustration style, constraints)
 
 Include detailed styling_notes for how each element should appear (colors, fonts, positioning adjustments).
 

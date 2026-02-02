@@ -4,7 +4,7 @@ This module uses Claude Opus 4.5 to create intelligent element-by-element
 mappings between inspiration and source elements.
 
 For each element in the inspiration, decides whether to:
-- keep: Use the inspiration element as-is
+- adapt: Recreate the inspiration element in the source brand's style (NOT copy)
 - replace: Replace with a source element or constraint text
 - omit: Remove the element (only if constraints forbid it)
 
@@ -177,13 +177,19 @@ def create_element_mapping(
         # Build mappings list
         mappings = []
         for mapping_data in result_data.get('mappings', []):
+            # Normalize action: 'keep' should be 'adapt' (never directly copy)
+            action = mapping_data.get('action', 'adapt')
+            if action == 'keep':
+                action = 'adapt'  # Convert legacy 'keep' to 'adapt'
+            
             mapping = ElementMappingEntry(
                 inspiration_element_id=mapping_data.get('inspiration_element_id', ''),
-                action=mapping_data.get('action', 'keep'),
+                action=action,
                 replacement_source=mapping_data.get('replacement_source'),
                 replacement_content=mapping_data.get('replacement_content', ''),
                 styling_notes=mapping_data.get('styling_notes', ''),
-                reasoning=mapping_data.get('reasoning')
+                reasoning=mapping_data.get('reasoning'),
+                adaptation_concept=mapping_data.get('adaptation_concept')  # New field for adapt actions
             )
             mappings.append(mapping)
         
@@ -207,12 +213,14 @@ def create_element_mapping(
         )
         
         # Log summary
-        actions = {'keep': 0, 'replace': 0, 'omit': 0}
+        actions = {'adapt': 0, 'replace': 0, 'omit': 0, 'keep': 0}
         for m in mappings:
             actions[m.action] = actions.get(m.action, 0) + 1
         
         print(f"  [✓] Created {len(mappings)} mappings")
-        print(f"    Keep: {actions['keep']}, Replace: {actions['replace']}, Omit: {actions['omit']}")
+        print(f"    Adapt: {actions['adapt']}, Replace: {actions['replace']}, Omit: {actions['omit']}")
+        if actions['keep'] > 0:
+            print(f"    [!] Warning: {actions['keep']} 'keep' actions detected - should be 'adapt' instead")
         
         return mapping_result, debug_info
         

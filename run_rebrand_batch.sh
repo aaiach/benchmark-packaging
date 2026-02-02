@@ -3,9 +3,26 @@
 # Batch Rebrand Script
 # =============================================================================
 # Runs rebrand tasks for all oat milk images against quinoat source image
+# Usage: ./run_rebrand_batch.sh [--limit N]
 # =============================================================================
 
 set -e
+
+# Parse arguments
+LIMIT=0  # 0 means no limit
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --limit|-l)
+            LIMIT="$2"
+            shift 2
+            ;;
+        *)
+            echo "Unknown option: $1"
+            echo "Usage: ./run_rebrand_batch.sh [--limit N]"
+            exit 1
+            ;;
+    esac
+done
 
 # Configuration
 API_URL="${API_URL:-http://localhost:5000}"
@@ -78,6 +95,13 @@ while IFS= read -r file; do
 done < <(find "$INSPIRATION_DIR" -maxdepth 1 -type f \( -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" -o -name "*.webp" \) | sort)
 
 echo ""
+
+# Apply limit if specified
+if [ "$LIMIT" -gt 0 ] && [ "$LIMIT" -lt "${#IMAGES[@]}" ]; then
+    IMAGES=("${IMAGES[@]:0:$LIMIT}")
+    echo "Limiting to first $LIMIT images"
+fi
+
 echo "Found ${#IMAGES[@]} images to process"
 echo "==========================================="
 echo ""

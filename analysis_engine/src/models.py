@@ -794,8 +794,8 @@ class ElementMappingEntry(BaseModel):
     inspiration_element_id: str = Field(
         description="References the element_id from InspirationExtraction"
     )
-    action: Literal["keep", "replace", "omit"] = Field(
-        description="Action to take: keep inspiration element, replace with source, or omit"
+    action: Literal["adapt", "replace", "omit", "keep"] = Field(
+        description="Action to take: adapt (recreate in source style), replace with source content, or omit. 'keep' is deprecated, use 'adapt'"
     )
     replacement_source: Optional[str] = Field(
         None,
@@ -803,11 +803,15 @@ class ElementMappingEntry(BaseModel):
     )
     replacement_content: Optional[str] = Field(
         default="",
-        description="The actual content to use (element content or constraint text). Empty for keep/omit actions."
+        description="The actual content to use (element content or constraint text). Empty for adapt/omit actions."
+    )
+    adaptation_concept: Optional[str] = Field(
+        None,
+        description="For action='adapt': what the element represents conceptually (e.g., 'leaf illustration', 'wave pattern')"
     )
     styling_notes: Optional[str] = Field(
         default="",
-        description="How to style the element (colors, fonts, positioning adjustments)"
+        description="How to style the element. For 'adapt': detailed instructions for recreating in source brand style"
     )
     reasoning: Optional[str] = Field(
         None,
