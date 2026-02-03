@@ -81,6 +81,8 @@ export type Product = {
   brand: string;
   name: string;
   image: string;
+  image_url?: string;
+  local_image_path?: string;
   heatmap: string;
   pod_scores: PodScore[];
   pop_status: PopStatus[];

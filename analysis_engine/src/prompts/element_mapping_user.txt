@@ -1,0 +1,55 @@
+Create a complete element-by-element mapping for rebranding.
+
+{inspiration_elements}
+
+{source_elements}
+
+{composition}
+
+## BRAND IDENTITY & CONSTRAINTS
+{brand_identity}
+
+## SOURCE BRAND INFO
+- Brand Name: {source_brand}
+- Product Name: {source_product}
+- Available Claims: {source_claims}
+
+## MAPPING TASK
+
+Inspiration element IDs to map: {inspiration_element_ids}
+Source element IDs available: {source_element_ids}
+
+You MUST create exactly {total_mappings_needed} mapping entries - one for each inspiration element.
+
+For each mapping, decide:
+- **adapt**: REINTERPRET the inspiration element in the source brand's style (for decorative/illustrative elements)
+- **replace**: Use source element or constraint text (for brand-specific elements like logos, text, certifications)
+- **omit**: Remove (only if constraints explicitly forbid something)
+
+**CRITICAL: NEVER COPY inspiration elements literally. All decorative elements must be RECREATED in the source brand's visual style.**
+
+When action is "replace":
+- replacement_source: The source element_id OR "constraint_text"
+- replacement_content: The actual content to use
+
+When action is "adapt":
+- adaptation_concept: What the element represents (e.g., "leaf illustration", "wave pattern")
+- styling_notes: DETAILED instructions for recreating in source style (must reference source brand's colors, illustration style, constraints)
+
+Include detailed styling_notes for how each element should appear (colors, fonts, positioning adjustments).
+
+The composition_description must describe the final layout precisely:
+- Exact positions of each element
+- Visual hierarchy
+- Spacing and alignment
+- Color application
+
+Use source brand colors in the color_scheme output.
+
+## PACKAGING FORMAT DECISION
+
+Review the PACKAGING FORMAT descriptions for both INSPIRATION and SOURCE images above.
+- Set `packaging_format_choice` to "inspiration" (default) to use the inspiration's physical packaging format
+- Set `packaging_format_choice` to "source" ONLY if the user's constraints explicitly request keeping the source packaging
+
+Output valid JSON only.

@@ -1,0 +1,31 @@
+Create a product packaging design following these specifications.
+
+{composition_instructions}
+
+## IMAGE SPECIFICATIONS
+
+- Dimensions: approximately {target_width}x{target_height} pixels
+- Style: Professional product packaging photography
+- Quality: High resolution, clean edges, photorealistic
+
+## PROVIDED ELEMENTS
+
+You have been given {num_crops} cropped element images:
+
+**USE DIRECTLY (brand assets):**
+- Logos and brand marks → incorporate exactly as provided
+- Product images → use as provided
+
+**RECREATE IN TARGET STYLE (do not copy):**
+- Illustrations → Create NEW artwork inspired by the concept, in the target brand style
+- Patterns → Design NEW patterns using the specified colors
+- Decorative elements → Draw NEW decorative elements matching the aesthetic
+
+## CRITICAL REMINDERS
+
+1. **NEVER** copy decorative elements, illustrations, or patterns from the reference images
+2. **ALWAYS** recreate non-brand visual elements fresh in the specified style
+3. The final design should look like it was created entirely for the target brand
+4. Only logos and explicit brand marks should come from provided images
+
+The output should be a single, professional packaging image that looks authentically designed for the target brand.

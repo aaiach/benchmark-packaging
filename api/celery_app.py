@@ -22,7 +22,12 @@ def make_celery() -> Celery:
         'scraper_tasks',
         broker=broker_url,
         backend=result_backend,
-        include=['api.src.tasks.scraper_tasks']
+        include=[
+            'api.src.tasks.scraper_tasks',
+            'api.src.tasks.image_analysis_tasks',
+            'api.src.tasks.rebrand_tasks',
+            'api.src.tasks.rebrand_session_tasks',
+        ]
     )
 
     # Update configuration

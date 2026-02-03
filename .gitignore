@@ -1,24 +1,114 @@
-# Python-generated files
-__pycache__/
-*.py[oc]
-build/
-dist/
-wheels/
-*.egg-info
+# =============================================================================
+# Monorepo Root
+# =============================================================================
 
-# Virtual environments
-.venv
-
-# Environment variables
-.env
-.env.local
-
-# Output files
-output/
+# OS
+.DS_Store
+Thumbs.db
 
 # IDE
 .vscode/
 .idea/
+*.swp
+*.swo
 
-# OS
-.DS_Store
+# Environment variables (root level)
+.env
+.env.local
+.env.*.local
+
+# =============================================================================
+# Python (analysis_engine)
+# =============================================================================
+
+# Bytecode / cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+# Build artifacts
+build/
+dist/
+wheels/
+*.egg-info/
+*.egg
+
+# Testing / Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# Type checking
+.mypy_cache/
+.pytype/
+
+# Output files - single shared data directory
+data/
+
+# Legacy output directories (deprecated - use data/ instead)
+analysis_engine/output/
+api/output/
+
+# =============================================================================
+# Node.js / React / Vite (frontend)
+# =============================================================================
+
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# NPM / Yarn
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.npm/
+.npm-cache/
+.yarn/
+.yarn-integrity
+
+# Build output
+dist/
+dist-ssr/
+*.local
+
+# Hardcoded data files (should use API instead)
+frontend/src/data/*.json
+
+# Frontend specific
+frontend/dist/
+frontend/dist-ssr/
+frontend/.npm-cache/
+
+# Legacy web_app
+web_app/dist/
+web_app/build/
+web_app/.next/
+web_app/out/
+
+# Vite
+.vite/
+vite.config.*.timestamp-*
+
+# =============================================================================
+# Docker (future)
+# =============================================================================
+
+# Docker compose overrides
+docker-compose.override.yml
+docker-compose.*.yml
+!docker-compose.yml
+!docker-compose.dev.yml
+!docker-compose.prod.yml
+
+# Local docker volumes
+.docker/
