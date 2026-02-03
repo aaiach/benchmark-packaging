@@ -46,4 +46,10 @@ The composition_description must describe the final layout precisely:
 
 Use source brand colors in the color_scheme output.
 
+## PACKAGING FORMAT DECISION
+
+Review the PACKAGING FORMAT descriptions for both INSPIRATION and SOURCE images above.
+- Set `packaging_format_choice` to "inspiration" (default) to use the inspiration's physical packaging format
+- Set `packaging_format_choice` to "source" ONLY if the user's constraints explicitly request keeping the source packaging
+
 Output valid JSON only.

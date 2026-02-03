@@ -58,6 +58,12 @@ def format_extraction_for_prompt(extraction, label: str) -> str:
     for color in extraction.color_palette:
         lines.append(f"  - {color.color_name}: {color.hex_code} ({color.usage})")
     
+    # Add packaging format if available
+    packaging_fmt = getattr(extraction, 'packaging_format_description', '')
+    if packaging_fmt:
+        lines.append("")
+        lines.append(f"PACKAGING FORMAT: {packaging_fmt}")
+    
     return "\n".join(lines)
 
 
@@ -203,10 +209,26 @@ def create_element_mapping(
             text_secondary=color_data.get('text_secondary'),
             accent=color_data.get('accent')
         )
+
+        # LLM decides packaging format choice (defaults to inspiration)
+        packaging_format_choice = result_data.get('packaging_format_choice', 'inspiration')
+        if packaging_format_choice not in ('source', 'inspiration'):
+            packaging_format_choice = 'inspiration'
+        
+        # Get the actual description based on the choice
+        if packaging_format_choice == 'source':
+            packaging_format_description = source.packaging_format_description or "Source packaging format (no description available)"
+        else:
+            packaging_format_description = inspiration.packaging_format_description or "Inspiration packaging format (no description available)"
+        
+        print(f"  [✓] Packaging format: {packaging_format_choice.upper()}")
+        print(f"      Description: {packaging_format_description[:100]}...")
         
         # Build final mapping result
         mapping_result = RebrandMapping(
             mappings=mappings,
+            packaging_format_choice=packaging_format_choice,
+            packaging_format_description=packaging_format_description,
             composition_description=result_data.get('composition_description', ''),
             color_scheme=color_scheme,
             assembly_notes=result_data.get('assembly_notes', '')

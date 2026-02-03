@@ -205,4 +205,51 @@ export const api = {
      */
     list: () => request<{ jobs: any[] }>(`/api/rebrand/list`),
   },
+
+  rebrandSession: {
+    /**
+     * Start a rebrand session for a category analysis
+     * This will rebrand the user's product against all competitors
+     */
+    start: async (analysisId: string, sourceFile: File, brandIdentity: string, category: string) => {
+      const formData = new FormData();
+      formData.append('source_image', sourceFile);
+      formData.append('brand_identity', brandIdentity);
+      formData.append('category', category);
+
+      const url = `${API_URL}/api/analysis/${analysisId}/rebrand-session/start`;
+      
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!response.ok) {
+          const error = await response.json().catch(() => ({ error: 'Unknown error' }));
+          throw new ApiError(response.status, error.error || response.statusText);
+        }
+
+        return response.json() as Promise<{ session_id: string; analysis_id: string; status: string; message: string }>;
+      } catch (error) {
+        if (error instanceof ApiError) throw error;
+        throw new ApiError(0, 'Network error - could not connect to API server');
+      }
+    },
+
+    /**
+     * Get the rebrand session for a category analysis
+     */
+    getForAnalysis: (analysisId: string) => request<any>(`/api/analysis/${analysisId}/rebrand-session`),
+
+    /**
+     * Get status of a rebrand session
+     */
+    getStatus: (sessionId: string) => request<any>(`/api/rebrand-session/${sessionId}/status`),
+
+    /**
+     * Get full session result
+     */
+    getResult: (sessionId: string) => request<any>(`/api/rebrand-session/${sessionId}/result`),
+  },
 };

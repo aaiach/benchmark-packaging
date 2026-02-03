@@ -1,4 +1,5 @@
 import React from 'react';
+import { Maximize2 } from 'lucide-react';
 import { ColorPaletteCompact } from '../molecules/ColorPalette';
 import type { Product, PointOfParity } from '../../types';
 
@@ -17,6 +18,10 @@ export function ProductCard({ product, onClick, pointsOfParity }: ProductCardPro
       onClick={onClick}
       className="glass-card group relative p-4 transition-all duration-300 cursor-pointer flex flex-col h-full hover:-translate-y-1 hover:shadow-glass-lg hover:bg-white/60"
     >
+      {/* Expand indicator */}
+      <div className="absolute top-3 right-3 z-10 text-gray-400 opacity-40 group-hover:opacity-100 group-hover:text-blue-500 transition-all duration-200">
+        <Maximize2 size={14} />
+      </div>
       <div className="relative aspect-[3/4] mb-4 overflow-hidden rounded-xl bg-white/40 border border-white/40 shadow-inner">
         <img
           src={product.image}

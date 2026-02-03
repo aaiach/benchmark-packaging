@@ -68,11 +68,26 @@ A good mapping typically has:
 - 50-70% "replace" actions (brand content from source)
 - Minimal "omit" actions (only when explicitly needed)
 
+## Packaging Format Decision
+
+You MUST choose which packaging format to use for the final image:
+- **"inspiration"** (DEFAULT): Use the inspiration's packaging shape, size, material, and physical characteristics
+- **"source"**: Use the source's packaging shape, size, material, and physical characteristics
+
+**By default, choose "inspiration"** so the final image looks like the inspiration's packaging but with source brand elements.
+
+**Only choose "source" if:**
+- The user's constraints explicitly say to keep the source packaging format
+- The user mentions "keep my packaging", "same bottle/box", "original format", etc.
+
+Both the INSPIRATION and SOURCE sections include a "PACKAGING FORMAT" description. Base your decision on these descriptions and the user constraints.
+
 ## Output Format
 
 Return JSON with:
 ```json
 {
+  "packaging_format_choice": "inspiration",
   "mappings": [
     {
       "inspiration_element_id": "text_1",
@@ -100,6 +115,8 @@ Return JSON with:
   "assembly_notes": "Additional notes for final image assembly"
 }
 ```
+
+**IMPORTANT**: The `packaging_format_choice` field is REQUIRED. Set to "inspiration" (default) or "source".
 
 The composition_description should be detailed enough to guide image generation with precise element positioning.
 

@@ -45,6 +45,7 @@ def create_app() -> Flask:
     from .routes.email import email_bp
     from .routes.image_analysis import image_analysis_bp
     from .routes.rebrand import rebrand_bp
+    from .routes.rebrand_session import rebrand_session_bp
 
     app.register_blueprint(health_bp)
     app.register_blueprint(scraper_bp, url_prefix='/api/scraper')
@@ -52,6 +53,7 @@ def create_app() -> Flask:
     app.register_blueprint(email_bp, url_prefix='/api/email')
     app.register_blueprint(image_analysis_bp, url_prefix='/api/image-analysis')
     app.register_blueprint(rebrand_bp, url_prefix='/api/rebrand')
+    app.register_blueprint(rebrand_session_bp, url_prefix='/api')
 
     # Static file serving for images and heatmaps
     @app.route('/images/<path:filename>')
@@ -82,6 +84,7 @@ def create_app() -> Flask:
         return send_from_directory(single_analysis_dir, filename)
 
     # Static file serving for rebrand images (source, inspiration, crops, final)
+    # Cache for 1 year since these are immutable (unique job_id in path)
     @app.route('/images/rebrand/<path:filename>')
     def serve_rebrand_image(filename):
         """Serve images from rebrand output directory.
@@ -90,10 +93,27 @@ def create_app() -> Flask:
             filename: Path to image file (e.g., "job_id/final_rebrand.png")
 
         Returns:
-            Image file or 404 error
+            Image file or 404 error with long-term caching (immutable content)
         """
         rebrand_dir = os.path.join(app.config['OUTPUT_DIR'], 'rebrand')
-        return send_from_directory(rebrand_dir, filename)
+        # max_age=31536000 (1 year) since job_id makes these immutable
+        return send_from_directory(rebrand_dir, filename, max_age=31536000)
+
+    # Static file serving for rebrand session images
+    # Cache for 1 year since these are immutable (unique session_id in path)
+    @app.route('/images/rebrand_sessions/<path:filename>')
+    def serve_rebrand_session_image(filename):
+        """Serve images from rebrand sessions directory.
+
+        Args:
+            filename: Path to image file (e.g., "session_id/source.png")
+
+        Returns:
+            Image file or 404 error with long-term caching (immutable content)
+        """
+        sessions_dir = os.path.join(app.config['OUTPUT_DIR'], 'rebrand_sessions')
+        # max_age=31536000 (1 year) since session_id makes these immutable
+        return send_from_directory(sessions_dir, filename, max_age=31536000)
 
     # Global error handlers
     @app.errorhandler(404)

@@ -59,7 +59,8 @@ Return a JSON object:
     {{"box_2d": [ymin, xmin, ymax, xmax], "id": "...", "type": "...", "label": "...", "content": "...", "importance": "..."}}
   ],
   "dominant_colors": ["#hex1", "#hex2", "#hex3"],
-  "style": "modern|vintage|minimalist|bold|organic|etc"
+  "style": "modern|vintage|minimalist|bold|organic|etc",
+  "packaging_format": "Detailed description of the physical packaging: shape (bottle, box, pouch, can, tube, jar, carton, etc.), size/dimensions, material appearance (plastic, glass, cardboard, metal, matte, glossy, metallic), 3D perspective or flat 2D, any physical features (cap, lid, spout, handle). Be specific and descriptive."
 }}
 
 IMPORTANT RULES:
@@ -68,6 +69,7 @@ IMPORTANT RULES:
 - 0,0 is top-left corner, 1000,1000 is bottom-right corner
 - Each element MUST have a UNIQUE bounding box - do NOT repeat the same box
 - Detect ALL distinct elements: logos, text blocks, images, icons, badges, trust marks, backgrounds
+- The packaging_format field is CRITICAL - describe the physical container thoroughly
 
 Be thorough - identify every distinct visual element."""
 
@@ -101,14 +103,16 @@ Return a JSON object:
     {{"box_2d": [ymin, xmin, ymax, xmax], "id": "...", "type": "...", "label": "...", "content": "...", "importance": "..."}}
   ],
   "brand_colors": ["#hex1", "#hex2"],
-  "claims": ["claim1", "claim2"]
+  "claims": ["claim1", "claim2"],
+  "packaging_format": "Detailed description of the physical packaging: shape (bottle, box, pouch, can, tube, jar, carton, etc.), size/dimensions, material appearance (plastic, glass, cardboard, metal, matte, glossy, metallic), 3D perspective or flat 2D, any physical features (cap, lid, spout, handle). Be specific and descriptive."
 }}
 
 IMPORTANT RULES:
 - box_2d coordinates MUST be integers between 0 and 1000
 - box_2d order is [ymin, xmin, ymax, xmax] (top, left, bottom, right)
 - Each element MUST have a UNIQUE bounding box - do NOT repeat the same coordinates
-- Focus on brand-defining elements that should be preserved in rebranding"""
+- Focus on brand-defining elements that should be preserved in rebranding
+- The packaging_format field is CRITICAL - describe the physical container thoroughly"""
 
 
 # =============================================================================
@@ -160,7 +164,7 @@ def parse_unified_response(response_text: str) -> Tuple[List[Dict], Dict]:
     if isinstance(data, dict):
         elements = data.get('elements', [])
         # Copy metadata fields
-        for key in ['dominant_colors', 'brand_colors', 'style', 'brand_name', 'product_name', 'claims']:
+        for key in ['dominant_colors', 'brand_colors', 'style', 'brand_name', 'product_name', 'claims', 'packaging_format']:
             if key in data:
                 metadata[key] = data[key]
     elif isinstance(data, list):
@@ -516,11 +520,17 @@ def extract_inspiration_elements(
                     usage="dominant"
                 ))
         
+        # Extract packaging format description
+        packaging_format_desc = metadata.get('packaging_format', '')
+        if packaging_format_desc:
+            print(f"[✓] Packaging format: {packaging_format_desc[:100]}...")
+        
         # Build extraction result
         extraction = InspirationExtraction(
             elements=elements,
             composition=composition,
             color_palette=color_palette,
+            packaging_format_description=packaging_format_desc,
             total_elements=len(elements),
             image_dimensions={'width': width, 'height': height}
         )
@@ -616,9 +626,14 @@ def extract_source_elements(
                     usage="brand"
                 ))
         
+        # Extract packaging format description
+        packaging_format_desc = metadata.get('packaging_format', '')
+        
         print(f"Brand: {brand_name}")
         print(f"Product: {product_name}")
         print(f"Claims: {len(claims)}")
+        if packaging_format_desc:
+            print(f"Packaging format: {packaging_format_desc[:100]}...")
         
         # Build extraction result
         extraction = SourceExtraction(
@@ -627,6 +642,7 @@ def extract_source_elements(
             product_name=product_name,
             available_claims=claims if isinstance(claims, list) else [],
             color_palette=color_palette,
+            packaging_format_description=packaging_format_desc,
             total_elements=len(elements)
         )
         

@@ -758,6 +758,10 @@ class InspirationExtraction(BaseModel):
     color_palette: List[ColorInfo] = Field(
         description="Color palette extracted from the image"
     )
+    packaging_format_description: str = Field(
+        default="",
+        description="LLM-generated description of the packaging format: shape, size, material, finish, 3D/2D, physical characteristics"
+    )
     total_elements: int = Field(
         description="Total number of elements extracted"
     )
@@ -783,6 +787,10 @@ class SourceExtraction(BaseModel):
     )
     color_palette: List[ColorInfo] = Field(
         description="Brand color palette"
+    )
+    packaging_format_description: str = Field(
+        default="",
+        description="LLM-generated description of the packaging format: shape, size, material, finish, 3D/2D, physical characteristics"
     )
     total_elements: int = Field(
         description="Total number of elements extracted"
@@ -833,6 +841,14 @@ class RebrandMapping(BaseModel):
     """Step 3 output: Complete element-by-element mapping."""
     mappings: List[ElementMappingEntry] = Field(
         description="Mapping for each inspiration element"
+    )
+    packaging_format_choice: Literal["source", "inspiration"] = Field(
+        default="inspiration",
+        description="Which packaging format to follow: 'inspiration' (default) or 'source' (only if explicitly requested)"
+    )
+    packaging_format_description: str = Field(
+        default="",
+        description="The chosen packaging format description (copied from either source or inspiration extraction)"
     )
     composition_description: str = Field(
         description="Textual description of final composition with precise positioning"
@@ -912,6 +928,108 @@ class RebrandResult(BaseModel):
     completed_at: Optional[str] = Field(
         None,
         description="ISO timestamp of job completion"
+    )
+    errors: List[str] = Field(
+        default_factory=list,
+        description="List of error messages if any"
+    )
+
+
+# =============================================================================
+# Pydantic Models for Rebrand Session (Multi-product rebrand from analysis)
+# =============================================================================
+
+class ProductRebrandEntry(BaseModel):
+    """A single product rebrand entry within a session."""
+    product_index: int = Field(
+        description="Index of the product in the analysis"
+    )
+    product_name: str = Field(
+        description="Name of the product/brand"
+    )
+    inspiration_image_path: str = Field(
+        description="Path to the inspiration image (competitor's cropped image)"
+    )
+    rebrand_job_id: Optional[str] = Field(
+        None,
+        description="ID of the rebrand job (once started)"
+    )
+    status: Literal["pending", "in_progress", "completed", "failed", "skipped"] = Field(
+        default="pending",
+        description="Status of this individual rebrand"
+    )
+    generated_image_path: Optional[str] = Field(
+        None,
+        description="Path to generated image (once completed)"
+    )
+    error: Optional[str] = Field(
+        None,
+        description="Error message if failed"
+    )
+    result: Optional[Dict[str, Any]] = Field(
+        None,
+        description="Full rebrand result (once completed)"
+    )
+
+
+class RebrandSessionProgress(BaseModel):
+    """Progress tracking for a rebrand session."""
+    total: int = Field(
+        description="Total number of products to rebrand"
+    )
+    completed: int = Field(
+        default=0,
+        description="Number of completed rebrands"
+    )
+    failed: int = Field(
+        default=0,
+        description="Number of failed rebrands"
+    )
+    current_product: Optional[str] = Field(
+        None,
+        description="Name of currently processing product"
+    )
+
+
+class RebrandSession(BaseModel):
+    """A rebrand session linked to a category analysis.
+    
+    Allows users to rebrand their product against all competitors
+    found in a competitive analysis.
+    """
+    session_id: str = Field(
+        description="Unique session identifier"
+    )
+    analysis_id: str = Field(
+        description="Reference to the parent category analysis (run_id)"
+    )
+    category: str = Field(
+        description="Product category name"
+    )
+    source_image_path: str = Field(
+        description="Path to the user's source product image"
+    )
+    brand_identity: str = Field(
+        description="Brand identity and constraints text"
+    )
+    status: Literal["pending", "in_progress", "completed", "partial", "failed"] = Field(
+        default="pending",
+        description="Overall session status"
+    )
+    created_at: str = Field(
+        description="ISO timestamp of session creation"
+    )
+    completed_at: Optional[str] = Field(
+        None,
+        description="ISO timestamp of session completion"
+    )
+    rebrands: List[ProductRebrandEntry] = Field(
+        default_factory=list,
+        description="List of individual product rebrands"
+    )
+    progress: RebrandSessionProgress = Field(
+        default_factory=lambda: RebrandSessionProgress(total=0),
+        description="Progress tracking"
     )
     errors: List[str] = Field(
         default_factory=list,

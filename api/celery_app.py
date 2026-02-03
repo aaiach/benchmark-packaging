@@ -25,7 +25,8 @@ def make_celery() -> Celery:
         include=[
             'api.src.tasks.scraper_tasks',
             'api.src.tasks.image_analysis_tasks',
-            'api.src.tasks.rebrand_tasks'
+            'api.src.tasks.rebrand_tasks',
+            'api.src.tasks.rebrand_session_tasks',
         ]
     )
 

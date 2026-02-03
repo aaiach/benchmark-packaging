@@ -171,6 +171,7 @@ def run_rebrand_pipeline(
                     "elements": [e.model_dump() for e in inspiration_extraction.elements],
                     "composition": inspiration_extraction.composition.model_dump(),
                     "color_palette": [c.model_dump() for c in inspiration_extraction.color_palette],
+                    "packaging_format_description": inspiration_extraction.packaging_format_description,
                 },
                 cropped_images=crop_urls,
                 duration_ms=duration_ms
@@ -246,6 +247,7 @@ def run_rebrand_pipeline(
                     "available_claims": source_extraction.available_claims,
                     "elements": [e.model_dump() for e in source_extraction.elements],
                     "color_palette": [c.model_dump() for c in source_extraction.color_palette],
+                    "packaging_format_description": source_extraction.packaging_format_description,
                 },
                 cropped_images=crop_urls,
                 duration_ms=duration_ms
@@ -330,10 +332,12 @@ def run_rebrand_pipeline(
                 step_number=step_number,
                 status="complete",
                 input_summary=f"{inspiration_extraction.total_elements} inspiration elements, {source_extraction.total_elements} source elements",
-                output_summary=f"Created {len(mapping.mappings)} mappings",
+                output_summary=f"Created {len(mapping.mappings)} mappings, format: {mapping.packaging_format_choice}",
                 details={
                     "total_mappings": len(mapping.mappings),
                     "mappings": [m.model_dump() for m in mapping.mappings],
+                    "packaging_format_choice": mapping.packaging_format_choice,
+                    "packaging_format_description": mapping.packaging_format_description,
                     "composition_description": mapping.composition_description,
                     "color_scheme": mapping.color_scheme.model_dump(),
                     "assembly_notes": mapping.assembly_notes,

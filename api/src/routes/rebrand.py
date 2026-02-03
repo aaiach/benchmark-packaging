@@ -287,21 +287,21 @@ def list_rebrands():
                 with open(result_file, 'r', encoding='utf-8') as f:
                     data = json.load(f)
                 
-                # Find actual image file extensions
+                # Transform URLs using the shared helper logic
+                # This ensures consistent URL generation regardless of job origin (single or session)
                 job_id = data.get('job_id')
-                source_file = _find_image_file(job_dir, 'source')
-                inspiration_file = _find_image_file(job_dir, 'inspiration')
+                data = _transform_image_urls(data, job_id, api_base_url)
                 
-                # Build summary entry
+                # Build summary entry using the transformed URLs
                 jobs.append({
                     'job_id': job_id,
                     'status': data.get('status'),
                     'created_at': data.get('created_at'),
                     'completed_at': data.get('completed_at'),
                     'brand_identity': data.get('brand_identity', '')[:100] + '...' if data.get('brand_identity') else '',
-                    'source_image_url': f"{api_base_url}/images/rebrand/{job_id}/{source_file}",
-                    'inspiration_image_url': f"{api_base_url}/images/rebrand/{job_id}/{inspiration_file}",
-                    'generated_image_url': data.get('generated_image_path'),
+                    'source_image_url': data.get('source_image_url'),
+                    'inspiration_image_url': data.get('inspiration_image_url'),
+                    'generated_image_url': data.get('generated_image_url'),
                     'steps_completed': sum(1 for s in data.get('steps', []) if s.get('status') == 'complete'),
                     'total_steps': 4
                 })
@@ -357,12 +357,64 @@ def _transform_image_urls(result: dict, job_id: str, api_base_url: str) -> dict:
         else:
             result['generated_image_url'] = result['generated_image_path']
     
-    # Transform source/inspiration paths - find actual file extensions
-    source_file = _find_image_file(job_dir, 'source')
-    inspiration_file = _find_image_file(job_dir, 'inspiration')
-    
-    result['source_image_url'] = f"{api_base_url}/images/rebrand/{job_id}/{source_file}"
-    result['inspiration_image_url'] = f"{api_base_url}/images/rebrand/{job_id}/{inspiration_file}"
+    # Transform source image path
+    source_path_str = result.get('source_image_path')
+    if source_path_str and os.path.isabs(source_path_str) and os.path.exists(source_path_str):
+        # Determine URL based on file location
+        path_obj = Path(source_path_str)
+        if 'rebrand_sessions' in source_path_str:
+            # File is in rebrand_sessions directory
+            # Structure: .../rebrand_sessions/SESSION_ID/filename
+            # URL: /images/rebrand_sessions/SESSION_ID/filename
+            try:
+                # Find part after rebrand_sessions
+                parts = source_path_str.split('rebrand_sessions/')
+                if len(parts) > 1:
+                    rel_path = parts[1]
+                    result['source_image_url'] = f"{api_base_url}/images/rebrand_sessions/{rel_path}"
+            except Exception:
+                # Fallback
+                result['source_image_url'] = f"{api_base_url}/images/rebrand/{job_id}/source.png"
+        else:
+            # Assume local job file
+            source_file = path_obj.name
+            result['source_image_url'] = f"{api_base_url}/images/rebrand/{job_id}/{source_file}"
+    else:
+        # Fallback to finding file in job dir
+        source_file = _find_image_file(job_dir, 'source')
+        result['source_image_url'] = f"{api_base_url}/images/rebrand/{job_id}/{source_file}"
+
+    # Transform inspiration image path
+    insp_path_str = result.get('inspiration_image_path')
+    if insp_path_str and os.path.isabs(insp_path_str) and os.path.exists(insp_path_str):
+        # Determine URL based on file location
+        path_obj = Path(insp_path_str)
+        if 'images' in str(path_obj.parent) or 'output/images' in str(path_obj):
+            # File is in main images directory (competitor image)
+            # Structure: .../output/images/CATEGORY/filename
+            # URL: /images/CATEGORY/filename
+            try:
+                # We need to find the path relative to output/images
+                # Try common patterns
+                if '/output/images/' in insp_path_str:
+                    rel_path = insp_path_str.split('/output/images/')[1]
+                    result['inspiration_image_url'] = f"{api_base_url}/images/{rel_path}"
+                elif '/images/' in insp_path_str:
+                    # Fallback for other structures
+                     rel_path = insp_path_str.split('/images/')[1]
+                     result['inspiration_image_url'] = f"{api_base_url}/images/{rel_path}"
+                else:
+                     result['inspiration_image_url'] = f"{api_base_url}/images/rebrand/{job_id}/inspiration.png"
+            except Exception:
+                result['inspiration_image_url'] = f"{api_base_url}/images/rebrand/{job_id}/inspiration.png"
+        else:
+            # Assume local job file
+            insp_file = path_obj.name
+            result['inspiration_image_url'] = f"{api_base_url}/images/rebrand/{job_id}/{insp_file}"
+    else:
+        # Fallback to finding file in job dir
+        inspiration_file = _find_image_file(job_dir, 'inspiration')
+        result['inspiration_image_url'] = f"{api_base_url}/images/rebrand/{job_id}/{inspiration_file}"
     
     # Transform cropped image URLs in steps
     if 'steps' in result:

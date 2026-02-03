@@ -132,11 +132,21 @@ def format_mapping_for_generation(
     """
     lines = ["# PACKAGING DESIGN COMPOSITION", ""]
     
+    # Packaging format with actual description from extraction
+    lines.append("## PACKAGING FORMAT")
+    fmt_choice = getattr(mapping, 'packaging_format_choice', 'inspiration')
+    fmt_desc = getattr(mapping, 'packaging_format_description', '')
+    if fmt_desc:
+        lines.append(f"{fmt_desc}")
+    else:
+        lines.append(f"(Follow the {fmt_choice} image's packaging shape, size, material, and finish)")
+    lines.append("")
+    
     # Overall description
     lines.append("## OVERALL LAYOUT")
     lines.append(mapping.composition_description)
     lines.append("")
-    
+
     # Color scheme
     lines.append("## COLOR SCHEME")
     lines.append(f"- Primary brand color: {mapping.color_scheme.primary}")
