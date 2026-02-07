@@ -1,7 +1,7 @@
 # Railway Auto-Deploy Quick Start
 
 ## 🚀 Goal
-Auto-deploy from GitHub `main` branch with 5 services: Redis, API, Worker, Flower, Frontend
+Auto-deploy from GitHub `single-analysis` branch with 5 services: Redis, API, Worker, Flower, Frontend
 
 ---
 
@@ -18,7 +18,7 @@ Go to https://railway.app/project and create these services:
 - Name: `api`
 - Settings → Source:
   - Root Directory: `/` (leave default)
-  - Production Branch: `main`
+  - Production Branch: `single-analysis`
 - Settings → Build:
   - Builder: `Docker`
   - Dockerfile Path: `docker/api.Dockerfile`
@@ -46,7 +46,7 @@ PINECONE_API_KEY=<paste-your-key>
 - Click: **New → GitHub Repo → aaiach/benchmark-packaging**
 - Name: `worker`
 - Settings → Source:
-  - Production Branch: `main`
+  - Production Branch: `single-analysis`
 - Settings → Build:
   - Builder: `Docker`
   - Dockerfile Path: `docker/worker.Dockerfile`
@@ -64,6 +64,8 @@ PINECONE_API_KEY=<paste-your-key>
 ### 4. Flower Service (Optional - for monitoring)
 - Click: **New → GitHub Repo → aaiach/benchmark-packaging**
 - Name: `flower`
+- Settings → Source:
+  - Production Branch: `single-analysis`
 - Settings → Build:
   - Builder: `Docker`
   - Dockerfile Path: `docker/worker.Dockerfile`
@@ -84,7 +86,7 @@ FLOWER_BASIC_AUTH=admin:changeme123
 - Name: `frontend`
 - Settings → Source:
   - Root Directory: `frontend`
-  - Production Branch: `main`
+  - Production Branch: `single-analysis`
 - Settings → Build:
   - Builder: `Docker`
   - Dockerfile Path: `docker/frontend.Dockerfile`
@@ -116,7 +118,7 @@ Push a change to trigger auto-deploy:
 ```bash
 git add .
 git commit -m "Configure Railway auto-deploy"
-git push origin main
+git push origin single-analysis
 ```
 
 Railway will automatically:
@@ -141,13 +143,13 @@ Check each service is running:
 
 ## 🎯 Auto-Deploy Workflow
 
-From now on, every time you push to `main`:
+From now on, every time you push to `single-analysis`:
 
 ```bash
 # Make changes
 git add .
 git commit -m "Your changes"
-git push origin main
+git push origin single-analysis
 
 # Railway automatically:
 # 1. Detects push

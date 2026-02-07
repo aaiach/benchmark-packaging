@@ -47,12 +47,12 @@ These files define:
 
 ## 🔄 Auto-Deploy Workflow
 
-Once configured, Railway automatically deploys when you push to `main`:
+Once configured, Railway automatically deploys when you push to `single-analysis`:
 
 ```bash
 git add .
 git commit -m "Your changes"
-git push origin main
+git push origin single-analysis
 # ✨ Railway automatically builds and deploys!
 ```
 
@@ -160,7 +160,7 @@ VITE_API_URL=https://${{api.RAILWAY_PUBLIC_DOMAIN}}
 
 ### Auto-deploy not triggering
 - Check the service is connected to GitHub repo
-- Verify the correct branch is selected (main)
+- Verify the correct branch is selected (single-analysis)
 - Ensure watch patterns match changed files
 - Check Railway dashboard for webhook status
 
