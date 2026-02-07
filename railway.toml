@@ -1,0 +1,70 @@
+# =============================================================================
+# Railway Configuration - Multi-Service Deployment
+# =============================================================================
+# This configuration deploys the Lead Gen application with multiple services:
+# - Redis (create via Railway dashboard as a Redis service)
+# - API (Flask backend)
+# - Worker (Celery task processor)
+# - Flower (Celery monitoring UI)
+# - Frontend (React SPA)
+#
+# Setup Instructions:
+# 1. Create a Redis service in Railway dashboard first
+# 2. Deploy services using: railway up (will auto-detect from this config)
+# 3. Set environment variables for each service in Railway dashboard
+#
+# Required Environment Variables (set in Railway dashboard):
+# - REDIS_URL (auto-provided by Redis service)
+# - ANTHROPIC_API_KEY
+# - OPENAI_API_KEY
+# - PINECONE_API_KEY
+# - CELERY_BROKER_URL=redis://...
+# - CELERY_RESULT_BACKEND=redis://...
+# - CORS_ORIGINS (for production domain)
+# - VITE_API_URL (for frontend build)
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# API Service - Flask REST API
+# -----------------------------------------------------------------------------
+[[services]]
+name = "api"
+dockerfile = "docker/api.Dockerfile"
+dockerContext = "."
+buildCommand = "docker build --target prod -f docker/api.Dockerfile -t api:prod ."
+
+[services.restartPolicyType]
+type = "on-failure"
+maxRetries = 10
+
+[services.healthcheck]
+path = "/api/health"
+port = 5000
+
+# -----------------------------------------------------------------------------
+# Worker Service - Celery Task Worker
+# -----------------------------------------------------------------------------
+[[services]]
+name = "worker"
+dockerfile = "docker/worker.Dockerfile"
+dockerContext = "."
+buildCommand = "docker build --target prod -f docker/worker.Dockerfile -t worker:prod ."
+
+# -----------------------------------------------------------------------------
+# Flower Service - Celery Monitoring UI
+# -----------------------------------------------------------------------------
+[[services]]
+name = "flower"
+dockerfile = "docker/worker.Dockerfile"
+dockerContext = "."
+buildCommand = "docker build --target prod -f docker/worker.Dockerfile -t flower:prod ."
+startCommand = "celery -A api.celery_app flower --port=5555 --url_prefix="
+
+# -----------------------------------------------------------------------------
+# Frontend Service - React SPA with Nginx
+# -----------------------------------------------------------------------------
+[[services]]
+name = "frontend"
+dockerfile = "docker/frontend.Dockerfile"
+dockerContext = "./frontend"
+buildCommand = "docker build --target prod -f ../docker/frontend.Dockerfile -t frontend:prod ."

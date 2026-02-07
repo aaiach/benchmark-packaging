@@ -1,0 +1,21 @@
+{
+  "$schema": "https://railway.app/railway.schema.json",
+  "build": {
+    "builder": "DOCKERFILE",
+    "dockerfilePath": "docker/worker.Dockerfile",
+    "dockerContext": ".",
+    "buildArgs": {
+      "target": "prod"
+    },
+    "watchPatterns": [
+      "api/**",
+      "analysis_engine/**",
+      "docker/worker.Dockerfile"
+    ]
+  },
+  "deploy": {
+    "numReplicas": 1,
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10
+  }
+}
