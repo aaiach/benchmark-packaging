@@ -1,7 +1,7 @@
 export const LANDING_CONTENT = {
   hero: {
     title: {
-      part1: "Agent IA de Benchmark Packaging",
+      part1: "Iceberg AI - Agent IA de Benchmark Packaging",
       highlight: "Dôté de la sensibilité d'Iceberg AI"
     },
     subtitle: "L'agent determine les POPs et PODs d'une catégorie de produit, en analysant les produits phare d'une catégorie."
