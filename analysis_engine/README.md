@@ -107,21 +107,68 @@ output/
 
 ```
 analysis_engine/
-├── main.py                    # CLI entry point
-├── pyproject.toml             # Dependencies
+├── main.py                           # CLI entry point
+├── generate_golden_rules_standalone.py # Golden Rules report generator
+├── pyproject.toml                     # Dependencies
 └── src/
-    ├── config.py              # Configuration management
-    ├── models.py              # Pydantic data models
-    ├── pipeline/              # Pipeline orchestration
-    │   ├── base.py            # Base pipeline classes
-    │   └── steps.py           # Step implementations
-    ├── product_discovery.py   # Gemini brand discovery
-    ├── scraper.py             # Firecrawl web scraping
-    ├── image_selector.py      # Image selection & download
-    ├── visual_analyzer.py     # Gemini Vision analysis
-    ├── competitive_analyzer.py # PODs/POPs extraction
-    └── prompts/               # LLM prompt templates
+    ├── config.py                      # Configuration management
+    ├── models.py                      # Pydantic data models
+    ├── golden_rules_generator.py      # Phase 1.4: Golden Rules analysis
+    ├── pipeline/                      # Pipeline orchestration
+    │   ├── base.py                    # Base pipeline classes
+    │   └── steps.py                   # Step implementations
+    ├── product_discovery.py           # Gemini brand discovery
+    ├── scraper.py                     # Firecrawl web scraping
+    ├── image_selector.py              # Image selection & download
+    ├── visual_analyzer.py             # Gemini Vision analysis
+    ├── competitive_analyzer.py        # PODs/POPs extraction
+    └── prompts/                       # LLM prompt templates
 ```
+
+## Golden Rules Report Generator (Phase 1.4)
+
+After completing the competitive analysis pipeline (steps 1-7), generate a comprehensive "Golden Rules" report that synthesizes findings into actionable insights:
+
+```bash
+# Generate Golden Rules report from analysis data
+python3 generate_golden_rules_standalone.py --category lait_davoine --run-id 20260120_184854
+
+# Generate as JSON
+python3 generate_golden_rules_standalone.py --category lait_davoine --run-id 20260120_184854 --format json
+
+# Save to file
+python3 generate_golden_rules_standalone.py --category lait_davoine --run-id 20260120_184854 --output reports/golden_rules.md
+
+# List available runs
+python3 generate_golden_rules_standalone.py --list-runs
+```
+
+### Report Contents
+
+The Golden Rules report synthesizes competitive intelligence to identify:
+
+1. **Market Patterns**:
+   - Recurring keywords and messaging themes
+   - Color codes and visual conventions
+   - Text structure and information hierarchy patterns
+   - Trust marks and certification usage
+
+2. **Market Gaps (Blue Ocean Opportunities)**:
+   - Under-represented positioning axes
+   - Unused color palettes
+   - Rare claim types
+   - Differentiation opportunities
+
+3. **Strategic Recommendations**:
+   - What to ADOPT (market standards >60% adoption)
+   - What to DISRUPT (high-potential gaps)
+   - Brand-specific positioning guidelines
+
+### Output Formats
+
+- **Markdown** (default): Human-readable report with tables and structure
+- **JSON**: Structured data for programmatic access
+- **HTML**: Styled web page with visual formatting
 
 ## Requirements
 
