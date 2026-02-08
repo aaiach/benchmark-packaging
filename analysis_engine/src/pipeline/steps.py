@@ -316,6 +316,149 @@ def execute_step_7_competitive(ctx: PipelineContext, config: Any) -> Optional[Pa
     return result_file
 
 
+def execute_step_8_review_correlation(ctx: PipelineContext, config: Any) -> Optional[Path]:
+    """Step 8: Review-Packaging Correlation Analysis (Phase 1.3).
+    
+    Scrapes customer reviews, analyzes sentiment and packaging topics,
+    then correlates packaging design attributes with customer satisfaction.
+    
+    Outputs:
+    - Review analyses with sentiment and topic extraction
+    - Correlation analysis between packaging attributes and sentiment
+    - Ranked list of packaging attributes by customer impact
+    
+    Returns:
+        Path to the correlation analysis JSON file
+    """
+    from ..review_scraper import ReviewScraper
+    from ..review_analyzer import ReviewAnalyzer
+    from ..correlation_engine import CorrelationEngine
+    from ..models import Product
+    
+    print(f"[Step 8] Review-Packaging Correlation Analysis...")
+    
+    # Load product details from step 2/3
+    products_file = ctx.output_dir / f"{ctx.category_slug}_discovered_{ctx.run_id}.json"
+    if not products_file.exists():
+        print("[!] Product details not found. Run steps 1-2 first.")
+        return None
+    
+    with open(products_file, 'r', encoding='utf-8') as f:
+        products_data = json.load(f)
+    
+    # Convert to Product objects
+    products = []
+    for p in products_data:
+        product = Product(
+            brand=p['brand'],
+            full_name=p['full_name'],
+            category=ctx.category,
+            target_audience=p.get('target_audience', ''),
+            product_url=p.get('product_url'),
+            brand_website=p.get('brand_website')
+        )
+        products.append(product)
+    
+    print(f"  Loaded {len(products)} products")
+    
+    # Load visual analyses from step 5
+    visual_analysis_file = ctx.output_dir / "analysis" / f"{ctx.category_slug}_visual_analysis_{ctx.run_id}.json"
+    if not visual_analysis_file.exists():
+        print("[!] Visual analysis not found. Run step 5 first.")
+        return None
+    
+    with open(visual_analysis_file, 'r', encoding='utf-8') as f:
+        visual_data = json.load(f)
+    
+    # Parse visual analyses
+    from ..models import VisualHierarchyAnalysis
+    packaging_analyses = {}
+    for analysis in visual_data.get('analyses', []):
+        brand = analysis['brand']
+        product_name = analysis['product_name']
+        product_key = f"{brand}_{product_name}"
+        
+        # Parse into VisualHierarchyAnalysis model
+        try:
+            packaging_analyses[product_key] = VisualHierarchyAnalysis.model_validate(analysis['analysis'])
+        except Exception as e:
+            print(f"  [!] Failed to parse visual analysis for {product_key}: {e}")
+            continue
+    
+    print(f"  Loaded {len(packaging_analyses)} visual analyses")
+    
+    # Step 1: Scrape reviews
+    print(f"\n  [1/3] Scraping customer reviews...")
+    scraper = ReviewScraper()
+    all_reviews = scraper.scrape_all_products(products, max_reviews_per_product=30)
+    
+    total_reviews = sum(len(reviews) for reviews in all_reviews.values())
+    print(f"  ✓ Scraped {total_reviews} reviews across {len(all_reviews)} products")
+    
+    # Step 2: Analyze reviews
+    print(f"\n  [2/3] Analyzing reviews for sentiment and packaging topics...")
+    analyzer = ReviewAnalyzer()
+    
+    review_analyses = {}
+    for product in products:
+        product_key = f"{product.brand}_{product.full_name}"
+        reviews = all_reviews.get(product_key, [])
+        
+        if not reviews:
+            continue
+        
+        analyses = analyzer.analyze_reviews_batch(
+            reviews,
+            product.brand,
+            product.full_name
+        )
+        review_analyses[product_key] = analyses
+    
+    packaging_focused_total = sum(
+        sum(1 for a in analyses if a.is_packaging_focused)
+        for analyses in review_analyses.values()
+    )
+    print(f"  ✓ Analyzed {total_reviews} reviews, {packaging_focused_total} are packaging-focused")
+    
+    # Step 3: Correlate with packaging attributes
+    print(f"\n  [3/3] Correlating packaging attributes with customer satisfaction...")
+    correlation_engine = CorrelationEngine()
+    
+    correlation_result = correlation_engine.analyze_correlations(
+        review_analyses,
+        packaging_analyses,
+        ctx.category
+    )
+    
+    print(f"  ✓ Identified {len(correlation_result.attribute_rankings)} correlated attributes")
+    
+    # Save results
+    output_dir = ctx.output_dir / "analysis"
+    output_dir.mkdir(exist_ok=True, parents=True)
+    
+    output_file = output_dir / f"{ctx.category_slug}_review_correlation_{ctx.run_id}.json"
+    with open(output_file, 'w', encoding='utf-8') as f:
+        json.dump(
+            correlation_result.model_dump(),
+            f,
+            indent=2,
+            ensure_ascii=False
+        )
+    
+    print(f"\n[✓] Review-packaging correlation analysis complete")
+    print(f"    Output: {output_file}")
+    
+    # Print top 5 findings
+    print(f"\n  Top 5 Packaging Attributes by Customer Impact:")
+    for ranking in correlation_result.attribute_rankings[:5]:
+        attr = ranking.attribute
+        impact_emoji = "🔺" if "positive" in attr.impact_category else "🔻" if "negative" in attr.impact_category else "➖"
+        print(f"    {ranking.rank}. {impact_emoji} {attr.attribute_value}")
+        print(f"       Correlation: {attr.correlation_score:+.2f}, Significance: p={attr.statistical_significance:.3f}")
+    
+    return output_file
+
+
 # =============================================================================
 # Step Registry
 # =============================================================================
@@ -380,6 +523,14 @@ STEPS: Dict[int, Step] = {
         output_pattern="analysis/{category}_competitive_analysis_{run_id}.json",
         requires=[5],  # Only requires visual analysis, not heatmaps
         executor=execute_step_7_competitive,
+    ),
+    8: Step(
+        number=8,
+        name="review_correlation",
+        description="Review-Packaging Correlation Analysis (Phase 1.3)",
+        output_pattern="analysis/{category}_review_correlation_{run_id}.json",
+        requires=[2, 5],  # Requires product details and visual analysis
+        executor=execute_step_8_review_correlation,
     ),
 }
 

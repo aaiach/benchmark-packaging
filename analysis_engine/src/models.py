@@ -1092,3 +1092,177 @@ class Product:
             'availability': self.availability,
             'additional_data': self.additional_data
         }
+
+
+# =============================================================================
+# Pydantic Models for Review Analysis (Phase 1.3)
+# =============================================================================
+
+class ReviewSentiment(BaseModel):
+    """Sentiment analysis result for a review."""
+    overall_score: float = Field(
+        description="Overall sentiment score from -1 (very negative) to 1 (very positive)",
+        ge=-1.0,
+        le=1.0
+    )
+    confidence: float = Field(
+        description="Confidence score from 0 to 1",
+        ge=0.0,
+        le=1.0
+    )
+    sentiment_label: Literal["very_negative", "negative", "neutral", "positive", "very_positive"] = Field(
+        description="Categorical sentiment label"
+    )
+
+
+class PackagingTopic(BaseModel):
+    """A packaging-related topic mentioned in a review."""
+    topic: Literal["design", "readability", "claims_believability", "shelf_appeal", "color", "typography", "trust_marks", "overall_appearance"] = Field(
+        description="Type of packaging topic"
+    )
+    sentiment: float = Field(
+        description="Sentiment score for this topic (-1 to 1)",
+        ge=-1.0,
+        le=1.0
+    )
+    relevance_score: float = Field(
+        description="How relevant this topic is to the review (0 to 1)",
+        ge=0.0,
+        le=1.0
+    )
+    mentioned_phrases: List[str] = Field(
+        description="Specific phrases from the review related to this topic"
+    )
+
+
+class ReviewAnalysis(BaseModel):
+    """Complete analysis of a single customer review."""
+    review_id: str = Field(description="Unique review identifier")
+    brand: str = Field(description="Product brand")
+    product_name: str = Field(description="Product name")
+    review_text: str = Field(description="Original review text")
+    rating: Optional[float] = Field(
+        None,
+        description="Original review rating (e.g., 1-5 stars)",
+        ge=1.0,
+        le=5.0
+    )
+    sentiment: ReviewSentiment = Field(
+        description="Overall sentiment analysis"
+    )
+    packaging_topics: List[PackagingTopic] = Field(
+        description="Packaging-related topics identified in the review"
+    )
+    is_packaging_focused: bool = Field(
+        description="Whether this review primarily discusses packaging"
+    )
+    review_date: Optional[str] = Field(
+        None,
+        description="Date of review (ISO format)"
+    )
+    verified_purchase: Optional[bool] = Field(
+        None,
+        description="Whether this was a verified purchase"
+    )
+
+
+class PackagingAttributeCorrelation(BaseModel):
+    """Correlation between a packaging attribute and customer satisfaction."""
+    attribute_category: str = Field(
+        description="Category of attribute: 'color', 'typography', 'claim', 'layout', 'trust_mark', 'surface_finish'"
+    )
+    attribute_value: str = Field(
+        description="Specific attribute value (e.g., 'matte finish', 'blue color', 'organic claim')"
+    )
+    correlation_score: float = Field(
+        description="Correlation coefficient (-1 to 1) with customer satisfaction",
+        ge=-1.0,
+        le=1.0
+    )
+    statistical_significance: float = Field(
+        description="P-value for statistical significance (0 to 1)",
+        ge=0.0,
+        le=1.0
+    )
+    average_sentiment: float = Field(
+        description="Average sentiment score for products with this attribute",
+        ge=-1.0,
+        le=1.0
+    )
+    sample_size: int = Field(
+        description="Number of reviews/products in sample",
+        ge=0
+    )
+    impact_category: Literal["strong_positive", "positive", "neutral", "negative", "strong_negative"] = Field(
+        description="Categorical impact on customer satisfaction"
+    )
+
+
+class AttributeRanking(BaseModel):
+    """Ranked packaging attribute by customer impact."""
+    rank: int = Field(description="Rank position (1 is highest impact)", ge=1)
+    attribute: PackagingAttributeCorrelation = Field(
+        description="The attribute and its correlation data"
+    )
+    supporting_evidence: List[str] = Field(
+        description="Example review phrases that support this correlation"
+    )
+
+
+class TopicCorrelation(BaseModel):
+    """Correlation between packaging topic mentions and sentiment."""
+    topic: str = Field(description="Packaging topic name")
+    mention_count: int = Field(description="Number of times mentioned in reviews", ge=0)
+    average_sentiment_when_mentioned: float = Field(
+        description="Average sentiment in reviews mentioning this topic",
+        ge=-1.0,
+        le=1.0
+    )
+    average_sentiment_when_not_mentioned: float = Field(
+        description="Average sentiment in reviews not mentioning this topic",
+        ge=-1.0,
+        le=1.0
+    )
+    sentiment_delta: float = Field(
+        description="Difference in sentiment (mentioned - not mentioned)"
+    )
+
+
+class ReviewPackagingCorrelationResult(BaseModel):
+    """Complete correlation analysis between reviews and packaging design."""
+    
+    # Metadata
+    category: str = Field(description="Product category analyzed")
+    analysis_date: str = Field(description="ISO date of analysis")
+    total_reviews: int = Field(description="Total number of reviews analyzed", ge=0)
+    packaging_focused_reviews: int = Field(
+        description="Number of reviews that discuss packaging",
+        ge=0
+    )
+    products_analyzed: int = Field(description="Number of products in analysis", ge=0)
+    
+    # Attribute Rankings
+    attribute_rankings: List[AttributeRanking] = Field(
+        description="Packaging attributes ranked by customer impact (highest to lowest)"
+    )
+    
+    # Topic Correlations
+    topic_correlations: List[TopicCorrelation] = Field(
+        description="Correlations between packaging topics and sentiment"
+    )
+    
+    # Product-specific insights
+    product_insights: List[Dict[str, Any]] = Field(
+        default_factory=list,
+        description="Per-product insights with packaging attributes and review sentiment"
+    )
+    
+    # Key Findings
+    key_findings: List[str] = Field(
+        description="3-5 key strategic insights from the correlation analysis"
+    )
+    
+    # Category Summary
+    executive_summary: str = Field(
+        description="Executive summary of the correlation analysis (2-3 sentences)"
+    )
