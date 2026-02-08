@@ -8,6 +8,11 @@ LLM-powered product analysis engine that discovers, scrapes, and analyzes produc
   - Gemini + Google Search for brand discovery
   - OpenAI + Web Search for product details
   - Gemini Vision for visual analysis and heatmap generation
+  - Gemini Vision for OCR text extraction and categorization
+- **OCR Pipeline**: Multilingual text extraction (French, Dutch, English)
+  - Categorizes text into: brand identity, claims, nutritional info, certifications, regulatory mentions
+  - Extracts visual codes: colors, typography, layout structure
+  - Structured JSON output for market analysis
 - **Visual Analysis**: Eye-tracking simulation and visual hierarchy analysis
 - **Competitive Intelligence**: PODs/POPs extraction for BCG-style presentations
 - **Intelligent Web Scraping**: Leverages Firecrawl for data extraction
@@ -37,7 +42,13 @@ uv sync
 Run the complete pipeline:
 
 ```bash
-uv run python main.py "lait d'avoine" --steps 1-7
+uv run python main.py "lait d'avoine" --steps 1-8
+```
+
+Run OCR extraction only (requires images from step 4):
+
+```bash
+uv run python main.py --run-id 20260120_184854 --steps 8
 ```
 
 ### Pipeline Steps
@@ -51,6 +62,7 @@ uv run python main.py "lait d'avoine" --steps 1-7
 | 5 | Visual | Visual hierarchy analysis |
 | 6 | Heatmaps | Eye-tracking heatmap generation |
 | 7 | Competitive | PODs/POPs competitive analysis |
+| 8 | OCR | OCR text extraction & categorization (multilingual) |
 
 ### Advanced Options
 
@@ -95,7 +107,8 @@ output/
 ├── {category}_details_{timestamp}.json       # Product details
 ├── analysis/
 │   ├── {category}_visual_analysis_{timestamp}.json
-│   └── {category}_competitive_analysis_{timestamp}.json
+│   ├── {category}_competitive_analysis_{timestamp}.json
+│   └── {category}_ocr_{timestamp}.json       # OCR text extraction results
 └── images/
     └── {category}_{timestamp}/
         ├── {brand}_{hash}.{ext}              # Product images

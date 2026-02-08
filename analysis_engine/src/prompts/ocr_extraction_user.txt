@@ -1,0 +1,34 @@
+Extract and categorize ALL text from this product packaging image.
+
+# IMAGE CONTEXT
+Product Category: {category}
+Expected Brand: {brand}
+Expected Product: {product_name}
+
+# INSTRUCTIONS
+
+Analyze the packaging image and extract:
+
+1. **Brand Identity**: Brand name, slogan, product name as displayed
+2. **Product Claims**: All marketing claims categorized by type (health, taste, eco, origin, quality, ethical)
+3. **Nutritional Information**: Nutrition table, highlighted values, allergens, ingredients
+4. **Certifications & Labels**: All visible certifications with visual descriptions
+5. **Regulatory Mentions**: Legal text, storage instructions, warnings, recycling info
+6. **Visual Codes**: Dominant colors (with hex), typography style, layout structure, design style
+
+# MULTILINGUAL EXTRACTION
+
+- Extract text in **original language** (French, Dutch, or English)
+- Tag the language for each text element
+- Do NOT translate
+
+# QUALITY REQUIREMENTS
+
+✓ Extract text EXACTLY as written
+✓ Be thorough - capture ALL visible text
+✓ Categorize claims precisely
+✓ Describe certification logos clearly
+✓ Note all detected languages
+✓ Rate your extraction confidence
+
+Return a complete structured OCR analysis.

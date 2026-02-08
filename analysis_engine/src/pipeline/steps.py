@@ -381,6 +381,14 @@ STEPS: Dict[int, Step] = {
         requires=[5],  # Only requires visual analysis, not heatmaps
         executor=execute_step_7_competitive,
     ),
+    8: Step(
+        number=8,
+        name="ocr",
+        description="OCR Text Extraction & Categorization (Gemini Vision)",
+        output_pattern="analysis/{category}_ocr_{run_id}.json",
+        requires=[4],  # Only requires images to be downloaded
+        executor=execute_step_8_ocr,
+    ),
 }
 
 
