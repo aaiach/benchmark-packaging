@@ -316,6 +316,47 @@ def execute_step_7_competitive(ctx: PipelineContext, config: Any) -> Optional[Pa
     return result_file
 
 
+def execute_step_8_ocr(ctx: PipelineContext, config: Any) -> List[Dict[str, Any]]:
+    """Step 8: OCR Text Extraction & Categorization using Gemini Vision.
+    
+    Extracts and categorizes all text from packaging images:
+    - Brand identity (name, slogan, product name)
+    - Product claims (health, taste, eco, origin, quality, ethical)
+    - Nutritional information
+    - Certifications and labels
+    - Regulatory mentions
+    - Visual codes (colors, typography, layout)
+    
+    Handles multilingual content (French, Dutch, English).
+    
+    Returns:
+        List of OCR analysis results as dictionaries
+    """
+    from ..ocr_analyzer import analyze_images_for_run
+    
+    print(f"[Step 8] OCR text extraction with {config.gemini.model}...")
+    print(f"  Multilingual support: French, Dutch, English")
+    
+    # Run OCR analysis
+    results = analyze_images_for_run(
+        output_dir=ctx.output_dir,
+        run_id=ctx.run_id,
+        category=ctx.category,
+        config=config
+    )
+    
+    if not results:
+        print("[!] No OCR results generated")
+        return []
+    
+    print(f"[✓] OCR extraction complete for {len(results)} products")
+    
+    # Store in context
+    ctx.data['ocr_results'] = results
+    
+    return [r.model_dump() for r in results]
+
+
 # =============================================================================
 # Step Registry
 # =============================================================================
@@ -380,6 +421,14 @@ STEPS: Dict[int, Step] = {
         output_pattern="analysis/{category}_competitive_analysis_{run_id}.json",
         requires=[5],  # Only requires visual analysis, not heatmaps
         executor=execute_step_7_competitive,
+    ),
+    8: Step(
+        number=8,
+        name="ocr",
+        description="OCR Text Extraction & Categorization (Gemini Vision)",
+        output_pattern="analysis/{category}_ocr_{run_id}.json",
+        requires=[4],  # Only requires images to be downloaded
+        executor=execute_step_8_ocr,
     ),
 }
 

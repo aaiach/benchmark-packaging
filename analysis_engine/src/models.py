@@ -578,6 +578,204 @@ class StrategicInsightsResult(BaseModel):
     )
 
 
+# =============================================================================
+# Pydantic Models for OCR Pipeline (Step 8)
+# =============================================================================
+
+class BrandIdentity(BaseModel):
+    """Brand name and slogan extracted from packaging."""
+    brand_name: str = Field(
+        description="Primary brand name as displayed on the packaging"
+    )
+    slogan: Optional[str] = Field(
+        None,
+        description="Brand slogan or tagline if present"
+    )
+    product_name: Optional[str] = Field(
+        None,
+        description="Specific product name/variant"
+    )
+    sub_brand: Optional[str] = Field(
+        None,
+        description="Sub-brand or product line name if applicable"
+    )
+
+
+class ProductClaim(BaseModel):
+    """A single marketing or product claim."""
+    claim_text: str = Field(
+        description="Exact text of the claim as it appears on packaging"
+    )
+    claim_type: Literal["health", "taste", "eco", "origin", "quality", "ethical", "other"] = Field(
+        description="Category of claim"
+    )
+    prominence: Literal["primary", "secondary", "tertiary"] = Field(
+        description="Visual prominence on packaging"
+    )
+    language: str = Field(
+        description="Language of the claim (e.g., 'fr', 'nl', 'en')"
+    )
+    position: Optional[str] = Field(
+        None,
+        description="Location on packaging (e.g., 'front-center', 'top-left')"
+    )
+
+
+class NutritionalInformation(BaseModel):
+    """Nutritional information extracted from packaging."""
+    has_nutrition_table: bool = Field(
+        description="Whether a nutritional information table is present"
+    )
+    key_values: List[Dict[str, str]] = Field(
+        default_factory=list,
+        description="Key nutritional values (e.g., [{'nutrient': 'Calories', 'value': '120 kcal', 'per': '100ml'}])"
+    )
+    highlighted_nutrients: List[str] = Field(
+        default_factory=list,
+        description="Nutrients that are visually emphasized (e.g., ['Low fat', 'High protein'])"
+    )
+    allergen_info: List[str] = Field(
+        default_factory=list,
+        description="Allergen information if present"
+    )
+    ingredients_list: Optional[str] = Field(
+        None,
+        description="Complete ingredients list text if readable"
+    )
+
+
+class Certification(BaseModel):
+    """A certification or label on the packaging."""
+    name: str = Field(
+        description="Name of the certification (e.g., 'Bio', 'Fair Trade', 'EU Organic')"
+    )
+    certification_type: Literal[
+        "organic", "fair-trade", "environmental", "quality", 
+        "dietary", "origin", "animal-welfare", "other"
+    ] = Field(
+        description="Type of certification"
+    )
+    issuing_body: Optional[str] = Field(
+        None,
+        description="Certifying organization if identifiable"
+    )
+    visual_description: str = Field(
+        description="Description of the certification logo/badge"
+    )
+    prominence: Literal["highly-visible", "visible", "subtle"] = Field(
+        description="How prominently the certification is displayed"
+    )
+
+
+class RegulatoryMention(BaseModel):
+    """Regulatory or legal text on the packaging."""
+    text: str = Field(
+        description="The regulatory text"
+    )
+    mention_type: Literal[
+        "recycling", "storage-instructions", "usage-instructions", 
+        "warning", "legal-notice", "barcode-info", "producer-info", "other"
+    ] = Field(
+        description="Type of regulatory mention"
+    )
+    language: str = Field(
+        description="Language of the text"
+    )
+
+
+class VisualCodes(BaseModel):
+    """Visual design codes and styling extracted from packaging."""
+    dominant_colors: List[str] = Field(
+        description="Dominant colors with hex codes (e.g., ['#2D5A3D Deep Forest Green', '#F5F5DC Warm Beige'])"
+    )
+    color_psychology: str = Field(
+        description="Brief analysis of color choices and their psychological impact"
+    )
+    typography_style: str = Field(
+        description="Description of typography style (e.g., 'Modern sans-serif with rounded edges', 'Traditional serif with high contrast')"
+    )
+    primary_font_category: str = Field(
+        description="Primary font category (e.g., 'Rounded Sans-Serif', 'Modern Serif', 'Script')"
+    )
+    layout_structure: str = Field(
+        description="Overall layout structure (e.g., 'Centered vertical hierarchy', 'Asymmetric grid', 'Diagonal composition')"
+    )
+    design_style: str = Field(
+        description="Overall design style (e.g., 'Minimalist premium', 'Rustic organic', 'Bold contemporary')"
+    )
+    surface_finish: str = Field(
+        description="Surface finish/material appearance (e.g., 'Matte cardboard', 'Glossy plastic', 'Textured paper')"
+    )
+
+
+class OCRResult(BaseModel):
+    """Complete OCR analysis result for a packaging image."""
+    
+    # Metadata
+    image_path: str = Field(
+        description="Path to the source image"
+    )
+    brand: str = Field(
+        description="Brand name for reference"
+    )
+    product_name: str = Field(
+        description="Product name for reference"
+    )
+    analysis_timestamp: str = Field(
+        description="ISO timestamp of analysis"
+    )
+    
+    # Extracted and categorized content
+    brand_identity: BrandIdentity = Field(
+        description="Brand name, slogan, and product identification"
+    )
+    
+    product_claims: List[ProductClaim] = Field(
+        description="All marketing claims categorized by type",
+        default_factory=list
+    )
+    
+    nutritional_info: NutritionalInformation = Field(
+        description="Nutritional information extracted"
+    )
+    
+    certifications: List[Certification] = Field(
+        description="All certifications and labels",
+        default_factory=list
+    )
+    
+    regulatory_mentions: List[RegulatoryMention] = Field(
+        description="Regulatory and legal text",
+        default_factory=list
+    )
+    
+    visual_codes: VisualCodes = Field(
+        description="Visual design codes and styling"
+    )
+    
+    # Additional metadata
+    detected_languages: List[str] = Field(
+        description="All languages detected on the packaging (e.g., ['fr', 'nl', 'en'])"
+    )
+    
+    all_text_raw: Optional[str] = Field(
+        None,
+        description="Complete raw text extracted for reference"
+    )
+    
+    extraction_confidence: float = Field(
+        description="Overall confidence in the extraction (0.0 to 1.0)",
+        ge=0.0,
+        le=1.0,
+        default=1.0
+    )
+    
+    notes: Optional[str] = Field(
+        None,
+        description="Any additional notes or observations"
+    )
+
+
 class VisualHierarchyAnalysis(BaseModel):
     """Complete visual hierarchy analysis result with 4 sections."""
     
