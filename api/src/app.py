@@ -41,6 +41,7 @@ def create_app() -> Flask:
     # Register blueprints
     from .routes.health import health_bp
     from .routes.scraper import scraper_bp
+    from .routes.competitor_scraper import competitor_scraper_bp
     from .routes.categories import categories_bp
     from .routes.email import email_bp
     from .routes.image_analysis import image_analysis_bp
@@ -49,6 +50,7 @@ def create_app() -> Flask:
 
     app.register_blueprint(health_bp)
     app.register_blueprint(scraper_bp, url_prefix='/api/scraper')
+    app.register_blueprint(competitor_scraper_bp, url_prefix='/api/competitor-scraper')
     app.register_blueprint(categories_bp, url_prefix='/api/categories')
     app.register_blueprint(email_bp, url_prefix='/api/email')
     app.register_blueprint(image_analysis_bp, url_prefix='/api/image-analysis')
@@ -114,6 +116,22 @@ def create_app() -> Flask:
         sessions_dir = os.path.join(app.config['OUTPUT_DIR'], 'rebrand_sessions')
         # max_age=31536000 (1 year) since session_id makes these immutable
         return send_from_directory(sessions_dir, filename, max_age=31536000)
+
+    # Static file serving for competitor packaging images
+    # Cache for 1 hour since these are scraped data
+    @app.route('/images/competitor_packaging/<path:filename>')
+    def serve_competitor_packaging_image(filename):
+        """Serve images from competitor packaging directory.
+
+        Args:
+            filename: Path to image file (e.g., "dataset_id/images/alpro/image.jpg")
+
+        Returns:
+            Image file or 404 error with caching
+        """
+        competitor_dir = os.path.join(app.config['OUTPUT_DIR'], 'competitor_packaging')
+        # max_age=3600 (1 hour) for cached competitor images
+        return send_from_directory(competitor_dir, filename, max_age=3600)
 
     # Global error handlers
     @app.errorhandler(404)
