@@ -22,6 +22,16 @@ firecrawl-py==4.13.0
 
 # Data processing
 pandas==2.2.3
+numpy==2.1.3
+
+# NLP & Sentiment Analysis
+transformers==4.48.0
+torch==2.5.1
+scikit-learn==1.6.1
+nltk==3.9.1
+
+# Statistical analysis
+scipy==1.15.0
 
 # Image processing
 pillow==11.1.0
